@@ -7,13 +7,14 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { CpfInput } from '@/components/ui/cpf-input'
 import { Label } from '@/components/ui/label'
+import { isCpfComplete } from '@/lib/format-cpf'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
 const cpfSchema = z.object({
-    cpf: z.string().min(11, 'Informe um CPF válido').max(14)
+    cpf: z.string().refine(isCpfComplete, 'Informe um CPF válido')
 })
 
 type CpfFormValues = z.infer<typeof cpfSchema>
@@ -59,7 +60,7 @@ export default function ExcluirPage() {
                             <Label htmlFor="cpf" required>
                                 CPF do inquilino
                             </Label>
-                            <Input id="cpf" placeholder="000.000.000-00" {...register('cpf')} />
+                            <CpfInput id="cpf" {...register('cpf')} />
                             {errors.cpf && (
                                 <p className="text-xs text-destructive">{errors.cpf.message}</p>
                             )}

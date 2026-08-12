@@ -7,16 +7,18 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { CpfInput } from '@/components/ui/cpf-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { isCpfComplete } from '@/lib/format-cpf'
 import { ocorrenciaService, OcorrenciaCreateInput } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_OPTIONS } from '@/shared/constants/tipo-ocorrencia'
 
 const inserirSchema = z.object({
     nomeInquilinoInformado: z.string().min(1, 'Informe o nome completo do inquilino'),
-    cpfInquilino: z.string().min(11, 'Informe um CPF válido').max(14),
+    cpfInquilino: z.string().refine(isCpfComplete, 'Informe um CPF válido'),
     tipo: z.string().min(1, 'Selecione o tipo de ocorrência'),
     descricao: z
         .string()
@@ -75,7 +77,7 @@ export default function InserirPage() {
                         <Label htmlFor="cpfInquilino" required>
                             CPF
                         </Label>
-                        <Input id="cpfInquilino" placeholder="000.000.000-00" {...register('cpfInquilino')} />
+                        <CpfInput id="cpfInquilino" {...register('cpfInquilino')} />
                         {errors.cpfInquilino && (
                             <p className="text-xs text-destructive">{errors.cpfInquilino.message}</p>
                         )}
