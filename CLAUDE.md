@@ -26,7 +26,7 @@ imobiliaria/
 
 | Serviço | Porta App | Porta DB (host)   |
 | ------- | --------- | ------------------ |
-| api     | 9010      | 5442 (PostgreSQL)  |
+| api     | 9010      | 5443 (PostgreSQL)  |
 | web     | 8010      | —                   |
 
 ## Tecnologias Comuns

@@ -4,7 +4,7 @@ import prisma from '../../../../infra/persistence/prisma'
 import { AuditLogService } from '../../../../infra/audit/audit-log.service'
 import { sanitizeCpf } from '../../../../shared/utils/sanitize-cpf'
 
-interface ConsultaResult {
+export interface ConsultaResult {
     constamInformacoes: boolean
     tipos: TipoOcorrencia[]
 }

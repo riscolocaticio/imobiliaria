@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { JwtModule } from '@nestjs/jwt'
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AuditLogModule } from '../../../../infra/audit/audit-log.module'
 import { CryptoService } from '../../../../infra/system/helpers/crypto/crypto.service'
@@ -13,7 +13,9 @@ import { AuthLoginUsecase } from './auth-login.usecase'
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
                 secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') }
+                signOptions: {
+                    expiresIn: configService.get<string>('JWT_EXPIRES_IN')
+                } as JwtModuleOptions['signOptions']
             })
         })
     ],

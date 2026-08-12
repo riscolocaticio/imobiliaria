@@ -7,14 +7,15 @@ let isRedirectingToLogin = false
 
 function redirectToLogin() {
     if (typeof window === 'undefined' || isRedirectingToLogin) return
+
+    const isOnLogin = window.location.pathname.startsWith(ROUTES.LOGIN)
+    if (isOnLogin) return
+
     isRedirectingToLogin = true
 
     destroyCookie(null, COOKIE_TOKEN.TOKEN, { path: '/' })
 
-    const isOnLogin = window.location.pathname.startsWith(ROUTES.LOGIN)
-    const returnTo = encodeURIComponent(
-        isOnLogin ? '/' : window.location.pathname + window.location.search
-    )
+    const returnTo = encodeURIComponent(window.location.pathname + window.location.search)
     window.location.href = `${ROUTES.LOGIN}?returnTo=${returnTo}`
 }
 

@@ -31,7 +31,7 @@ npm run seed                  # cria imobiliária + usuário de teste (login: ad
 npm run dev                   # inicia (porta 9010)
 ```
 
-**Porta:** `9010` | **DB:** `localhost:5442` → `risco_locaticio` | **Swagger:** `/api-docs`
+**Porta:** `9010` | **DB:** `localhost:5443` → `risco_locaticio` | **Swagger:** `/api-docs`
 
 ## Estrutura de Pastas
 
