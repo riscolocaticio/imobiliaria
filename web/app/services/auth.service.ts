@@ -1,0 +1,34 @@
+import { setCookie, destroyCookie } from 'nookies'
+import { apiClient } from './api.service'
+import { COOKIE_TOKEN } from '@/shared/enums/cookies.enum'
+
+export interface UsuarioLogado {
+    id: number
+    imobiliariaId: number
+    nomeCompleto: string
+    email: string
+    role: 'IMOBILIARIA' | 'MASTER'
+}
+
+export const authService = {
+    async login(login: string, password: string): Promise<void> {
+        const { data } = await apiClient.post<{ accessToken: string }>('/auth/login', {
+            login,
+            password
+        })
+
+        setCookie(null, COOKIE_TOKEN.TOKEN, data.accessToken, {
+            path: '/',
+            maxAge: 60 * 60 * 8
+        })
+    },
+
+    async me(): Promise<UsuarioLogado> {
+        const { data } = await apiClient.get<UsuarioLogado>('/auth/me')
+        return data
+    },
+
+    logout(): void {
+        destroyCookie(null, COOKIE_TOKEN.TOKEN, { path: '/' })
+    }
+}

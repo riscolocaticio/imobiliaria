@@ -1,0 +1,30 @@
+enum StatusRegistro {
+    ACTIVE
+    INACTIVE
+}
+
+enum UsuarioRole {
+    IMOBILIARIA
+    MASTER
+}
+
+enum TipoOcorrencia {
+    ABANDONO_IMOVEL
+    INADIMPLENCIA_LOCATICIA
+    DEPREDACAO_DANOS_IMOVEL
+    MULTA_CONTRATUAL
+    DESCUMPRIMENTO_CONTRATUAL
+    OUTROS
+}
+
+enum StatusOcorrencia {
+    ATIVA
+    EXCLUIDA
+}
+
+enum AcaoAuditoria {
+    LOGIN
+    CONSULTA_CPF
+    INSERCAO_OCORRENCIA
+    EXCLUSAO_OCORRENCIA
+}

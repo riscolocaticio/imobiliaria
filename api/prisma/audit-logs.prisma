@@ -1,0 +1,17 @@
+model AuditLog {
+    id             Int            @id @default(autoincrement())
+    usuarioId      Int
+    imobiliariaId  Int
+    acao           AcaoAuditoria
+    cpfConsultado  String?
+    ocorrenciaId   Int?
+    createdAt      DateTime       @default(now())
+
+    usuario     Usuario      @relation(fields: [usuarioId], references: [id])
+    imobiliaria Imobiliaria  @relation(fields: [imobiliariaId], references: [id])
+    ocorrencia  Ocorrencia?  @relation(fields: [ocorrenciaId], references: [id])
+
+    @@index([usuarioId])
+    @@index([cpfConsultado])
+    @@map("audit_logs")
+}

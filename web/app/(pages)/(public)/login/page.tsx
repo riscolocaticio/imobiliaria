@@ -1,0 +1,96 @@
+'use client'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Suspense, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useSearchParams } from 'next/navigation'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { authService } from '@/app/services/auth.service'
+import { ROUTES } from '@/shared/enums/routes.enum'
+
+const loginSchema = z.object({
+    login: z.string().min(1, 'Informe o login'),
+    password: z.string().min(1, 'Informe a senha')
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <LoginForm />
+        </Suspense>
+    )
+}
+
+function LoginForm() {
+    const [erro, setErro] = useState<string | null>(null)
+    const [enviando, setEnviando] = useState(false)
+    const searchParams = useSearchParams()
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) })
+
+    async function onSubmit(values: LoginFormValues) {
+        setErro(null)
+        setEnviando(true)
+        try {
+            await authService.login(values.login, values.password)
+            const returnTo = searchParams.get('returnTo')
+            window.location.href = returnTo || ROUTES.CONSULTAR
+        } catch {
+            setErro('Login ou senha incorretos')
+            setEnviando(false)
+        }
+    }
+
+    return (
+        <Card className="w-full max-w-sm">
+            <CardHeader>
+                <CardTitle>Plataforma de Risco Locatício</CardTitle>
+                <CardDescription>Acesso restrito a imobiliárias cadastradas</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="login" required>
+                            Login
+                        </Label>
+                        <Input id="login" autoComplete="username" {...register('login')} />
+                        {errors.login && (
+                            <p className="text-xs text-destructive">{errors.login.message}</p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <Label htmlFor="password" required>
+                            Senha
+                        </Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            autoComplete="current-password"
+                            {...register('password')}
+                        />
+                        {errors.password && (
+                            <p className="text-xs text-destructive">{errors.password.message}</p>
+                        )}
+                    </div>
+
+                    {erro && <p className="text-sm text-destructive">{erro}</p>}
+
+                    <Button type="submit" size="lg" disabled={enviando}>
+                        {enviando ? 'Entrando...' : 'Entrar'}
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    )
+}

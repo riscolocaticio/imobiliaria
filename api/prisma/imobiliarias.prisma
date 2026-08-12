@@ -1,0 +1,16 @@
+model Imobiliaria {
+    id           Int             @id @default(autoincrement())
+    razaoSocial  String
+    nomeFantasia String?
+    cnpj         String          @unique
+    email        String
+    status       StatusRegistro  @default(ACTIVE)
+    createdAt    DateTime        @default(now())
+    updatedAt    DateTime        @updatedAt
+
+    usuarios     Usuario[]
+    ocorrencias  Ocorrencia[]
+    auditLogs    AuditLog[]
+
+    @@map("imobiliarias")
+}

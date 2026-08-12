@@ -1,0 +1,22 @@
+model Ocorrencia {
+    id                     Int               @id @default(autoincrement())
+    cpfInquilino           String
+    nomeInquilinoInformado String
+    tipo                   TipoOcorrencia
+    descricao              String
+    imobiliariaId          Int
+    usuarioId              Int
+    status                 StatusOcorrencia  @default(ATIVA)
+    excluidoEm             DateTime?
+    excluidoPorUsuarioId   Int?
+    createdAt              DateTime          @default(now())
+
+    imobiliaria       Imobiliaria @relation(fields: [imobiliariaId], references: [id])
+    usuario           Usuario     @relation("OcorrenciaRegistradaPor", fields: [usuarioId], references: [id])
+    excluidoPorUsuario Usuario?   @relation("OcorrenciaExcluidaPor", fields: [excluidoPorUsuarioId], references: [id])
+    auditLogs         AuditLog[]
+
+    @@index([cpfInquilino])
+    @@index([imobiliariaId])
+    @@map("ocorrencias")
+}

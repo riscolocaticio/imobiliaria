@@ -1,0 +1,40 @@
+import { ValidationPipe } from '@nestjs/common'
+import { NestFactory } from '@nestjs/core'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { AppModule } from './app.module'
+import { GlobalExceptionFilter } from './infra/system/security/global-exceptions-filters'
+
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule)
+
+    app.enableCors({
+        origin: [process.env.URL_FRONT_END],
+        credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        allowedHeaders: 'Content-Type, Accept, Authorization',
+        exposedHeaders: ['Authorization'],
+        maxAge: 60 * 60 * 24
+    })
+
+    app.useGlobalFilters(new GlobalExceptionFilter())
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
+            transformOptions: { enableImplicitConversion: true }
+        })
+    )
+
+    const config = new DocumentBuilder()
+        .setTitle('Plataforma de Risco Locatício API')
+        .setDescription('Documentação da API')
+        .setVersion('1.0')
+        .addBearerAuth()
+        .build()
+    const document = SwaggerModule.createDocument(app, config)
+    SwaggerModule.setup('api-docs', app, document)
+
+    await app.listen(process.env.PORT)
+}
+bootstrap()

@@ -1,0 +1,22 @@
+model Usuario {
+    id             Int             @id @default(autoincrement())
+    imobiliariaId  Int
+    nomeCompleto   String
+    cpf            String          @unique
+    dataNascimento DateTime
+    email          String
+    login          String          @unique
+    passwordHash   String
+    role           UsuarioRole     @default(IMOBILIARIA)
+    status         StatusRegistro  @default(ACTIVE)
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+
+    imobiliaria           Imobiliaria  @relation(fields: [imobiliariaId], references: [id])
+    ocorrenciasRegistradas Ocorrencia[] @relation("OcorrenciaRegistradaPor")
+    ocorrenciasExcluidas   Ocorrencia[] @relation("OcorrenciaExcluidaPor")
+    auditLogs              AuditLog[]
+
+    @@index([imobiliariaId])
+    @@map("usuarios")
+}
