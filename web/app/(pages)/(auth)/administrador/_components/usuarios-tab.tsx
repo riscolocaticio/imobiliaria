@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -58,9 +58,10 @@ export function UsuariosTab() {
     const imobiliariaIdFiltro =
         filtroImobiliaria === TODAS_IMOBILIARIAS ? undefined : Number(filtroImobiliaria)
 
-    const { data: usuarios } = useQuery({
+    const { data: usuarios, isFetching: isFetchingUsuarios } = useQuery({
         queryKey: ['admin-usuarios', imobiliariaIdFiltro],
-        queryFn: () => usuarioService.listar(imobiliariaIdFiltro)
+        queryFn: () => usuarioService.listar(imobiliariaIdFiltro),
+        placeholderData: keepPreviousData
     })
 
     const formCriar = useForm<CriarFormValues>({
@@ -129,6 +130,7 @@ export function UsuariosTab() {
     const mostrarCarregandoCriar = useDelayedLoading(criarMutation.isPending)
     const mostrarCarregandoStatus = useDelayedLoading(statusMutation.isPending)
     const mostrarCarregandoAtualizar = useDelayedLoading(atualizarMutation.isPending)
+    const mostrarCarregandoFiltro = useDelayedLoading(isFetchingUsuarios)
 
     function iniciarEdicao(usuario: Usuario) {
         formEditar.reset({
@@ -148,19 +150,28 @@ export function UsuariosTab() {
                     <CardDescription>{usuarios?.length ?? 0} usuário(s)</CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                    <Select value={filtroImobiliaria} onValueChange={setFiltroImobiliaria}>
-                        <SelectTrigger className="w-56">
-                            <SelectValue placeholder="Filtrar por imobiliária" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
-                            {imobiliarias?.map((imobiliaria) => (
-                                <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
-                                    {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div className="relative">
+                        <Select
+                            value={filtroImobiliaria}
+                            onValueChange={setFiltroImobiliaria}
+                            disabled={isFetchingUsuarios}
+                        >
+                            <SelectTrigger className="w-56">
+                                <SelectValue placeholder="Filtrar por imobiliária" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
+                                {imobiliarias?.map((imobiliaria) => (
+                                    <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
+                                        {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {mostrarCarregandoFiltro && (
+                            <Loader2 className="pointer-events-none absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                        )}
+                    </div>
                     <Button onClick={() => setDialogCriarAberto(true)}>
                         <Plus className="h-4 w-4" />
                         Novo usuário

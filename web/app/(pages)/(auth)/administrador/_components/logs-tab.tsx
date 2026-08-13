@@ -1,12 +1,14 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { ACAO_LOG_LABEL, logService } from '@/app/services/log.service'
 
@@ -18,13 +20,14 @@ export function LogsTab() {
     const [filtroImobiliaria, setFiltroImobiliaria] = useState(TODAS_IMOBILIARIAS)
     const [filtroAcao, setFiltroAcao] = useState(TODAS_ACOES)
     const [page, setPage] = useState(1)
+    const [ultimaAcao, setUltimaAcao] = useState<'anterior' | 'proxima' | 'filtro' | null>(null)
 
     const { data: imobiliarias } = useQuery({
         queryKey: ['admin-imobiliarias'],
         queryFn: () => imobiliariaService.listar()
     })
 
-    const { data: resultado, isLoading } = useQuery({
+    const { data: resultado, isLoading, isFetching } = useQuery({
         queryKey: ['admin-logs', filtroImobiliaria, filtroAcao, page],
         queryFn: () =>
             logService.listar({
@@ -33,13 +36,16 @@ export function LogsTab() {
                 acao: filtroAcao === TODAS_ACOES ? undefined : filtroAcao,
                 page,
                 pageSize: PAGE_SIZE
-            })
+            }),
+        placeholderData: keepPreviousData
     })
 
+    const mostrarCarregando = useDelayedLoading(isFetching)
     const totalPaginas = resultado ? Math.max(1, Math.ceil(resultado.total / PAGE_SIZE)) : 1
 
     function aplicarFiltro(setter: (value: string) => void) {
         return (value: string) => {
+            setUltimaAcao('filtro')
             setter(value)
             setPage(1)
         }
@@ -54,8 +60,17 @@ export function LogsTab() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <div className="flex flex-col gap-1.5">
-                        <Label>Imobiliária</Label>
-                        <Select value={filtroImobiliaria} onValueChange={aplicarFiltro(setFiltroImobiliaria)}>
+                        <Label className="flex items-center gap-1.5">
+                            Imobiliária
+                            {mostrarCarregando && ultimaAcao === 'filtro' && (
+                                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                            )}
+                        </Label>
+                        <Select
+                            value={filtroImobiliaria}
+                            onValueChange={aplicarFiltro(setFiltroImobiliaria)}
+                            disabled={isFetching}
+                        >
                             <SelectTrigger className="w-52">
                                 <SelectValue />
                             </SelectTrigger>
@@ -71,7 +86,11 @@ export function LogsTab() {
                     </div>
                     <div className="flex flex-col gap-1.5">
                         <Label>Ação</Label>
-                        <Select value={filtroAcao} onValueChange={aplicarFiltro(setFiltroAcao)}>
+                        <Select
+                            value={filtroAcao}
+                            onValueChange={aplicarFiltro(setFiltroAcao)}
+                            disabled={isFetching}
+                        >
                             <SelectTrigger className="w-52">
                                 <SelectValue />
                             </SelectTrigger>
@@ -131,9 +150,15 @@ export function LogsTab() {
                         <Button
                             variant="outline"
                             size="sm"
-                            disabled={page <= 1}
-                            onClick={() => setPage((p) => p - 1)}
+                            disabled={page <= 1 || isFetching}
+                            onClick={() => {
+                                setUltimaAcao('anterior')
+                                setPage((p) => p - 1)
+                            }}
                         >
+                            {mostrarCarregando && ultimaAcao === 'anterior' && (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            )}
                             Anterior
                         </Button>
                         <p className="text-xs text-muted-foreground">
@@ -142,9 +167,15 @@ export function LogsTab() {
                         <Button
                             variant="outline"
                             size="sm"
-                            disabled={page >= totalPaginas}
-                            onClick={() => setPage((p) => p + 1)}
+                            disabled={page >= totalPaginas || isFetching}
+                            onClick={() => {
+                                setUltimaAcao('proxima')
+                                setPage((p) => p + 1)
+                            }}
                         >
+                            {mostrarCarregando && ultimaAcao === 'proxima' && (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            )}
                             Próxima
                         </Button>
                     </div>
