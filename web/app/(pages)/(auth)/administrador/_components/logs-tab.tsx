@@ -47,7 +47,7 @@ export function LogsTab() {
 
     return (
         <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-            <CardHeader className="shrink-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <CardHeader className="shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <CardTitle>Logs de auditoria</CardTitle>
                     <CardDescription>{resultado?.total ?? 0} registro(s) no total</CardDescription>
