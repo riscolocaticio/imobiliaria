@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CurrentUser } from '../../../infra/system/security/decorators/current-user.decorator'
 import { JwtAuthGuard } from '../../../infra/system/security/guards/jwt-auth.guard'
@@ -21,13 +21,23 @@ export class UsuarioController {
     ) {}
 
     @Get()
-    async list(@CurrentUser() usuario: UsuarioFromJwtDto) {
-        return this.usuarioListByImobiliariaUsecase.execute(usuario.imobiliariaId)
+    async list(
+        @CurrentUser() usuario: UsuarioFromJwtDto,
+        @Query('imobiliariaId') imobiliariaIdQuery?: string
+    ) {
+        const imobiliariaId =
+            usuario.role === 'MASTER'
+                ? imobiliariaIdQuery
+                    ? Number(imobiliariaIdQuery)
+                    : undefined
+                : usuario.imobiliariaId
+
+        return this.usuarioListByImobiliariaUsecase.execute(imobiliariaId)
     }
 
     @Post()
     async create(@CurrentUser() usuario: UsuarioFromJwtDto, @Body() input: UsuarioCreateInput) {
-        return this.usuarioCreateUsecase.execute(usuario.imobiliariaId, input)
+        return this.usuarioCreateUsecase.execute(usuario, input)
     }
 
     @Patch(':id')
@@ -36,6 +46,6 @@ export class UsuarioController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: UsuarioUpdateInput
     ) {
-        return this.usuarioUpdateUsecase.execute(usuario.imobiliariaId, id, input)
+        return this.usuarioUpdateUsecase.execute(usuario, id, input)
     }
 }

@@ -35,7 +35,36 @@ async function main() {
         }
     })
 
+    const plataforma = await prisma.imobiliaria.upsert({
+        where: { cnpj: '00000000000272' },
+        update: {},
+        create: {
+            razaoSocial: 'Administração da Plataforma',
+            nomeFantasia: 'Plataforma de Risco Locatício',
+            cnpj: '00000000000272',
+            email: 'admin@plataformariscolocaticio.com.br'
+        }
+    })
+
+    const masterPasswordHash = await bcrypt.hash('master123', 10)
+
+    await prisma.usuario.upsert({
+        where: { login: 'master' },
+        update: {},
+        create: {
+            imobiliariaId: plataforma.id,
+            nomeCompleto: 'Administrador da Plataforma',
+            cpf: '00000000099',
+            dataNascimento: new Date('1990-01-01'),
+            email: 'master@plataformariscolocaticio.com.br',
+            login: 'master',
+            passwordHash: masterPasswordHash,
+            role: 'MASTER'
+        }
+    })
+
     console.log('Seed concluído: imobiliária "Imobiliária Exemplo" e usuário "admin" / "senha123"')
+    console.log('Seed concluído: usuário master "master" / "master123"')
 }
 
 main()

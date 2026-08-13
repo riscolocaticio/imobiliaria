@@ -2,6 +2,7 @@ import { apiClient } from './api.service'
 
 export interface Usuario {
     id: number
+    imobiliariaId?: number
     nomeCompleto: string
     cpf: string
     dataNascimento: string
@@ -10,6 +11,7 @@ export interface Usuario {
     role: 'IMOBILIARIA' | 'MASTER'
     status: 'ATIVO' | 'INATIVO'
     createdAt: string
+    imobiliaria?: { id: number; razaoSocial: string; nomeFantasia: string | null }
 }
 
 export interface UsuarioCreateInput {
@@ -19,11 +21,14 @@ export interface UsuarioCreateInput {
     email: string
     login: string
     password: string
+    imobiliariaId?: number
 }
 
 export const usuarioService = {
-    async listar(): Promise<Usuario[]> {
-        const { data } = await apiClient.get<Usuario[]>('/usuarios')
+    async listar(imobiliariaId?: number): Promise<Usuario[]> {
+        const { data } = await apiClient.get<Usuario[]>('/usuarios', {
+            params: imobiliariaId ? { imobiliariaId } : undefined
+        })
         return data
     },
 

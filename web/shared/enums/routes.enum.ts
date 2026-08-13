@@ -3,5 +3,6 @@ export enum ROUTES {
     CONSULTAR = '/consultar',
     INSERIR = '/inserir',
     EXCLUIR = '/excluir',
-    USUARIOS = '/usuarios'
+    USUARIOS = '/usuarios',
+    ADMINISTRADOR = '/administrador'
 }

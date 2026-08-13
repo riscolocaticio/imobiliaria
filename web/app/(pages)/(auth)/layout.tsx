@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Search, PlusCircle, Trash2, Users, LogOut } from 'lucide-react'
+import { Search, PlusCircle, Trash2, Users, ShieldCheck, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useUser } from '@/app/providers/user-provider'
@@ -16,6 +16,13 @@ const NAV_ITEMS = [
     { href: ROUTES.EXCLUIR, label: 'Excluir informações', shortLabel: 'Excluir', icon: Trash2 },
     { href: ROUTES.USUARIOS, label: 'Usuários', shortLabel: 'Usuários', icon: Users }
 ]
+
+const ADMIN_NAV_ITEM = {
+    href: ROUTES.ADMINISTRADOR,
+    label: 'Administrador',
+    shortLabel: 'Admin',
+    icon: ShieldCheck
+}
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     const { usuario, carregando } = useUser()
@@ -37,6 +44,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         window.location.href = ROUTES.LOGIN
     }
 
+    const navItems = usuario.role === 'MASTER' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
+
     return (
         <div className="min-h-screen">
             <header className="border-b border-border bg-card">
@@ -47,7 +56,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                     </div>
 
                     <nav className="hidden flex-wrap items-center gap-2 md:flex">
-                        {NAV_ITEMS.map((item) => {
+                        {navItems.map((item) => {
                             const Icon = item.icon
                             const ativo = pathname === item.href
                             return (
@@ -96,7 +105,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-card md:hidden"
                 style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
-                {NAV_ITEMS.map((item) => {
+                {navItems.map((item) => {
                     const Icon = item.icon
                     const ativo = pathname === item.href
                     return (

@@ -10,6 +10,7 @@ import AuthModule from './modules/core/auth/auth.module'
 import ImobiliariaModule from './modules/core/imobiliaria/imobiliaria.module'
 import UsuarioModule from './modules/core/usuario/usuario.module'
 import OcorrenciaModule from './modules/core/ocorrencia/ocorrencia.module'
+import LogModule from './modules/core/log/log.module'
 
 @Module({
     imports: [
@@ -35,7 +36,8 @@ import OcorrenciaModule from './modules/core/ocorrencia/ocorrencia.module'
         AuthModule,
         ImobiliariaModule,
         UsuarioModule,
-        OcorrenciaModule
+        OcorrenciaModule,
+        LogModule
     ],
     controllers: [],
     providers: [JwtStrategy, { provide: APP_GUARD, useClass: ThrottlerGuard }]

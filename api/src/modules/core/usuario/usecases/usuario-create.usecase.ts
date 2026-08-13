@@ -1,16 +1,31 @@
-import { ConflictException, Injectable } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import prisma from '../../../../infra/persistence/prisma'
+import { AuditLogService } from '../../../../infra/audit/audit-log.service'
 import { CryptoService } from '../../../../infra/system/helpers/crypto/crypto.service'
 import { sanitizeCpf } from '../../../../shared/utils/sanitize-cpf'
 import { UsuarioCreateInput } from '../types/usuario-create.input'
+import { UsuarioFromJwtDto } from '../types/usuario-from-jwt.input'
 
 const MAX_USUARIOS_POR_IMOBILIARIA = 2
 
 @Injectable()
 export class UsuarioCreateUsecase {
-    constructor(private readonly cryptoService: CryptoService) {}
+    constructor(
+        private readonly cryptoService: CryptoService,
+        private readonly auditLogService: AuditLogService
+    ) {}
 
-    async execute(imobiliariaId: number, input: UsuarioCreateInput) {
+    async execute(usuarioAtual: UsuarioFromJwtDto, input: UsuarioCreateInput) {
+        const imobiliariaId =
+            usuarioAtual.role === 'MASTER' && input.imobiliariaId
+                ? input.imobiliariaId
+                : usuarioAtual.imobiliariaId
+
+        if (usuarioAtual.role === 'MASTER') {
+            const imobiliaria = await prisma.imobiliaria.findUnique({ where: { id: imobiliariaId } })
+            if (!imobiliaria) throw new NotFoundException('Imobiliária não encontrada')
+        }
+
         const usuariosAtivos = await prisma.usuario.count({
             where: { imobiliariaId, status: 'ATIVO' }
         })
@@ -55,6 +70,12 @@ export class UsuarioCreateUsecase {
                 status: true,
                 createdAt: true
             }
+        })
+
+        await this.auditLogService.record({
+            usuarioId: usuarioAtual.id,
+            imobiliariaId,
+            acao: 'CRIACAO_USUARIO'
         })
 
         return usuario
