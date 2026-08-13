@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common'
+import { APP_GUARD } from '@nestjs/core'
 import { ConfigModule } from '@nestjs/config'
 import { PassportModule } from '@nestjs/passport'
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import * as Joi from 'joi'
 import { JwtStrategy } from './infra/system/security/decorators/jwt.strategy'
 import { AuditLogModule } from './infra/audit/audit-log.module'
@@ -22,6 +24,12 @@ import OcorrenciaModule from './modules/core/ocorrencia/ocorrencia.module'
                 URL_FRONT_END: Joi.string().required()
             })
         }),
+        ThrottlerModule.forRoot([
+            {
+                ttl: 60_000,
+                limit: 60
+            }
+        ]),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         AuditLogModule,
         AuthModule,
@@ -30,6 +38,6 @@ import OcorrenciaModule from './modules/core/ocorrencia/ocorrencia.module'
         OcorrenciaModule
     ],
     controllers: [],
-    providers: [JwtStrategy]
+    providers: [JwtStrategy, { provide: APP_GUARD, useClass: ThrottlerGuard }]
 })
 export class AppModule {}

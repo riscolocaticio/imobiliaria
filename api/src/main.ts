@@ -1,11 +1,18 @@
 import { ValidationPipe, INestApplication } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import helmet from 'helmet'
 import { AppModule } from './app.module'
 import { GlobalExceptionFilter } from './infra/system/security/global-exceptions-filters'
 
 export async function createApp(): Promise<INestApplication> {
     const app = await NestFactory.create(AppModule)
+
+    app.use(
+        helmet({
+            contentSecurityPolicy: false
+        })
+    )
 
     app.enableCors({
         origin: [process.env.URL_FRONT_END],
@@ -26,14 +33,16 @@ export async function createApp(): Promise<INestApplication> {
         })
     )
 
-    const config = new DocumentBuilder()
-        .setTitle('Plataforma de Risco Locatício API')
-        .setDescription('Documentação da API')
-        .setVersion('1.0')
-        .addBearerAuth()
-        .build()
-    const document = SwaggerModule.createDocument(app, config)
-    SwaggerModule.setup('api-docs', app, document)
+    if (process.env.NODE_ENV !== 'production') {
+        const config = new DocumentBuilder()
+            .setTitle('Plataforma de Risco Locatício API')
+            .setDescription('Documentação da API')
+            .setVersion('1.0')
+            .addBearerAuth()
+            .build()
+        const document = SwaggerModule.createDocument(app, config)
+        SwaggerModule.setup('api-docs', app, document)
+    }
 
     return app
 }
