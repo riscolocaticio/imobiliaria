@@ -57,6 +57,7 @@ export default function InserirPage() {
             <CardContent>
                 <form
                     className="flex flex-col gap-5"
+                    noValidate
                     onSubmit={handleSubmit((values) => {
                         setSucesso(false)
                         inserirMutation.mutate(values)
@@ -115,7 +116,12 @@ export default function InserirPage() {
                         <Label htmlFor="descricao" required>
                             Descreva a ocorrência
                         </Label>
-                        <Textarea id="descricao" className="min-h-56" {...register('descricao')} />
+                        <Textarea
+                            id="descricao"
+                            placeholder="Descreva os detalhes relevantes da ocorrência..."
+                            className="min-h-56 resize-y"
+                            {...register('descricao')}
+                        />
                         {errors.descricao && (
                             <p className="text-xs text-destructive">{errors.descricao.message}</p>
                         )}
