@@ -19,7 +19,7 @@ export class ImobiliariaUpdateUsecase {
             if (usuariosVinculados > 0) {
                 const sufixo = usuariosVinculados === 1 ? 'usuário vinculado' : 'usuários vinculados'
                 throw new ConflictException(
-                    `Não é possível excluir: essa imobiliária tem ${usuariosVinculados} ${sufixo} a ela. Mova ou remova os usuários primeiro.`
+                    `Não é possível excluir essa imobiliária pois existem ${usuariosVinculados} ${sufixo} a ela.`
                 )
             }
         }
