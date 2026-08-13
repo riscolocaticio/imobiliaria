@@ -43,7 +43,7 @@ export default function ExcluirPage() {
     })
 
     return (
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_1fr]">
+        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
             <Card>
                 <CardHeader>
                     <CardTitle>Excluir informações</CardTitle>
