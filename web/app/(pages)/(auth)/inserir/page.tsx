@@ -3,14 +3,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { ocorrenciaService, OcorrenciaCreateInput } from '@/app/services/ocorrencia.service'
@@ -33,6 +33,7 @@ export default function InserirPage() {
 
     const {
         register,
+        control,
         handleSubmit,
         reset,
         formState: { errors }
@@ -87,16 +88,24 @@ export default function InserirPage() {
                         <Label htmlFor="tipo" required>
                             Tipo de ocorrência
                         </Label>
-                        <Select id="tipo" defaultValue="" {...register('tipo')}>
-                            <option value="" disabled>
-                                Selecione...
-                            </option>
-                            {TIPO_OCORRENCIA_OPTIONS.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </Select>
+                        <Controller
+                            name="tipo"
+                            control={control}
+                            render={({ field }) => (
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                    <SelectTrigger id="tipo">
+                                        <SelectValue placeholder="Selecione..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {TIPO_OCORRENCIA_OPTIONS.map((option) => (
+                                            <SelectItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                         {errors.tipo && <p className="text-xs text-destructive">{errors.tipo.message}</p>}
                     </div>
 
