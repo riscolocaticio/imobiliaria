@@ -46,7 +46,7 @@ async function main() {
         }
     })
 
-    const masterPasswordHash = await bcrypt.hash('master123', 10)
+    const masterPasswordHash = await bcrypt.hash('Master@#Risco2026', 10)
 
     await prisma.usuario.upsert({
         where: { login: 'master' },
@@ -64,7 +64,7 @@ async function main() {
     })
 
     console.log('Seed concluído: imobiliária "Imobiliária Exemplo" e usuário "admin" / "senha123"')
-    console.log('Seed concluído: usuário master "master" / "master123"')
+    console.log('Seed concluído: usuário master "master" / "Master@#Risco2026"')
 }
 
 main()

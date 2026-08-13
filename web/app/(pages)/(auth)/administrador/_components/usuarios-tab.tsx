@@ -382,19 +382,21 @@ export function UsuariosTab() {
                                     <Button variant="outline" size="sm" onClick={() => iniciarEdicao(usuario)}>
                                         Editar
                                     </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={statusMutation.isPending}
-                                        onClick={() =>
-                                            statusMutation.mutate({
-                                                id: usuario.id,
-                                                status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                            })
-                                        }
-                                    >
-                                        {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
-                                    </Button>
+                                    {usuario.role !== 'MASTER' && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={statusMutation.isPending}
+                                            onClick={() =>
+                                                statusMutation.mutate({
+                                                    id: usuario.id,
+                                                    status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
+                                                })
+                                            }
+                                        >
+                                            {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         )
