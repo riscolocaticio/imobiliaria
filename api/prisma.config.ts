@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv'
-import { defineConfig, env } from 'prisma/config'
+import { defineConfig } from 'prisma/config'
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` })
 dotenv.config({ path: '.env' })
@@ -11,6 +11,13 @@ export default defineConfig({
         seed: 'ts-node prisma/seed.ts'
     },
     datasource: {
-        url: env('DATABASE_URL')
+        // O Migrate precisa de conexão direta (sem pgbouncer) — em produção (Neon) usar DIRECT_URL
+        // (ou DATABASE_URL_UNPOOLED, nome usado pela integração Neon<>Vercel). Localmente nenhuma
+        // das duas existe, então cai pra DATABASE_URL.
+        url:
+            process.env.DIRECT_URL ||
+            process.env.DATABASE_URL_UNPOOLED ||
+            process.env.DATABASE_URL ||
+            ''
     }
 })
