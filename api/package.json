@@ -24,7 +24,7 @@
         "psm:gen": "prisma generate",
         "seed": "cross-env NODE_ENV=development ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
         "postinstall": "prisma generate",
-        "vercel-build": "nest build"
+        "vercel-build": "echo 'skip nest build - vercel empacota api/index.ts direto'"
     },
     "prisma": {
         "seed": "cross-env NODE_ENV=development ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
