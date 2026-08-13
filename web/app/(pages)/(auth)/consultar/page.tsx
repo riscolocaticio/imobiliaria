@@ -85,7 +85,11 @@ export default function ConsultarPage() {
                                             <p className="mt-2 text-xs text-muted-foreground">
                                                 {ocorrencia.imobiliaria.nomeFantasia ??
                                                     ocorrencia.imobiliaria.razaoSocial}{' '}
-                                                · {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')}
+                                                · {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                                                {new Date(ocorrencia.createdAt).toLocaleTimeString('pt-BR', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
                                             </p>
                                         </li>
                                     ))}
