@@ -3,12 +3,13 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { isAxiosError } from 'axios'
@@ -37,6 +38,7 @@ export default function UsuariosPage() {
 
     const {
         register,
+        control,
         handleSubmit,
         reset,
         formState: { errors }
@@ -148,7 +150,17 @@ export default function UsuariosPage() {
                                     <Label htmlFor="dataNascimento" required>
                                         Data de nascimento
                                     </Label>
-                                    <Input id="dataNascimento" type="date" {...register('dataNascimento')} />
+                                    <Controller
+                                        name="dataNascimento"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <DatePicker
+                                                id="dataNascimento"
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                            />
+                                        )}
+                                    />
                                     {errors.dataNascimento && (
                                         <p className="text-xs text-destructive">{errors.dataNascimento.message}</p>
                                     )}
