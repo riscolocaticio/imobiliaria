@@ -119,7 +119,7 @@ export default function InserirPage() {
                         <Textarea
                             id="descricao"
                             placeholder="Descreva os detalhes relevantes da ocorrência..."
-                            className="min-h-56 resize-y"
+                            className="min-h-56"
                             {...register('descricao')}
                         />
                         {errors.descricao && (
