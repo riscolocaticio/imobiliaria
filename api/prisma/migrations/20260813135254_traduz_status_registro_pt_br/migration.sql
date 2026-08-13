@@ -1,0 +1,3 @@
+-- RenameEnumValue
+ALTER TYPE "StatusRegistro" RENAME VALUE 'ACTIVE' TO 'ATIVO';
+ALTER TYPE "StatusRegistro" RENAME VALUE 'INACTIVE' TO 'INATIVO';

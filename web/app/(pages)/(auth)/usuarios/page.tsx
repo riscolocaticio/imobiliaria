@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { CpfInput } from '@/components/ui/cpf-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { isAxiosError } from 'axios'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { usuarioService } from '@/app/services/usuario.service'
 
@@ -51,12 +52,16 @@ export default function UsuariosPage() {
     })
 
     const statusMutation = useMutation({
-        mutationFn: ({ id, status }: { id: number; status: 'ACTIVE' | 'INACTIVE' }) =>
+        mutationFn: ({ id, status }: { id: number; status: 'ATIVO' | 'INATIVO' }) =>
             usuarioService.atualizarStatus(id, status),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['usuarios'] })
     })
 
-    const usuariosAtivos = usuarios?.filter((usuario) => usuario.status === 'ACTIVE').length ?? 0
+    const erroStatus = isAxiosError<{ message?: string }>(statusMutation.error)
+        ? statusMutation.error.response?.data?.message
+        : null
+
+    const usuariosAtivos = usuarios?.filter((usuario) => usuario.status === 'ATIVO').length ?? 0
 
     return (
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
@@ -74,8 +79,8 @@ export default function UsuariosPage() {
                             <div>
                                 <div className="flex items-center gap-2 font-medium">
                                     {usuario.nomeCompleto}
-                                    <Badge variant={usuario.status === 'ACTIVE' ? 'default' : 'outline'}>
-                                        {usuario.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                                    <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                        {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
                                     </Badge>
                                 </div>
                                 <p className="text-muted-foreground">
@@ -89,14 +94,16 @@ export default function UsuariosPage() {
                                 onClick={() =>
                                     statusMutation.mutate({
                                         id: usuario.id,
-                                        status: usuario.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
+                                        status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
                                     })
                                 }
                             >
-                                {usuario.status === 'ACTIVE' ? 'Desativar' : 'Reativar'}
+                                {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
                             </Button>
                         </div>
                     ))}
+
+                    {erroStatus && <p className="text-sm text-destructive">{erroStatus}</p>}
 
                     {!mostrarFormulario && usuariosAtivos < 2 && (
                         <Button variant="outline" onClick={() => setMostrarFormulario(true)}>

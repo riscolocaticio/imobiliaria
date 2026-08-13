@@ -14,7 +14,7 @@ export class UsuarioUpdateInput {
     @IsOptional()
     password?: string
 
-    @IsIn(['ACTIVE', 'INACTIVE'])
+    @IsIn(['ATIVO', 'INATIVO'])
     @IsOptional()
-    status?: 'ACTIVE' | 'INACTIVE'
+    status?: 'ATIVO' | 'INATIVO'
 }

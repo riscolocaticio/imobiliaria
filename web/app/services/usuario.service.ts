@@ -8,7 +8,7 @@ export interface Usuario {
     email: string
     login: string
     role: 'IMOBILIARIA' | 'MASTER'
-    status: 'ACTIVE' | 'INACTIVE'
+    status: 'ATIVO' | 'INATIVO'
     createdAt: string
 }
 
@@ -32,7 +32,7 @@ export const usuarioService = {
         return data
     },
 
-    async atualizarStatus(id: number, status: 'ACTIVE' | 'INACTIVE'): Promise<Usuario> {
+    async atualizarStatus(id: number, status: 'ATIVO' | 'INATIVO'): Promise<Usuario> {
         const { data } = await apiClient.patch<Usuario>(`/usuarios/${id}`, { status })
         return data
     }

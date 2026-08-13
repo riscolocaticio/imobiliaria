@@ -15,6 +15,17 @@ export class UsuarioUpdateUsecase {
             throw new ForbiddenException('Usuário não pertence à sua imobiliária')
         }
 
+        if (input.status === 'INATIVO' && usuario.status === 'ATIVO') {
+            const usuariosAtivos = await prisma.usuario.count({
+                where: { imobiliariaId, status: 'ATIVO' }
+            })
+            if (usuariosAtivos <= 1) {
+                throw new ForbiddenException(
+                    'Não é possível desativar o único usuário ativo da imobiliária'
+                )
+            }
+        }
+
         return prisma.usuario.update({
             where: { id: usuarioId },
             data: {

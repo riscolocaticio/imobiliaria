@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
             select: { status: true }
         })
 
-        if (!usuario || usuario.status !== 'ACTIVE') {
+        if (!usuario || usuario.status !== 'ATIVO') {
             throw new UnauthorizedException('Usuário inativo ou não encontrado')
         }
 

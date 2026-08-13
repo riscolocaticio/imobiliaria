@@ -8,7 +8,7 @@ model Usuario {
     login          String          @unique
     passwordHash   String
     role           UsuarioRole     @default(IMOBILIARIA)
-    status         StatusRegistro  @default(ACTIVE)
+    status         StatusRegistro  @default(ATIVO)
     createdAt      DateTime        @default(now())
     updatedAt      DateTime        @updatedAt
 

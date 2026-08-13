@@ -12,7 +12,7 @@ export class UsuarioCreateUsecase {
 
     async execute(imobiliariaId: number, input: UsuarioCreateInput) {
         const usuariosAtivos = await prisma.usuario.count({
-            where: { imobiliariaId, status: 'ACTIVE' }
+            where: { imobiliariaId, status: 'ATIVO' }
         })
 
         if (usuariosAtivos >= MAX_USUARIOS_POR_IMOBILIARIA) {

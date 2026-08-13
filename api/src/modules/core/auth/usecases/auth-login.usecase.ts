@@ -15,7 +15,7 @@ export class AuthLoginUsecase {
     async execute(login: string, password: string): Promise<{ accessToken: string }> {
         const usuario = await prisma.usuario.findUnique({ where: { login } })
 
-        if (!usuario || usuario.status !== 'ACTIVE') {
+        if (!usuario || usuario.status !== 'ATIVO') {
             throw new UnauthorizedException('Login ou senha incorretos')
         }
 

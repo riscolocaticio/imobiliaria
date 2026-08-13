@@ -1,6 +1,6 @@
 enum StatusRegistro {
-    ACTIVE
-    INACTIVE
+    ATIVO
+    INATIVO
 }
 
 enum UsuarioRole {
