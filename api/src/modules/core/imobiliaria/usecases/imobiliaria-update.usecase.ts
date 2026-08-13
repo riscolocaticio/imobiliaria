@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import prisma from '../../../../infra/persistence/prisma'
 import { AuditLogService } from '../../../../infra/audit/audit-log.service'
 import { ImobiliariaUpdateInput } from '../types/imobiliaria-update.input'
@@ -13,6 +13,15 @@ export class ImobiliariaUpdateUsecase {
         if (!imobiliaria) throw new NotFoundException('Imobiliária não encontrada')
 
         const excluindo = input.status === 'INATIVO' && imobiliaria.status === 'ATIVO'
+
+        if (excluindo) {
+            const usuariosVinculados = await prisma.usuario.count({ where: { imobiliariaId } })
+            if (usuariosVinculados > 0) {
+                throw new ConflictException(
+                    'Não é possível excluir uma imobiliária com usuários vinculados a ela. Mova ou remova os usuários primeiro.'
+                )
+            }
+        }
 
         const atualizada = await prisma.imobiliaria.update({
             where: { id: imobiliariaId },
