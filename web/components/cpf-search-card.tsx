@@ -10,6 +10,7 @@ import { CpfInput } from '@/components/ui/cpf-input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { isCpfComplete } from '@/lib/format-cpf'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 
 const cpfSchema = z.object({
     cpf: z.string().refine(isCpfComplete, 'Informe um CPF válido')
@@ -41,6 +42,7 @@ export function CpfSearchCard({
         handleSubmit,
         formState: { errors }
     } = useForm<CpfFormValues>({ resolver: zodResolver(cpfSchema) })
+    const mostrarCarregando = useDelayedLoading(isPending)
 
     return (
         <Card>
@@ -77,8 +79,8 @@ export function CpfSearchCard({
                     </div>
 
                     <Button type="submit" size="lg" disabled={isPending}>
-                        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {isPending ? buttonLoadingLabel : buttonLabel}
+                        {mostrarCarregando && <Loader2 className="h-4 w-4 animate-spin" />}
+                        {mostrarCarregando ? buttonLoadingLabel : buttonLabel}
                     </Button>
                 </form>
             </CardContent>

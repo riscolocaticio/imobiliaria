@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authService } from '@/app/services/auth.service'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ROUTES } from '@/shared/enums/routes.enum'
 
 const loginSchema = z.object({
@@ -33,6 +34,7 @@ function LoginForm() {
     const [enviando, setEnviando] = useState(false)
     const [mostrarSenha, setMostrarSenha] = useState(false)
     const searchParams = useSearchParams()
+    const mostrarCarregando = useDelayedLoading(enviando)
 
     const {
         register,
@@ -97,8 +99,8 @@ function LoginForm() {
                     </div>
 
                     <Button type="submit" size="lg" disabled={enviando}>
-                        {enviando && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {enviando ? 'Entrando...' : 'Entrar'}
+                        {mostrarCarregando && <Loader2 className="h-4 w-4 animate-spin" />}
+                        {mostrarCarregando ? 'Entrando...' : 'Entrar'}
                     </Button>
                 </form>
             </CardContent>

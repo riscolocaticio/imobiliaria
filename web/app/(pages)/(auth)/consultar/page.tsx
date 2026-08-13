@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { formatCpf } from '@/lib/format-cpf'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
@@ -37,6 +38,8 @@ export default function ConsultarPage() {
             toast.error(getErrorMessage(error, 'Não foi possível carregar os detalhes.'))
         }
     })
+
+    const mostrarCarregandoDetalhes = useDelayedLoading(detalhesMutation.isPending)
 
     return (
         <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
@@ -78,10 +81,10 @@ export default function ConsultarPage() {
                                     onClick={() => detalhesMutation.mutate()}
                                     disabled={detalhesMutation.isPending}
                                 >
-                                    {detalhesMutation.isPending && (
+                                    {mostrarCarregandoDetalhes && (
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                     )}
-                                    {detalhesMutation.isPending ? 'Carregando...' : 'Ver detalhes'}
+                                    {mostrarCarregandoDetalhes ? 'Carregando...' : 'Ver detalhes'}
                                 </Button>
                             )}
 

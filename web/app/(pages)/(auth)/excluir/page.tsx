@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
@@ -35,6 +36,8 @@ export default function ExcluirPage() {
             toast.error(getErrorMessage(error, 'Não foi possível excluir o registro.'))
         }
     })
+
+    const mostrarCarregandoExclusao = useDelayedLoading(excluirMutation.isPending)
 
     return (
         <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
@@ -85,10 +88,10 @@ export default function ExcluirPage() {
                                             excluirMutation.mutate(registro.id)
                                         }}
                                     >
-                                        {excluirMutation.isPending && excluindoId === registro.id && (
+                                        {mostrarCarregandoExclusao && excluindoId === registro.id && (
                                             <Loader2 className="h-4 w-4 animate-spin" />
                                         )}
-                                        {excluirMutation.isPending && excluindoId === registro.id
+                                        {mostrarCarregandoExclusao && excluindoId === registro.id
                                             ? 'Excluindo...'
                                             : 'Excluir'}
                                     </Button>

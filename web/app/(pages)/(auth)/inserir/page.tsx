@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, OcorrenciaCreateInput } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_OPTIONS } from '@/shared/constants/tipo-ocorrencia'
 
@@ -58,6 +59,8 @@ export default function InserirPage() {
             toast.error(getErrorMessage(error, 'Não foi possível registrar a ocorrência. Tente novamente.'))
         }
     })
+
+    const mostrarCarregando = useDelayedLoading(inserirMutation.isPending)
 
     return (
         <Card className="flex h-full min-h-0 flex-col">
@@ -140,8 +143,8 @@ export default function InserirPage() {
                         className="shrink-0 lg:w-fit lg:self-end"
                         disabled={inserirMutation.isPending}
                     >
-                        {inserirMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                        {inserirMutation.isPending ? 'Registrando...' : 'Confirmar'}
+                        {mostrarCarregando && <Loader2 className="h-4 w-4 animate-spin" />}
+                        {mostrarCarregando ? 'Registrando...' : 'Confirmar'}
                     </Button>
                 </form>
             </CardContent>

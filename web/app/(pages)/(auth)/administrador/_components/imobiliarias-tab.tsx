@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import {
     imobiliariaService,
     ImobiliariaComContagem
@@ -90,6 +91,9 @@ export function ImobiliariasTab() {
         }
     })
 
+    const mostrarCarregandoCriar = useDelayedLoading(criarMutation.isPending)
+    const mostrarCarregandoAtualizar = useDelayedLoading(atualizarMutation.isPending)
+
     function iniciarEdicao(imobiliaria: ImobiliariaComContagem) {
         formEditar.reset({
             razaoSocial: imobiliaria.razaoSocial,
@@ -145,7 +149,7 @@ export function ImobiliariasTab() {
                                     })
                                 }
                             >
-                                {atualizarMutation.isPending &&
+                                {mostrarCarregandoAtualizar &&
                                     atualizarMutation.variables?.id === imobiliaria.id && (
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                     )}
@@ -205,8 +209,8 @@ export function ImobiliariasTab() {
                         </div>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={criarMutation.isPending}>
-                                {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                {criarMutation.isPending ? 'Salvando...' : 'Salvar imobiliária'}
+                                {mostrarCarregandoCriar && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {mostrarCarregandoCriar ? 'Salvando...' : 'Salvar imobiliária'}
                             </Button>
                             <Button type="button" variant="ghost" onClick={() => setDialogCriarAberto(false)}>
                                 Cancelar
@@ -261,8 +265,8 @@ export function ImobiliariasTab() {
                         </div>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={atualizarMutation.isPending}>
-                                {atualizarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                {atualizarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                {mostrarCarregandoAtualizar && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {mostrarCarregandoAtualizar ? 'Salvando...' : 'Salvar'}
                             </Button>
                             <Button type="button" variant="ghost" onClick={() => setImobiliariaEditando(null)}>
                                 Cancelar

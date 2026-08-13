@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { usuarioService, Usuario } from '@/app/services/usuario.service'
 
@@ -125,6 +126,10 @@ export function UsuariosTab() {
         }
     })
 
+    const mostrarCarregandoCriar = useDelayedLoading(criarMutation.isPending)
+    const mostrarCarregandoStatus = useDelayedLoading(statusMutation.isPending)
+    const mostrarCarregandoAtualizar = useDelayedLoading(atualizarMutation.isPending)
+
     function iniciarEdicao(usuario: Usuario) {
         formEditar.reset({
             nomeCompleto: usuario.nomeCompleto,
@@ -199,7 +204,7 @@ export function UsuariosTab() {
                                         })
                                     }
                                 >
-                                    {statusMutation.isPending && statusMutation.variables?.id === usuario.id && (
+                                    {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                     )}
                                     {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
@@ -336,8 +341,8 @@ export function UsuariosTab() {
 
                         <div className="flex gap-2">
                             <Button type="submit" disabled={criarMutation.isPending}>
-                                {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                {criarMutation.isPending ? 'Salvando...' : 'Salvar usuário'}
+                                {mostrarCarregandoCriar && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {mostrarCarregandoCriar ? 'Salvando...' : 'Salvar usuário'}
                             </Button>
                             <Button type="button" variant="ghost" onClick={() => setDialogCriarAberto(false)}>
                                 Cancelar
@@ -415,8 +420,8 @@ export function UsuariosTab() {
                         </div>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={atualizarMutation.isPending}>
-                                {atualizarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                {atualizarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                {mostrarCarregandoAtualizar && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {mostrarCarregandoAtualizar ? 'Salvando...' : 'Salvar'}
                             </Button>
                             <Button type="button" variant="ghost" onClick={() => setUsuarioEditando(null)}>
                                 Cancelar

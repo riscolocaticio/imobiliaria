@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
+import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { usuarioService } from '@/app/services/usuario.service'
 
@@ -91,6 +92,8 @@ export default function UsuariosPage() {
     })
 
     const usuariosAtivos = usuarios?.filter((usuario) => usuario.status === 'ATIVO').length ?? 0
+    const mostrarCarregandoCriar = useDelayedLoading(criarMutation.isPending)
+    const mostrarCarregandoStatus = useDelayedLoading(statusMutation.isPending)
 
     return (
         <div className="flex h-full min-h-0 flex-col">
@@ -135,7 +138,7 @@ export default function UsuariosPage() {
                                     })
                                 }
                             >
-                                {statusMutation.isPending && statusMutation.variables?.id === usuario.id && (
+                                {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
                                     <Loader2 className="h-4 w-4 animate-spin" />
                                 )}
                                 {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
@@ -253,8 +256,8 @@ export default function UsuariosPage() {
 
                         <div className="flex gap-2">
                             <Button type="submit" disabled={criarMutation.isPending}>
-                                {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                {criarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                {mostrarCarregandoCriar && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {mostrarCarregandoCriar ? 'Salvando...' : 'Salvar'}
                             </Button>
                             <Button type="button" variant="ghost" onClick={() => setDialogAberto(false)}>
                                 Cancelar
