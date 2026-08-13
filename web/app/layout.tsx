@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { ReactQueryProvider } from './providers/react-query-provider'
 import { UserProvider } from './providers/user-provider'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
     title: 'Plataforma de Risco Locatício',
