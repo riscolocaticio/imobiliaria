@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, Search } from 'lucide-react'
+import { FileSearch, Loader2, Search } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -39,18 +39,20 @@ export default function ConsultarPage() {
     })
 
     return (
-        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
-            <CpfSearchCard
-                icon={Search}
-                title="Consultar informações"
-                description="Informe o CPF do inquilino"
-                isPending={consultaMutation.isPending}
-                onSubmit={(cpf) => consultaMutation.mutate(cpf)}
-            />
+        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+            <div className="lg:self-start">
+                <CpfSearchCard
+                    icon={Search}
+                    title="Consultar informações"
+                    description="Informe o CPF do inquilino"
+                    isPending={consultaMutation.isPending}
+                    onSubmit={(cpf) => consultaMutation.mutate(cpf)}
+                />
+            </div>
 
             {resultado ? (
-                <Card>
-                    <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+                    <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
                         <div>
                             <CardTitle>
                                 {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
@@ -68,10 +70,11 @@ export default function ConsultarPage() {
                         )}
                     </CardHeader>
                     {resultado.constamInformacoes && (
-                        <CardContent className="flex flex-col gap-4">
+                        <CardContent className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
                             {!detalhes && (
                                 <Button
                                     variant="outline"
+                                    className="w-fit"
                                     onClick={() => detalhesMutation.mutate()}
                                     disabled={detalhesMutation.isPending}
                                 >
@@ -110,9 +113,12 @@ export default function ConsultarPage() {
                     )}
                 </Card>
             ) : (
-                <Card className="flex min-h-[220px] items-center justify-center border-dashed p-6 lg:min-h-[280px]">
+                <Card className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 border-dashed p-6">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                        <FileSearch className="h-7 w-7 text-muted-foreground" />
+                    </span>
                     <p className="max-w-xs text-center text-sm text-muted-foreground">
-                        Informe um CPF para consultar as ocorrências registradas
+                        Informe um CPF ao lado para consultar as ocorrências registradas
                     </p>
                 </Card>
             )}

@@ -46,8 +46,8 @@ export function LogsTab() {
     }
 
     return (
-        <Card>
-            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+            <CardHeader className="shrink-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <CardTitle>Logs de auditoria</CardTitle>
                     <CardDescription>{resultado?.total ?? 0} registro(s) no total</CardDescription>
@@ -87,43 +87,47 @@ export function LogsTab() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-                {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
+            <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
+                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                    {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
 
-                {resultado?.logs.map((log) => (
-                    <div
-                        key={log.id}
-                        className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
-                    >
-                        <Badge variant="secondary" className="w-fit">
-                            {ACAO_LOG_LABEL[log.acao] ?? log.acao}
-                        </Badge>
-                        <div>
-                            <p className="font-medium">
-                                {log.usuario.nomeCompleto}{' '}
-                                <span className="font-normal text-muted-foreground">({log.usuario.login})</span>
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
-                                {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
+                    {resultado?.logs.map((log) => (
+                        <div
+                            key={log.id}
+                            className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
+                        >
+                            <Badge variant="secondary" className="w-fit">
+                                {ACAO_LOG_LABEL[log.acao] ?? log.acao}
+                            </Badge>
+                            <div>
+                                <p className="font-medium">
+                                    {log.usuario.nomeCompleto}{' '}
+                                    <span className="font-normal text-muted-foreground">
+                                        ({log.usuario.login})
+                                    </span>
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
+                                    {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
+                                </p>
+                            </div>
+                            <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
+                                {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                                {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
                             </p>
                         </div>
-                        <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
-                            {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                            {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
-                        </p>
-                    </div>
-                ))}
+                    ))}
 
-                {resultado && resultado.logs.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Nenhum log encontrado com esses filtros.</p>
-                )}
+                    {resultado && resultado.logs.length === 0 && (
+                        <p className="text-sm text-muted-foreground">Nenhum log encontrado com esses filtros.</p>
+                    )}
+                </div>
 
                 {resultado && totalPaginas > 1 && (
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex shrink-0 items-center justify-between border-t border-border pt-3">
                         <Button
                             variant="outline"
                             size="sm"

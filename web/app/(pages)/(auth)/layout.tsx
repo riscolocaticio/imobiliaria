@@ -47,8 +47,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     const navItems = usuario.role === 'MASTER' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
 
     return (
-        <div className="min-h-screen">
-            <header className="border-b border-border bg-card">
+        <div className="flex h-dvh flex-col overflow-hidden">
+            <header className="shrink-0 border-b border-border bg-card">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                     <div>
                         <p className="text-sm font-semibold">Plataforma de Risco Locatício</p>
@@ -99,10 +99,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </div>
             </header>
 
-            <main className="mx-auto max-w-7xl px-4 pb-24 pt-6 sm:px-6 sm:pt-8 md:pb-8 lg:px-8">{children}</main>
+            <main className="mx-auto flex w-full min-h-0 max-w-7xl flex-1 flex-col overflow-hidden px-4 pb-20 pt-6 sm:px-6 sm:pt-8 md:pb-8 lg:px-8">
+                {children}
+            </main>
 
             <nav
-                className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-card md:hidden"
+                className="fixed inset-x-0 bottom-0 z-40 flex shrink-0 border-t border-border bg-card md:hidden"
                 style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
                 {navItems.map((item) => {

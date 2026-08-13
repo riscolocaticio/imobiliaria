@@ -34,8 +34,8 @@ export default function AdministradorPage() {
     }
 
     return (
-        <div className="flex flex-col gap-6">
-            <div>
+        <div className="flex h-full min-h-0 flex-col gap-6">
+            <div className="shrink-0">
                 <h1 className="text-2xl font-bold tracking-tight">Administrador</h1>
                 <p className="text-sm text-muted-foreground">
                     Gerencie imobiliárias, usuários de qualquer imobiliária e acompanhe todos os
@@ -43,7 +43,7 @@ export default function AdministradorPage() {
                 </p>
             </div>
 
-            <div className="flex w-fit gap-1 rounded-lg border border-border bg-card p-1">
+            <div className="flex w-fit shrink-0 gap-1 rounded-lg border border-border bg-card p-1">
                 {ABAS.map((item) => {
                     const Icon = item.icon
                     const ativa = aba === item.id
@@ -65,9 +65,11 @@ export default function AdministradorPage() {
                 })}
             </div>
 
-            {aba === 'imobiliarias' && <ImobiliariasTab />}
-            {aba === 'usuarios' && <UsuariosTab />}
-            {aba === 'logs' && <LogsTab />}
+            <div className="min-h-0 flex-1">
+                {aba === 'imobiliarias' && <ImobiliariasTab />}
+                {aba === 'usuarios' && <UsuariosTab />}
+                {aba === 'logs' && <LogsTab />}
+            </div>
         </div>
     )
 }

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CnpjInput } from '@/components/ui/cnpj-input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
@@ -20,19 +21,25 @@ import {
     ImobiliariaComContagem
 } from '@/app/services/imobiliaria.service'
 
-const imobiliariaSchema = z.object({
+const criarSchema = z.object({
     razaoSocial: z.string().min(1, 'Informe a razão social'),
     nomeFantasia: z.string().optional(),
     cnpj: z.string().refine(isCnpjComplete, 'Informe um CNPJ válido'),
     email: z.string().email('E-mail inválido')
 })
 
-type ImobiliariaFormValues = z.infer<typeof imobiliariaSchema>
+const editarSchema = z.object({
+    razaoSocial: z.string().min(1, 'Informe a razão social'),
+    nomeFantasia: z.string().optional(),
+    email: z.string().email('E-mail inválido')
+})
+
+type CriarFormValues = z.infer<typeof criarSchema>
+type EditarFormValues = z.infer<typeof editarSchema>
 
 export function ImobiliariasTab() {
-    const [mostrarFormulario, setMostrarFormulario] = useState(false)
-    const [editandoId, setEditandoId] = useState<number | null>(null)
-    const [edicao, setEdicao] = useState({ razaoSocial: '', nomeFantasia: '', email: '' })
+    const [dialogCriarAberto, setDialogCriarAberto] = useState(false)
+    const [imobiliariaEditando, setImobiliariaEditando] = useState<ImobiliariaComContagem | null>(null)
     const queryClient = useQueryClient()
 
     const { data: imobiliarias } = useQuery({
@@ -40,23 +47,23 @@ export function ImobiliariasTab() {
         queryFn: () => imobiliariaService.listar()
     })
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors }
-    } = useForm<ImobiliariaFormValues>({
-        resolver: zodResolver(imobiliariaSchema),
+    const formCriar = useForm<CriarFormValues>({
+        resolver: zodResolver(criarSchema),
         defaultValues: { razaoSocial: '', nomeFantasia: '', cnpj: '', email: '' }
     })
 
+    const formEditar = useForm<EditarFormValues>({
+        resolver: zodResolver(editarSchema),
+        defaultValues: { razaoSocial: '', nomeFantasia: '', email: '' }
+    })
+
     const criarMutation = useMutation({
-        mutationFn: (values: ImobiliariaFormValues) => imobiliariaService.criar(values),
+        mutationFn: (values: CriarFormValues) => imobiliariaService.criar(values),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
             toast.success('Imobiliária criada com sucesso.')
-            reset()
-            setMostrarFormulario(false)
+            formCriar.reset()
+            setDialogCriarAberto(false)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível criar a imobiliária. Verifique os dados e tente novamente.'))
@@ -76,7 +83,7 @@ export function ImobiliariasTab() {
             toast.success(
                 variables.input.status ? 'Status atualizado com sucesso.' : 'Imobiliária atualizada com sucesso.'
             )
-            setEditandoId(null)
+            setImobiliariaEditando(null)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível atualizar a imobiliária.'))
@@ -84,187 +91,186 @@ export function ImobiliariasTab() {
     })
 
     function iniciarEdicao(imobiliaria: ImobiliariaComContagem) {
-        setEditandoId(imobiliaria.id)
-        setEdicao({
+        formEditar.reset({
             razaoSocial: imobiliaria.razaoSocial,
             nomeFantasia: imobiliaria.nomeFantasia ?? '',
             email: imobiliaria.email
         })
+        setImobiliariaEditando(imobiliaria)
     }
 
     return (
-        <div className="flex flex-col gap-6">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between gap-4">
-                    <div>
-                        <CardTitle>Imobiliárias cadastradas</CardTitle>
-                        <CardDescription>{imobiliarias?.length ?? 0} imobiliária(s)</CardDescription>
-                    </div>
-                    <Button variant="outline" onClick={() => setMostrarFormulario((v) => !v)}>
-                        {mostrarFormulario ? 'Cancelar' : 'Nova imobiliária'}
-                    </Button>
-                </CardHeader>
+        <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+            <CardHeader className="shrink-0 flex-row items-center justify-between gap-4 space-y-0">
+                <div>
+                    <CardTitle>Imobiliárias cadastradas</CardTitle>
+                    <CardDescription>{imobiliarias?.length ?? 0} imobiliária(s)</CardDescription>
+                </div>
+                <Button onClick={() => setDialogCriarAberto(true)}>
+                    <Plus className="h-4 w-4" />
+                    Nova imobiliária
+                </Button>
+            </CardHeader>
 
-                {mostrarFormulario && (
-                    <CardContent className="border-b border-border pb-6">
-                        <form
-                            className="flex flex-col gap-4"
-                            noValidate
-                            onSubmit={handleSubmit((values) => criarMutation.mutate(values))}
-                        >
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="razaoSocial" required>
-                                        Razão social
-                                    </Label>
-                                    <Input id="razaoSocial" {...register('razaoSocial')} />
-                                    {errors.razaoSocial && (
-                                        <p className="text-xs text-destructive">{errors.razaoSocial.message}</p>
-                                    )}
-                                </div>
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="nomeFantasia">Nome fantasia</Label>
-                                    <Input id="nomeFantasia" {...register('nomeFantasia')} />
-                                </div>
+            <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                {imobiliarias?.map((imobiliaria) => (
+                    <div
+                        key={imobiliaria.id}
+                        className="flex flex-col gap-2 rounded-md border border-border p-4 text-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <div>
+                            <div className="flex items-center gap-2 font-medium">
+                                {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
+                                <Badge variant={imobiliaria.status === 'ATIVO' ? 'default' : 'outline'}>
+                                    {imobiliaria.status === 'ATIVO' ? 'Ativa' : 'Inativa'}
+                                </Badge>
                             </div>
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="cnpj" required>
-                                        CNPJ
-                                    </Label>
-                                    <CnpjInput id="cnpj" {...register('cnpj')} />
-                                    {errors.cnpj && (
-                                        <p className="text-xs text-destructive">{errors.cnpj.message}</p>
+                            <p className="text-muted-foreground">
+                                {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} · {imobiliaria._count.usuarios}{' '}
+                                usuário(s)
+                            </p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => iniciarEdicao(imobiliaria)}>
+                                Editar
+                            </Button>
+                            <Button
+                                variant={imobiliaria.status === 'ATIVO' ? 'destructive' : 'outline'}
+                                size="sm"
+                                disabled={atualizarMutation.isPending}
+                                onClick={() =>
+                                    atualizarMutation.mutate({
+                                        id: imobiliaria.id,
+                                        input: { status: imobiliaria.status === 'ATIVO' ? 'INATIVO' : 'ATIVO' }
+                                    })
+                                }
+                            >
+                                {atualizarMutation.isPending &&
+                                    atualizarMutation.variables?.id === imobiliaria.id && (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
                                     )}
-                                </div>
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="email" required>
-                                        E-mail
-                                    </Label>
-                                    <Input id="email" type="email" {...register('email')} />
-                                    {errors.email && (
-                                        <p className="text-xs text-destructive">{errors.email.message}</p>
-                                    )}
-                                </div>
-                            </div>
-                            <Button type="submit" className="w-fit" disabled={criarMutation.isPending}>
+                                {imobiliaria.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                            </Button>
+                        </div>
+                    </div>
+                ))}
+            </CardContent>
+
+            <Dialog open={dialogCriarAberto} onOpenChange={setDialogCriarAberto}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Nova imobiliária</DialogTitle>
+                    </DialogHeader>
+                    <form
+                        className="flex flex-col gap-4"
+                        noValidate
+                        onSubmit={formCriar.handleSubmit((values) => criarMutation.mutate(values))}
+                    >
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="razaoSocial" required>
+                                Razão social
+                            </Label>
+                            <Input id="razaoSocial" {...formCriar.register('razaoSocial')} />
+                            {formCriar.formState.errors.razaoSocial && (
+                                <p className="text-xs text-destructive">
+                                    {formCriar.formState.errors.razaoSocial.message}
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="nomeFantasia">Nome fantasia</Label>
+                            <Input id="nomeFantasia" {...formCriar.register('nomeFantasia')} />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="cnpj" required>
+                                CNPJ
+                            </Label>
+                            <CnpjInput id="cnpj" {...formCriar.register('cnpj')} />
+                            {formCriar.formState.errors.cnpj && (
+                                <p className="text-xs text-destructive">
+                                    {formCriar.formState.errors.cnpj.message}
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="email" required>
+                                E-mail
+                            </Label>
+                            <Input id="email" type="email" {...formCriar.register('email')} />
+                            {formCriar.formState.errors.email && (
+                                <p className="text-xs text-destructive">
+                                    {formCriar.formState.errors.email.message}
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            <Button type="submit" disabled={criarMutation.isPending}>
                                 {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                                 {criarMutation.isPending ? 'Salvando...' : 'Salvar imobiliária'}
                             </Button>
-                        </form>
-                    </CardContent>
-                )}
+                            <Button type="button" variant="ghost" onClick={() => setDialogCriarAberto(false)}>
+                                Cancelar
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
 
-                <CardContent className="flex flex-col gap-3 pt-6">
-                    {imobiliarias?.map((imobiliaria) => (
-                        <div
-                            key={imobiliaria.id}
-                            className="flex flex-col gap-3 rounded-md border border-border p-4 text-sm"
-                        >
-                            {editandoId === imobiliaria.id ? (
-                                <div className="flex flex-col gap-3">
-                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="flex flex-col gap-1.5">
-                                            <Label htmlFor={`razaoSocial-${imobiliaria.id}`}>Razão social</Label>
-                                            <Input
-                                                id={`razaoSocial-${imobiliaria.id}`}
-                                                value={edicao.razaoSocial}
-                                                onChange={(e) =>
-                                                    setEdicao((v) => ({ ...v, razaoSocial: e.target.value }))
-                                                }
-                                            />
-                                        </div>
-                                        <div className="flex flex-col gap-1.5">
-                                            <Label htmlFor={`nomeFantasia-${imobiliaria.id}`}>Nome fantasia</Label>
-                                            <Input
-                                                id={`nomeFantasia-${imobiliaria.id}`}
-                                                value={edicao.nomeFantasia}
-                                                onChange={(e) =>
-                                                    setEdicao((v) => ({ ...v, nomeFantasia: e.target.value }))
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5">
-                                        <Label htmlFor={`email-${imobiliaria.id}`}>E-mail</Label>
-                                        <Input
-                                            id={`email-${imobiliaria.id}`}
-                                            value={edicao.email}
-                                            onChange={(e) => setEdicao((v) => ({ ...v, email: e.target.value }))}
-                                        />
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            size="sm"
-                                            disabled={atualizarMutation.isPending}
-                                            onClick={() =>
-                                                atualizarMutation.mutate({ id: imobiliaria.id, input: edicao })
-                                            }
-                                        >
-                                            {atualizarMutation.isPending &&
-                                                atualizarMutation.variables?.id === imobiliaria.id && (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                )}
-                                            {atualizarMutation.isPending &&
-                                            atualizarMutation.variables?.id === imobiliaria.id
-                                                ? 'Salvando...'
-                                                : 'Salvar'}
-                                        </Button>
-                                        <Button size="sm" variant="ghost" onClick={() => setEditandoId(null)}>
-                                            Cancelar
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <div className="flex items-center gap-2 font-medium">
-                                            {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
-                                            <Badge variant={imobiliaria.status === 'ATIVO' ? 'default' : 'outline'}>
-                                                {imobiliaria.status === 'ATIVO' ? 'Ativa' : 'Inativa'}
-                                            </Badge>
-                                        </div>
-                                        <p className="text-muted-foreground">
-                                            {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} ·{' '}
-                                            {imobiliaria._count.usuarios}{' '}
-                                            usuário(s)
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => iniciarEdicao(imobiliaria)}
-                                        >
-                                            Editar
-                                        </Button>
-                                        <Button
-                                            variant={imobiliaria.status === 'ATIVO' ? 'destructive' : 'outline'}
-                                            size="sm"
-                                            disabled={atualizarMutation.isPending}
-                                            onClick={() =>
-                                                atualizarMutation.mutate({
-                                                    id: imobiliaria.id,
-                                                    input: {
-                                                        status:
-                                                            imobiliaria.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                                    }
-                                                })
-                                            }
-                                        >
-                                            {atualizarMutation.isPending &&
-                                                atualizarMutation.variables?.id === imobiliaria.id && (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                )}
-                                            {imobiliaria.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
-                                        </Button>
-                                    </div>
-                                </div>
+            <Dialog
+                open={imobiliariaEditando !== null}
+                onOpenChange={(open) => !open && setImobiliariaEditando(null)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Editar imobiliária</DialogTitle>
+                    </DialogHeader>
+                    <form
+                        className="flex flex-col gap-4"
+                        noValidate
+                        onSubmit={formEditar.handleSubmit((values) => {
+                            if (imobiliariaEditando) {
+                                atualizarMutation.mutate({ id: imobiliariaEditando.id, input: values })
+                            }
+                        })}
+                    >
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="razaoSocial-editar" required>
+                                Razão social
+                            </Label>
+                            <Input id="razaoSocial-editar" {...formEditar.register('razaoSocial')} />
+                            {formEditar.formState.errors.razaoSocial && (
+                                <p className="text-xs text-destructive">
+                                    {formEditar.formState.errors.razaoSocial.message}
+                                </p>
                             )}
                         </div>
-                    ))}
-                </CardContent>
-            </Card>
-        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="nomeFantasia-editar">Nome fantasia</Label>
+                            <Input id="nomeFantasia-editar" {...formEditar.register('nomeFantasia')} />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="email-editar" required>
+                                E-mail
+                            </Label>
+                            <Input id="email-editar" type="email" {...formEditar.register('email')} />
+                            {formEditar.formState.errors.email && (
+                                <p className="text-xs text-destructive">
+                                    {formEditar.formState.errors.email.message}
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            <Button type="submit" disabled={atualizarMutation.isPending}>
+                                {atualizarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {atualizarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                            </Button>
+                            <Button type="button" variant="ghost" onClick={() => setImobiliariaEditando(null)}>
+                                Cancelar
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </Card>
     )
 }

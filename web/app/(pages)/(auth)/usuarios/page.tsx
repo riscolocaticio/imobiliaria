@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { DatePicker } from '@/components/ui/date-picker'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -32,7 +33,7 @@ const usuarioSchema = z.object({
 type UsuarioFormValues = z.infer<typeof usuarioSchema>
 
 export default function UsuariosPage() {
-    const [mostrarFormulario, setMostrarFormulario] = useState(false)
+    const [dialogAberto, setDialogAberto] = useState(false)
     const queryClient = useQueryClient()
 
     const { data: usuarios } = useQuery({
@@ -43,7 +44,7 @@ export default function UsuariosPage() {
     const { data: imobiliariaAtual } = useQuery({
         queryKey: ['imobiliaria-me'],
         queryFn: () => imobiliariaService.me(),
-        enabled: mostrarFormulario
+        enabled: dialogAberto
     })
 
     const {
@@ -70,7 +71,7 @@ export default function UsuariosPage() {
             queryClient.invalidateQueries({ queryKey: ['usuarios'] })
             toast.success('Usuário criado com sucesso.')
             reset()
-            setMostrarFormulario(false)
+            setDialogAberto(false)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível criar o usuário. Verifique os dados e tente novamente.'))
@@ -92,13 +93,21 @@ export default function UsuariosPage() {
     const usuariosAtivos = usuarios?.filter((usuario) => usuario.status === 'ATIVO').length ?? 0
 
     return (
-        <div className="mx-auto flex max-w-4xl flex-col gap-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Usuários da imobiliária</CardTitle>
-                    <CardDescription>Cada imobiliária pode ter no máximo 2 usuários ativos</CardDescription>
+        <div className="flex h-full min-h-0 flex-col">
+            <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+                <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
+                    <div>
+                        <CardTitle>Usuários da imobiliária</CardTitle>
+                        <CardDescription>Cada imobiliária pode ter no máximo 2 usuários ativos</CardDescription>
+                    </div>
+                    {usuariosAtivos < 2 && (
+                        <Button onClick={() => setDialogAberto(true)}>
+                            <Plus className="h-4 w-4" />
+                            Adicionar usuário
+                        </Button>
+                    )}
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3">
+                <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
                     {usuarios?.map((usuario) => (
                         <div
                             key={usuario.id}
@@ -133,140 +142,127 @@ export default function UsuariosPage() {
                             </Button>
                         </div>
                     ))}
-
-                    {!mostrarFormulario && usuariosAtivos < 2 && (
-                        <Button variant="outline" onClick={() => setMostrarFormulario(true)}>
-                            Adicionar usuário
-                        </Button>
-                    )}
                 </CardContent>
             </Card>
 
-            {mostrarFormulario && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Novo usuário</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form
-                            className="flex flex-col gap-4"
-                            onSubmit={handleSubmit((values) => criarMutation.mutate(values))}
-                        >
+            <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Novo usuário</DialogTitle>
+                    </DialogHeader>
+                    <form
+                        className="flex flex-col gap-4"
+                        noValidate
+                        onSubmit={handleSubmit((values) => criarMutation.mutate(values))}
+                    >
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="imobiliaria">Imobiliária</Label>
+                            <Select
+                                value={imobiliariaAtual ? String(imobiliariaAtual.id) : undefined}
+                                onValueChange={() => {}}
+                            >
+                                <SelectTrigger id="imobiliaria">
+                                    <SelectValue placeholder="Carregando..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {imobiliariaAtual && (
+                                        <SelectItem value={String(imobiliariaAtual.id)}>
+                                            {imobiliariaAtual.nomeFantasia ?? imobiliariaAtual.razaoSocial}
+                                        </SelectItem>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                Por enquanto, o usuário é sempre criado na sua própria imobiliária.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="imobiliaria">Imobiliária</Label>
-                                <Select
-                                    value={imobiliariaAtual ? String(imobiliariaAtual.id) : undefined}
-                                    onValueChange={() => {}}
-                                >
-                                    <SelectTrigger id="imobiliaria">
-                                        <SelectValue placeholder="Carregando..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {imobiliariaAtual && (
-                                            <SelectItem value={String(imobiliariaAtual.id)}>
-                                                {imobiliariaAtual.nomeFantasia ?? imobiliariaAtual.razaoSocial}
-                                            </SelectItem>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                <p className="text-xs text-muted-foreground">
-                                    Por enquanto, o usuário é sempre criado na sua própria imobiliária. A opção
-                                    de escolher outra será ativada quando o painel de administração da
-                                    plataforma for implementado.
-                                </p>
+                                <Label htmlFor="nomeCompleto" required>
+                                    Nome completo
+                                </Label>
+                                <Input id="nomeCompleto" {...register('nomeCompleto')} />
+                                {errors.nomeCompleto && (
+                                    <p className="text-xs text-destructive">{errors.nomeCompleto.message}</p>
+                                )}
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="nomeCompleto" required>
-                                        Nome completo
-                                    </Label>
-                                    <Input id="nomeCompleto" {...register('nomeCompleto')} />
-                                    {errors.nomeCompleto && (
-                                        <p className="text-xs text-destructive">{errors.nomeCompleto.message}</p>
-                                    )}
-                                </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="cpf" required>
+                                    CPF
+                                </Label>
+                                <CpfInput id="cpf" {...register('cpf')} />
+                                {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
+                            </div>
+                        </div>
 
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="cpf" required>
-                                        CPF
-                                    </Label>
-                                    <CpfInput id="cpf" {...register('cpf')} />
-                                    {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
-                                </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="dataNascimento" required>
+                                    Data de nascimento
+                                </Label>
+                                <Controller
+                                    name="dataNascimento"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <DatePicker
+                                            id="dataNascimento"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    )}
+                                />
+                                {errors.dataNascimento && (
+                                    <p className="text-xs text-destructive">{errors.dataNascimento.message}</p>
+                                )}
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="dataNascimento" required>
-                                        Data de nascimento
-                                    </Label>
-                                    <Controller
-                                        name="dataNascimento"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <DatePicker
-                                                id="dataNascimento"
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                            />
-                                        )}
-                                    />
-                                    {errors.dataNascimento && (
-                                        <p className="text-xs text-destructive">{errors.dataNascimento.message}</p>
-                                    )}
-                                </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="email" required>
+                                    E-mail
+                                </Label>
+                                <Input id="email" type="email" {...register('email')} />
+                                {errors.email && (
+                                    <p className="text-xs text-destructive">{errors.email.message}</p>
+                                )}
+                            </div>
+                        </div>
 
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="email" required>
-                                        E-mail
-                                    </Label>
-                                    <Input id="email" type="email" {...register('email')} />
-                                    {errors.email && (
-                                        <p className="text-xs text-destructive">{errors.email.message}</p>
-                                    )}
-                                </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="login" required>
+                                    Usuário
+                                </Label>
+                                <Input id="login" {...register('login')} />
+                                {errors.login && (
+                                    <p className="text-xs text-destructive">{errors.login.message}</p>
+                                )}
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="login" required>
-                                        Usuário
-                                    </Label>
-                                    <Input id="login" {...register('login')} />
-                                    {errors.login && (
-                                        <p className="text-xs text-destructive">{errors.login.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-col gap-1.5">
-                                    <Label htmlFor="password" required>
-                                        Senha
-                                    </Label>
-                                    <Input id="password" type="password" {...register('password')} />
-                                    {errors.password && (
-                                        <p className="text-xs text-destructive">{errors.password.message}</p>
-                                    )}
-                                </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="password" required>
+                                    Senha
+                                </Label>
+                                <Input id="password" type="password" {...register('password')} />
+                                {errors.password && (
+                                    <p className="text-xs text-destructive">{errors.password.message}</p>
+                                )}
                             </div>
+                        </div>
 
-                            <div className="flex gap-2">
-                                <Button type="submit" disabled={criarMutation.isPending}>
-                                    {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                                    {criarMutation.isPending ? 'Salvando...' : 'Salvar'}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    onClick={() => setMostrarFormulario(false)}
-                                >
-                                    Cancelar
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            )}
+                        <div className="flex gap-2">
+                            <Button type="submit" disabled={criarMutation.isPending}>
+                                {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                                {criarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                            </Button>
+                            <Button type="button" variant="ghost" onClick={() => setDialogAberto(false)}>
+                                Cancelar
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

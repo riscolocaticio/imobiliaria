@@ -60,18 +60,18 @@ export default function InserirPage() {
     })
 
     return (
-        <Card className="w-full">
-            <CardHeader>
+        <Card className="flex h-full min-h-0 flex-col">
+            <CardHeader className="shrink-0">
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de forma simples e objetiva</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex min-h-0 flex-1 flex-col">
                 <form
-                    className="flex flex-col gap-5"
+                    className="flex h-full min-h-0 flex-col gap-5"
                     noValidate
                     onSubmit={handleSubmit((values) => inserirMutation.mutate(values))}
                 >
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr_1fr]">
+                    <div className="grid shrink-0 grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr_1fr]">
                         <div className="flex flex-col gap-1.5">
                             <Label htmlFor="nomeInquilinoInformado" required>
                                 Nome completo do inquilino
@@ -120,14 +120,14 @@ export default function InserirPage() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex min-h-0 flex-1 flex-col gap-1.5">
                         <Label htmlFor="descricao" required>
                             Descreva a ocorrência
                         </Label>
                         <Textarea
                             id="descricao"
                             placeholder="Preencher com os detalhes relevantes da ocorrência..."
-                            className="min-h-56"
+                            className="min-h-40 flex-1 resize-none"
                             {...register('descricao')}
                         />
                         {errors.descricao && (
@@ -135,7 +135,11 @@ export default function InserirPage() {
                         )}
                     </div>
 
-                    <Button type="submit" className="lg:w-fit lg:self-end" disabled={inserirMutation.isPending}>
+                    <Button
+                        type="submit"
+                        className="shrink-0 lg:w-fit lg:self-end"
+                        disabled={inserirMutation.isPending}
+                    >
                         {inserirMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                         {inserirMutation.isPending ? 'Registrando...' : 'Confirmar'}
                     </Button>

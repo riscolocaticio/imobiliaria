@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, Trash2 } from 'lucide-react'
+import { FolderOpen, Loader2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -37,18 +37,20 @@ export default function ExcluirPage() {
     })
 
     return (
-        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
-            <CpfSearchCard
-                icon={Trash2}
-                title="Excluir informações"
-                description="Consulte o CPF da sua imobiliária"
-                isPending={listarMutation.isPending}
-                onSubmit={(cpf) => listarMutation.mutate(cpf)}
-            />
+        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+            <div className="lg:self-start">
+                <CpfSearchCard
+                    icon={Trash2}
+                    title="Excluir informações"
+                    description="Consulte o CPF da sua imobiliária"
+                    isPending={listarMutation.isPending}
+                    onSubmit={(cpf) => listarMutation.mutate(cpf)}
+                />
+            </div>
 
             {registros ? (
-                <Card>
-                    <CardHeader>
+                <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+                    <CardHeader className="shrink-0">
                         <CardTitle>
                             {registros.length === 0
                                 ? 'Nenhum registro administrável por sua imobiliária'
@@ -56,7 +58,7 @@ export default function ExcluirPage() {
                         </CardTitle>
                     </CardHeader>
                     {registros.length > 0 && (
-                        <CardContent className="flex flex-col gap-3">
+                        <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
                             {registros.map((registro) => (
                                 <div
                                     key={registro.id}
@@ -96,9 +98,12 @@ export default function ExcluirPage() {
                     )}
                 </Card>
             ) : (
-                <Card className="flex min-h-[220px] items-center justify-center border-dashed p-6 lg:min-h-[280px]">
+                <Card className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 border-dashed p-6">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                        <FolderOpen className="h-7 w-7 text-muted-foreground" />
+                    </span>
                     <p className="max-w-xs text-center text-sm text-muted-foreground">
-                        Informe um CPF para ver os registros administráveis pela sua imobiliária
+                        Informe um CPF ao lado para ver os registros administráveis pela sua imobiliária
                     </p>
                 </Card>
             )}
