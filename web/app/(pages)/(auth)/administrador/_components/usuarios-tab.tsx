@@ -154,7 +154,7 @@ export function UsuariosTab() {
                         <Select
                             value={filtroImobiliaria}
                             onValueChange={setFiltroImobiliaria}
-                            disabled={isFetchingUsuarios}
+                            disabled={mostrarCarregandoFiltro}
                         >
                             <SelectTrigger className="w-56">
                                 <SelectValue placeholder="Filtrar por imobiliária" />

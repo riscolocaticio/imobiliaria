@@ -69,7 +69,7 @@ export function LogsTab() {
                         <Select
                             value={filtroImobiliaria}
                             onValueChange={aplicarFiltro(setFiltroImobiliaria)}
-                            disabled={isFetching}
+                            disabled={mostrarCarregando}
                         >
                             <SelectTrigger className="w-52">
                                 <SelectValue />
@@ -89,7 +89,7 @@ export function LogsTab() {
                         <Select
                             value={filtroAcao}
                             onValueChange={aplicarFiltro(setFiltroAcao)}
-                            disabled={isFetching}
+                            disabled={mostrarCarregando}
                         >
                             <SelectTrigger className="w-52">
                                 <SelectValue />
@@ -150,7 +150,7 @@ export function LogsTab() {
                         <Button
                             variant="outline"
                             size="sm"
-                            disabled={page <= 1 || isFetching}
+                            disabled={page <= 1 || mostrarCarregando}
                             onClick={() => {
                                 setUltimaAcao('anterior')
                                 setPage((p) => p - 1)
@@ -167,7 +167,7 @@ export function LogsTab() {
                         <Button
                             variant="outline"
                             size="sm"
-                            disabled={page >= totalPaginas || isFetching}
+                            disabled={page >= totalPaginas || mostrarCarregando}
                             onClick={() => {
                                 setUltimaAcao('proxima')
                                 setPage((p) => p + 1)
