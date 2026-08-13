@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -32,6 +33,7 @@ export default function ConsultarPage() {
     return (
         <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
             <CpfSearchCard
+                icon={Search}
                 title="Consultar informações"
                 description="Informe o CPF do inquilino"
                 isPending={consultaMutation.isPending}

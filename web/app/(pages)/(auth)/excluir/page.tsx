@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,6 +29,7 @@ export default function ExcluirPage() {
     return (
         <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
             <CpfSearchCard
+                icon={Trash2}
                 title="Excluir informações"
                 description="Consulte o CPF da sua imobiliária"
                 isPending={listarMutation.isPending}
