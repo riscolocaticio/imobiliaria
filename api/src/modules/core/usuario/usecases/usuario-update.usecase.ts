@@ -1,9 +1,11 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import prisma from '../../../../infra/persistence/prisma'
 import { AuditLogService } from '../../../../infra/audit/audit-log.service'
 import { CryptoService } from '../../../../infra/system/helpers/crypto/crypto.service'
 import { UsuarioUpdateInput } from '../types/usuario-update.input'
 import { UsuarioFromJwtDto } from '../types/usuario-from-jwt.input'
+
+const MAX_USUARIOS_ATIVOS_POR_IMOBILIARIA = 2
 
 @Injectable()
 export class UsuarioUpdateUsecase {
@@ -20,7 +22,22 @@ export class UsuarioUpdateUsecase {
             throw new ForbiddenException('Usuário não pertence à sua imobiliária')
         }
 
-        if (input.status === 'INATIVO' && usuario.status === 'ATIVO') {
+        const novaImobiliariaId =
+            usuarioAtual.role === 'MASTER' && input.imobiliariaId
+                ? input.imobiliariaId
+                : usuario.imobiliariaId
+        const mudouDeImobiliaria = novaImobiliariaId !== usuario.imobiliariaId
+
+        if (mudouDeImobiliaria) {
+            const imobiliariaDestino = await prisma.imobiliaria.findUnique({
+                where: { id: novaImobiliariaId }
+            })
+            if (!imobiliariaDestino) throw new NotFoundException('Imobiliária não encontrada')
+        }
+
+        const novoStatus = input.status ?? usuario.status
+
+        if (input.status === 'INATIVO' && usuario.status === 'ATIVO' && !mudouDeImobiliaria) {
             const usuariosAtivos = await prisma.usuario.count({
                 where: { imobiliariaId: usuario.imobiliariaId, status: 'ATIVO' }
             })
@@ -31,9 +48,23 @@ export class UsuarioUpdateUsecase {
             }
         }
 
+        const passaAContarComoAtivoAli = novoStatus === 'ATIVO' && (mudouDeImobiliaria || usuario.status === 'INATIVO')
+
+        if (passaAContarComoAtivoAli) {
+            const usuariosAtivos = await prisma.usuario.count({
+                where: { imobiliariaId: novaImobiliariaId, status: 'ATIVO' }
+            })
+            if (usuariosAtivos >= MAX_USUARIOS_ATIVOS_POR_IMOBILIARIA) {
+                throw new ConflictException(
+                    `Essa imobiliária já tem o máximo de ${MAX_USUARIOS_ATIVOS_POR_IMOBILIARIA} usuários ativos`
+                )
+            }
+        }
+
         const atualizado = await prisma.usuario.update({
             where: { id: usuarioId },
             data: {
+                imobiliariaId: novaImobiliariaId,
                 nomeCompleto: input.nomeCompleto,
                 email: input.email,
                 status: input.status,
@@ -43,6 +74,7 @@ export class UsuarioUpdateUsecase {
             },
             select: {
                 id: true,
+                imobiliariaId: true,
                 nomeCompleto: true,
                 cpf: true,
                 dataNascimento: true,
@@ -58,7 +90,7 @@ export class UsuarioUpdateUsecase {
 
         await this.auditLogService.record({
             usuarioId: usuarioAtual.id,
-            imobiliariaId: usuario.imobiliariaId,
+            imobiliariaId: novaImobiliariaId,
             acao: excluindo ? 'EXCLUSAO_USUARIO' : 'EDICAO_USUARIO'
         })
 

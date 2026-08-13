@@ -24,6 +24,14 @@ export interface UsuarioCreateInput {
     imobiliariaId?: number
 }
 
+export interface UsuarioUpdateInput {
+    nomeCompleto?: string
+    email?: string
+    password?: string
+    status?: 'ATIVO' | 'INATIVO'
+    imobiliariaId?: number
+}
+
 export const usuarioService = {
     async listar(imobiliariaId?: number): Promise<Usuario[]> {
         const { data } = await apiClient.get<Usuario[]>('/usuarios', {
@@ -34,6 +42,11 @@ export const usuarioService = {
 
     async criar(input: UsuarioCreateInput): Promise<Usuario> {
         const { data } = await apiClient.post<Usuario>('/usuarios', input)
+        return data
+    },
+
+    async atualizar(id: number, input: UsuarioUpdateInput): Promise<Usuario> {
+        const { data } = await apiClient.patch<Usuario>(`/usuarios/${id}`, input)
         return data
     },
 

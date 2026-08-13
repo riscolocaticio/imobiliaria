@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator'
+import { IsEmail, IsIn, IsInt, IsOptional, IsString, MinLength } from 'class-validator'
 
 export class UsuarioUpdateInput {
     @IsString()
@@ -17,4 +17,8 @@ export class UsuarioUpdateInput {
     @IsIn(['ATIVO', 'INATIVO'])
     @IsOptional()
     status?: 'ATIVO' | 'INATIVO'
+
+    @IsInt()
+    @IsOptional()
+    imobiliariaId?: number
 }

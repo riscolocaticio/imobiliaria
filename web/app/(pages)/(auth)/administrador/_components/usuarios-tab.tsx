@@ -35,6 +35,13 @@ const TODAS_IMOBILIARIAS = 'todas'
 export function UsuariosTab() {
     const [mostrarFormulario, setMostrarFormulario] = useState(false)
     const [filtroImobiliaria, setFiltroImobiliaria] = useState<string>(TODAS_IMOBILIARIAS)
+    const [editandoId, setEditandoId] = useState<number | null>(null)
+    const [edicao, setEdicao] = useState({
+        nomeCompleto: '',
+        email: '',
+        imobiliariaId: '',
+        password: ''
+    })
     const queryClient = useQueryClient()
 
     const { data: imobiliarias } = useQuery({
@@ -93,6 +100,34 @@ export function UsuariosTab() {
     const erroStatus = isAxiosError<{ message?: string }>(statusMutation.error)
         ? statusMutation.error.response?.data?.message
         : null
+
+    const atualizarMutation = useMutation({
+        mutationFn: ({ id, imobiliariaId, password, ...resto }: typeof edicao & { id: number }) =>
+            usuarioService.atualizar(id, {
+                ...resto,
+                imobiliariaId: Number(imobiliariaId),
+                password: password || undefined
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
+            queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
+            setEditandoId(null)
+        }
+    })
+
+    const erroAtualizar = isAxiosError<{ message?: string }>(atualizarMutation.error)
+        ? atualizarMutation.error.response?.data?.message
+        : null
+
+    function iniciarEdicao(usuario: NonNullable<typeof usuarios>[number]) {
+        setEditandoId(usuario.id)
+        setEdicao({
+            nomeCompleto: usuario.nomeCompleto,
+            email: usuario.email,
+            imobiliariaId: String(usuario.imobiliariaId ?? usuario.imobiliaria?.id ?? ''),
+            password: ''
+        })
+    }
 
     return (
         <div className="flex flex-col gap-6">
@@ -243,41 +278,127 @@ export function UsuariosTab() {
 
                 <CardContent className="flex flex-col gap-3 pt-6">
                     {erroStatus && <p className="text-sm text-destructive">{erroStatus}</p>}
+                    {erroAtualizar && <p className="text-sm text-destructive">{erroAtualizar}</p>}
 
-                    {usuarios?.map((usuario) => (
-                        <div
-                            key={usuario.id}
-                            className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
-                        >
-                            <div>
-                                <div className="flex items-center gap-2 font-medium">
-                                    {usuario.nomeCompleto}
-                                    <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
-                                        {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                                    </Badge>
-                                    {usuario.role === 'MASTER' && <Badge variant="secondary">Master</Badge>}
-                                </div>
-                                <p className="text-muted-foreground">
-                                    {usuario.login} · {usuario.email}
-                                    {usuario.imobiliaria &&
-                                        ` · ${usuario.imobiliaria.nomeFantasia ?? usuario.imobiliaria.razaoSocial}`}
-                                </p>
-                            </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={statusMutation.isPending}
-                                onClick={() =>
-                                    statusMutation.mutate({
-                                        id: usuario.id,
-                                        status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                    })
-                                }
+                    {usuarios?.map((usuario) =>
+                        editandoId === usuario.id ? (
+                            <div
+                                key={usuario.id}
+                                className="flex flex-col gap-3 rounded-md border border-border p-4 text-sm"
                             >
-                                {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
-                            </Button>
-                        </div>
-                    ))}
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor={`nomeCompleto-${usuario.id}`}>Nome completo</Label>
+                                        <Input
+                                            id={`nomeCompleto-${usuario.id}`}
+                                            value={edicao.nomeCompleto}
+                                            onChange={(e) =>
+                                                setEdicao((v) => ({ ...v, nomeCompleto: e.target.value }))
+                                            }
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor={`email-${usuario.id}`}>E-mail</Label>
+                                        <Input
+                                            id={`email-${usuario.id}`}
+                                            type="email"
+                                            value={edicao.email}
+                                            onChange={(e) => setEdicao((v) => ({ ...v, email: e.target.value }))}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor={`imobiliariaId-${usuario.id}`}>Imobiliária</Label>
+                                        <Select
+                                            value={edicao.imobiliariaId}
+                                            onValueChange={(value) =>
+                                                setEdicao((v) => ({ ...v, imobiliariaId: value }))
+                                            }
+                                        >
+                                            <SelectTrigger id={`imobiliariaId-${usuario.id}`}>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {imobiliarias?.map((imobiliaria) => (
+                                                    <SelectItem
+                                                        key={imobiliaria.id}
+                                                        value={String(imobiliaria.id)}
+                                                    >
+                                                        {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label htmlFor={`password-${usuario.id}`}>
+                                            Nova senha (opcional)
+                                        </Label>
+                                        <Input
+                                            id={`password-${usuario.id}`}
+                                            type="password"
+                                            placeholder="Deixe em branco pra manter"
+                                            value={edicao.password}
+                                            onChange={(e) =>
+                                                setEdicao((v) => ({ ...v, password: e.target.value }))
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button
+                                        size="sm"
+                                        disabled={atualizarMutation.isPending}
+                                        onClick={() => atualizarMutation.mutate({ id: usuario.id, ...edicao })}
+                                    >
+                                        {atualizarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                    </Button>
+                                    <Button size="sm" variant="ghost" onClick={() => setEditandoId(null)}>
+                                        Cancelar
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div
+                                key={usuario.id}
+                                className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                            >
+                                <div>
+                                    <div className="flex items-center gap-2 font-medium">
+                                        {usuario.nomeCompleto}
+                                        <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                            {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                                        </Badge>
+                                        {usuario.role === 'MASTER' && <Badge variant="secondary">Master</Badge>}
+                                    </div>
+                                    <p className="text-muted-foreground">
+                                        {usuario.login} · {usuario.email}
+                                        {usuario.imobiliaria &&
+                                            ` · ${usuario.imobiliaria.nomeFantasia ?? usuario.imobiliaria.razaoSocial}`}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => iniciarEdicao(usuario)}>
+                                        Editar
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={statusMutation.isPending}
+                                        onClick={() =>
+                                            statusMutation.mutate({
+                                                id: usuario.id,
+                                                status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
+                                            })
+                                        }
+                                    >
+                                        {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    )}
                 </CardContent>
             </Card>
         </div>
