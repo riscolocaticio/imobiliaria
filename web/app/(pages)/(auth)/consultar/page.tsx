@@ -5,7 +5,7 @@ import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { formatCpf } from '@/lib/format-cpf'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
@@ -41,31 +41,26 @@ export default function ConsultarPage() {
             />
 
             {resultado ? (
-                <Card className="overflow-hidden">
-                    <CardHeader className="gap-4 border-b border-border bg-muted/40">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex flex-col gap-1.5">
-                                <Badge
-                                    variant={resultado.constamInformacoes ? 'destructive' : 'default'}
-                                    className="w-fit px-3 py-1 text-xs tracking-wide"
-                                >
-                                    {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
-                                </Badge>
-                                <CardDescription>CPF {formatCpf(cpfConsultado)}</CardDescription>
-                            </div>
-                            {resultado.constamInformacoes && (
-                                <div className="flex flex-wrap gap-2 sm:justify-end">
-                                    {resultado.tipos.map((tipo) => (
-                                        <Badge key={tipo} variant="secondary">
-                                            {TIPO_OCORRENCIA_LABEL[tipo]}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            )}
+                <Card>
+                    <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <CardTitle>
+                                {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
+                            </CardTitle>
+                            <CardDescription>CPF {formatCpf(cpfConsultado)}</CardDescription>
                         </div>
+                        {resultado.constamInformacoes && (
+                            <div className="flex flex-wrap gap-2 sm:justify-end">
+                                {resultado.tipos.map((tipo) => (
+                                    <Badge key={tipo} variant="secondary">
+                                        {TIPO_OCORRENCIA_LABEL[tipo]}
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
                     </CardHeader>
                     {resultado.constamInformacoes && (
-                        <CardContent className="flex flex-col gap-4 pt-6">
+                        <CardContent className="flex flex-col gap-4">
                             {!detalhes && (
                                 <Button
                                     variant="outline"
@@ -77,24 +72,20 @@ export default function ConsultarPage() {
                             )}
 
                             {detalhes && (
-                                <ul className="flex flex-col gap-3">
+                                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     {detalhes.map((ocorrencia) => (
                                         <li
                                             key={ocorrencia.id}
-                                            className="grid grid-cols-1 gap-3 rounded-lg border border-border p-4 text-sm md:grid-cols-[220px_1fr_auto] md:items-center md:gap-6"
+                                            className="rounded-md border border-border p-4 text-sm"
                                         >
-                                            <div>
-                                                <p className="font-semibold">
-                                                    {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
-                                                </p>
-                                                <p className="mt-0.5 text-xs text-muted-foreground">
-                                                    {ocorrencia.imobiliaria.nomeFantasia ??
-                                                        ocorrencia.imobiliaria.razaoSocial}
-                                                </p>
-                                            </div>
-                                            <p className="text-muted-foreground">{ocorrencia.descricao}</p>
-                                            <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
-                                                {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                                            <p className="font-medium">
+                                                {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
+                                            </p>
+                                            <p className="mt-1 text-muted-foreground">{ocorrencia.descricao}</p>
+                                            <p className="mt-2 text-xs text-muted-foreground">
+                                                {ocorrencia.imobiliaria.nomeFantasia ??
+                                                    ocorrencia.imobiliaria.razaoSocial}{' '}
+                                                · {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
                                                 {new Date(ocorrencia.createdAt).toLocaleTimeString('pt-BR', {
                                                     hour: '2-digit',
                                                     minute: '2-digit'
