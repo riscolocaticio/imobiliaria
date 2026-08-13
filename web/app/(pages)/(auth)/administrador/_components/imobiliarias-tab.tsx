@@ -9,8 +9,10 @@ import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { CnpjInput } from '@/components/ui/cnpj-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
 import {
     imobiliariaService,
     ImobiliariaComContagem
@@ -19,7 +21,7 @@ import {
 const imobiliariaSchema = z.object({
     razaoSocial: z.string().min(1, 'Informe a razão social'),
     nomeFantasia: z.string().optional(),
-    cnpj: z.string().min(14, 'Informe um CNPJ válido').max(18),
+    cnpj: z.string().refine(isCnpjComplete, 'Informe um CNPJ válido'),
     email: z.string().email('E-mail inválido')
 })
 
@@ -122,7 +124,7 @@ export function ImobiliariasTab() {
                                     <Label htmlFor="cnpj" required>
                                         CNPJ
                                     </Label>
-                                    <Input id="cnpj" placeholder="00.000.000/0000-00" {...register('cnpj')} />
+                                    <CnpjInput id="cnpj" {...register('cnpj')} />
                                     {errors.cnpj && (
                                         <p className="text-xs text-destructive">{errors.cnpj.message}</p>
                                     )}
@@ -214,7 +216,8 @@ export function ImobiliariasTab() {
                                             </Badge>
                                         </div>
                                         <p className="text-muted-foreground">
-                                            {imobiliaria.cnpj} · {imobiliaria.email} · {imobiliaria._count.usuarios}{' '}
+                                            {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} ·{' '}
+                                            {imobiliaria._count.usuarios}{' '}
                                             usuário(s)
                                         </p>
                                     </div>
