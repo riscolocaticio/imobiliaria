@@ -50,7 +50,17 @@ export default function UsuariosPage() {
         handleSubmit,
         reset,
         formState: { errors }
-    } = useForm<UsuarioFormValues>({ resolver: zodResolver(usuarioSchema) })
+    } = useForm<UsuarioFormValues>({
+        resolver: zodResolver(usuarioSchema),
+        defaultValues: {
+            nomeCompleto: '',
+            cpf: '',
+            dataNascimento: '',
+            email: '',
+            login: '',
+            password: ''
+        }
+    })
 
     const criarMutation = useMutation({
         mutationFn: (values: UsuarioFormValues) => usuarioService.criar(values),

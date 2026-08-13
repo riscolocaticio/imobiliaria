@@ -37,7 +37,15 @@ export default function InserirPage() {
         handleSubmit,
         reset,
         formState: { errors }
-    } = useForm<InserirFormValues>({ resolver: zodResolver(inserirSchema) })
+    } = useForm<InserirFormValues>({
+        resolver: zodResolver(inserirSchema),
+        defaultValues: {
+            nomeInquilinoInformado: '',
+            cpfInquilino: '',
+            tipo: '',
+            descricao: ''
+        }
+    })
 
     const inserirMutation = useMutation({
         mutationFn: (values: InserirFormValues) =>
@@ -118,7 +126,7 @@ export default function InserirPage() {
                         </Label>
                         <Textarea
                             id="descricao"
-                            placeholder="Descreva os detalhes relevantes da ocorrência..."
+                            placeholder="Preencher com os detalhes relevantes da ocorrência..."
                             className="min-h-56"
                             {...register('descricao')}
                         />
