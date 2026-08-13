@@ -46,19 +46,19 @@ export function CpfSearchCard({
             </CardHeader>
             <CardContent>
                 <form
-                    className="flex flex-col gap-4"
+                    className="flex flex-col gap-6"
                     noValidate
                     onSubmit={handleSubmit((values) => onSubmit(values.cpf))}
                 >
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-col gap-2">
                         <Label htmlFor="cpf" required>
                             CPF do inquilino
                         </Label>
-                        <CpfInput id="cpf" {...register('cpf')} />
+                        <CpfInput id="cpf" className="h-11" {...register('cpf')} />
                         {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
                     </div>
 
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" size="lg" className="mt-1" disabled={isPending}>
                         {isPending ? buttonLoadingLabel : buttonLabel}
                     </Button>
                 </form>
