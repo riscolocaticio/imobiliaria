@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ReactQueryProvider } from './providers/react-query-provider'
 import { UserProvider } from './providers/user-provider'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
     title: 'Plataforma de Risco Locatício',
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ReactQueryProvider>
                     <UserProvider>{children}</UserProvider>
                 </ReactQueryProvider>
+                <Analytics />
             </body>
         </html>
     )
