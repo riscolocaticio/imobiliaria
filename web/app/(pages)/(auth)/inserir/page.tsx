@@ -49,20 +49,20 @@ export default function InserirPage() {
     })
 
     return (
-        <Card className="mx-auto max-w-3xl">
+        <Card className="mx-auto max-w-6xl">
             <CardHeader>
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de forma simples e objetiva</CardDescription>
             </CardHeader>
             <CardContent>
                 <form
-                    className="flex flex-col gap-4"
+                    className="flex flex-col gap-5"
                     onSubmit={handleSubmit((values) => {
                         setSucesso(false)
                         inserirMutation.mutate(values)
                     })}
                 >
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr_1fr]">
                         <div className="flex flex-col gap-1.5">
                             <Label htmlFor="nomeInquilinoInformado" required>
                                 Nome completo do inquilino
@@ -84,38 +84,38 @@ export default function InserirPage() {
                                 <p className="text-xs text-destructive">{errors.cpfInquilino.message}</p>
                             )}
                         </div>
-                    </div>
 
-                    <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="tipo" required>
-                            Tipo de ocorrência
-                        </Label>
-                        <Controller
-                            name="tipo"
-                            control={control}
-                            render={({ field }) => (
-                                <Select value={field.value} onValueChange={field.onChange}>
-                                    <SelectTrigger id="tipo">
-                                        <SelectValue placeholder="Selecione..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {TIPO_OCORRENCIA_OPTIONS.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
-                        {errors.tipo && <p className="text-xs text-destructive">{errors.tipo.message}</p>}
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="tipo" required>
+                                Tipo de ocorrência
+                            </Label>
+                            <Controller
+                                name="tipo"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger id="tipo">
+                                            <SelectValue placeholder="Selecione..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {TIPO_OCORRENCIA_OPTIONS.map((option) => (
+                                                <SelectItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {errors.tipo && <p className="text-xs text-destructive">{errors.tipo.message}</p>}
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-1.5">
                         <Label htmlFor="descricao" required>
                             Descreva a ocorrência
                         </Label>
-                        <Textarea id="descricao" className="min-h-40" {...register('descricao')} />
+                        <Textarea id="descricao" className="min-h-56" {...register('descricao')} />
                         {errors.descricao && (
                             <p className="text-xs text-destructive">{errors.descricao.message}</p>
                         )}
@@ -128,7 +128,7 @@ export default function InserirPage() {
                     )}
                     {sucesso && <p className="text-sm text-emerald-600">Ocorrência registrada com sucesso.</p>}
 
-                    <Button type="submit" disabled={inserirMutation.isPending}>
+                    <Button type="submit" className="lg:w-fit lg:self-end" disabled={inserirMutation.isPending}>
                         {inserirMutation.isPending ? 'Registrando...' : 'Confirmar'}
                     </Button>
                 </form>
