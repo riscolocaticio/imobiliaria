@@ -1,18 +1,17 @@
 import type { IncomingMessage, ServerResponse } from 'http'
-import serverlessHttp from 'serverless-http'
 import { createApp } from '../src/main'
 
-type ServerlessHandler = (req: IncomingMessage, res: ServerResponse) => Promise<unknown>
+type ExpressHandler = (req: IncomingMessage, res: ServerResponse) => void
 
-let handlerPromise: Promise<ServerlessHandler> | null = null
+let handlerPromise: Promise<ExpressHandler> | null = null
 
-async function buildHandler(): Promise<ServerlessHandler> {
+async function buildHandler(): Promise<ExpressHandler> {
     const app = await createApp()
     await app.init()
-    return serverlessHttp(app.getHttpAdapter().getInstance()) as ServerlessHandler
+    return app.getHttpAdapter().getInstance()
 }
 
-function getHandler(): Promise<ServerlessHandler> {
+function getHandler(): Promise<ExpressHandler> {
     if (!handlerPromise) {
         handlerPromise = buildHandler()
     }
@@ -20,6 +19,6 @@ function getHandler(): Promise<ServerlessHandler> {
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-    const nestHandler = await getHandler()
-    return nestHandler(req, res)
+    const expressApp = await getHandler()
+    expressApp(req, res)
 }
