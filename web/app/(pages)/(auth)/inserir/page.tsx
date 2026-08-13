@@ -49,7 +49,7 @@ export default function InserirPage() {
     })
 
     return (
-        <Card className="mx-auto max-w-6xl">
+        <Card className="w-full">
             <CardHeader>
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de forma simples e objetiva</CardDescription>

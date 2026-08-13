@@ -66,13 +66,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                                 </Link>
                             )
                         })}
-                        <ThemeToggle />
+                        <ThemeToggle compact />
                         <button
                             onClick={sair}
-                            className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                            title="Sair"
+                            aria-label="Sair"
+                            className="inline-flex shrink-0 items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                             <LogOut className="h-4 w-4" />
-                            Sair
                         </button>
                     </nav>
 
