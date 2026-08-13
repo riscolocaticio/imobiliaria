@@ -1,11 +1,13 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CpfSearchCard } from '@/components/cpf-search-card'
+import { getErrorMessage } from '@/lib/get-error-message'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
@@ -15,7 +17,10 @@ export default function ExcluirPage() {
 
     const listarMutation = useMutation({
         mutationFn: (cpf: string) => ocorrenciaService.listarExcluiveis(cpf),
-        onSuccess: setRegistros
+        onSuccess: setRegistros,
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível consultar o CPF. Tente novamente.'))
+        }
     })
 
     const excluirMutation = useMutation({
@@ -23,6 +28,11 @@ export default function ExcluirPage() {
         onSuccess: (_data, id) => {
             setRegistros((atual) => atual?.filter((registro) => registro.id !== id) ?? null)
             setExcluindoId(null)
+            toast.success('Registro excluído com sucesso.')
+        },
+        onError: (error) => {
+            setExcluindoId(null)
+            toast.error(getErrorMessage(error, 'Não foi possível excluir o registro.'))
         }
     })
 
@@ -73,6 +83,9 @@ export default function ExcluirPage() {
                                             excluirMutation.mutate(registro.id)
                                         }}
                                     >
+                                        {excluirMutation.isPending && excluindoId === registro.id && (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        )}
                                         {excluirMutation.isPending && excluindoId === registro.id
                                             ? 'Excluindo...'
                                             : 'Excluir'}

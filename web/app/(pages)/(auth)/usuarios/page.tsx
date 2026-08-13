@@ -2,8 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,7 +15,7 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { isAxiosError } from 'axios'
+import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { usuarioService } from '@/app/services/usuario.service'
@@ -66,20 +68,26 @@ export default function UsuariosPage() {
         mutationFn: (values: UsuarioFormValues) => usuarioService.criar(values),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['usuarios'] })
+            toast.success('Usuário criado com sucesso.')
             reset()
             setMostrarFormulario(false)
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível criar o usuário. Verifique os dados e tente novamente.'))
         }
     })
 
     const statusMutation = useMutation({
         mutationFn: ({ id, status }: { id: number; status: 'ATIVO' | 'INATIVO' }) =>
             usuarioService.atualizarStatus(id, status),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['usuarios'] })
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['usuarios'] })
+            toast.success(variables.status === 'ATIVO' ? 'Usuário reativado.' : 'Usuário desativado.')
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível atualizar o usuário.'))
+        }
     })
-
-    const erroStatus = isAxiosError<{ message?: string }>(statusMutation.error)
-        ? statusMutation.error.response?.data?.message
-        : null
 
     const usuariosAtivos = usuarios?.filter((usuario) => usuario.status === 'ATIVO').length ?? 0
 
@@ -118,12 +126,13 @@ export default function UsuariosPage() {
                                     })
                                 }
                             >
+                                {statusMutation.isPending && statusMutation.variables?.id === usuario.id && (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                )}
                                 {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
                             </Button>
                         </div>
                     ))}
-
-                    {erroStatus && <p className="text-sm text-destructive">{erroStatus}</p>}
 
                     {!mostrarFormulario && usuariosAtivos < 2 && (
                         <Button variant="outline" onClick={() => setMostrarFormulario(true)}>
@@ -241,14 +250,9 @@ export default function UsuariosPage() {
                                 </div>
                             </div>
 
-                            {criarMutation.isError && (
-                                <p className="text-sm text-destructive">
-                                    Não foi possível criar o usuário. Verifique os dados e tente novamente.
-                                </p>
-                            )}
-
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={criarMutation.isPending}>
+                                    {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                                     {criarMutation.isPending ? 'Salvando...' : 'Salvar'}
                                 </Button>
                                 <Button

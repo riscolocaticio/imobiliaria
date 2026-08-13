@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Search, type LucideIcon } from 'lucide-react'
+import { Loader2, Search, type LucideIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -77,6 +77,7 @@ export function CpfSearchCard({
                     </div>
 
                     <Button type="submit" size="lg" disabled={isPending}>
+                        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                         {isPending ? buttonLoadingLabel : buttonLabel}
                     </Button>
                 </form>

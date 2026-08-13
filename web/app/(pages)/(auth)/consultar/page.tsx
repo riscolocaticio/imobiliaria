@@ -1,13 +1,15 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { Search } from 'lucide-react'
+import { Loader2, Search } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { formatCpf } from '@/lib/format-cpf'
+import { getErrorMessage } from '@/lib/get-error-message'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
@@ -22,12 +24,18 @@ export default function ConsultarPage() {
             setResultado(data)
             setCpfConsultado(cpf)
             setDetalhes(null)
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível consultar o CPF. Tente novamente.'))
         }
     })
 
     const detalhesMutation = useMutation({
         mutationFn: () => ocorrenciaService.detalhar(cpfConsultado),
-        onSuccess: (data) => setDetalhes(data)
+        onSuccess: (data) => setDetalhes(data),
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível carregar os detalhes.'))
+        }
     })
 
     return (
@@ -67,6 +75,9 @@ export default function ConsultarPage() {
                                     onClick={() => detalhesMutation.mutate()}
                                     disabled={detalhesMutation.isPending}
                                 >
+                                    {detalhesMutation.isPending && (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    )}
                                     {detalhesMutation.isPending ? 'Carregando...' : 'Ver detalhes'}
                                 </Button>
                             )}

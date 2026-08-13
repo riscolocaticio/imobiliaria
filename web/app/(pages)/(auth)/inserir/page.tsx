@@ -2,8 +2,9 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -12,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { ocorrenciaService, OcorrenciaCreateInput } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_OPTIONS } from '@/shared/constants/tipo-ocorrencia'
@@ -29,8 +31,6 @@ const inserirSchema = z.object({
 type InserirFormValues = z.infer<typeof inserirSchema>
 
 export default function InserirPage() {
-    const [sucesso, setSucesso] = useState(false)
-
     const {
         register,
         control,
@@ -51,8 +51,11 @@ export default function InserirPage() {
         mutationFn: (values: InserirFormValues) =>
             ocorrenciaService.inserir(values as OcorrenciaCreateInput),
         onSuccess: () => {
-            setSucesso(true)
+            toast.success('Ocorrência registrada com sucesso.')
             reset()
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível registrar a ocorrência. Tente novamente.'))
         }
     })
 
@@ -66,10 +69,7 @@ export default function InserirPage() {
                 <form
                     className="flex flex-col gap-5"
                     noValidate
-                    onSubmit={handleSubmit((values) => {
-                        setSucesso(false)
-                        inserirMutation.mutate(values)
-                    })}
+                    onSubmit={handleSubmit((values) => inserirMutation.mutate(values))}
                 >
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr_1fr]">
                         <div className="flex flex-col gap-1.5">
@@ -135,14 +135,8 @@ export default function InserirPage() {
                         )}
                     </div>
 
-                    {inserirMutation.isError && (
-                        <p className="text-sm text-destructive">
-                            Não foi possível registrar a ocorrência. Tente novamente.
-                        </p>
-                    )}
-                    {sucesso && <p className="text-sm text-emerald-600">Ocorrência registrada com sucesso.</p>}
-
                     <Button type="submit" className="lg:w-fit lg:self-end" disabled={inserirMutation.isPending}>
+                        {inserirMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                         {inserirMutation.isPending ? 'Registrando...' : 'Confirmar'}
                     </Button>
                 </form>

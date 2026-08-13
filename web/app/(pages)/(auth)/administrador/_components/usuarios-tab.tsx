@@ -2,9 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { usuarioService } from '@/app/services/usuario.service'
@@ -82,24 +84,26 @@ export function UsuariosTab() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
+            toast.success('Usuário criado com sucesso.')
             reset()
             setMostrarFormulario(false)
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível criar o usuário. Verifique os dados e tente novamente.'))
         }
     })
-
-    const erroCriar = isAxiosError<{ message?: string }>(criarMutation.error)
-        ? criarMutation.error.response?.data?.message
-        : null
 
     const statusMutation = useMutation({
         mutationFn: ({ id, status }: { id: number; status: 'ATIVO' | 'INATIVO' }) =>
             usuarioService.atualizarStatus(id, status),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
+            toast.success(variables.status === 'ATIVO' ? 'Usuário reativado.' : 'Usuário desativado.')
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível atualizar o usuário.'))
+        }
     })
-
-    const erroStatus = isAxiosError<{ message?: string }>(statusMutation.error)
-        ? statusMutation.error.response?.data?.message
-        : null
 
     const atualizarMutation = useMutation({
         mutationFn: ({ id, imobiliariaId, password, ...resto }: typeof edicao & { id: number }) =>
@@ -111,13 +115,13 @@ export function UsuariosTab() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
+            toast.success('Usuário atualizado com sucesso.')
             setEditandoId(null)
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível atualizar o usuário.'))
         }
     })
-
-    const erroAtualizar = isAxiosError<{ message?: string }>(atualizarMutation.error)
-        ? atualizarMutation.error.response?.data?.message
-        : null
 
     function iniciarEdicao(usuario: NonNullable<typeof usuarios>[number]) {
         setEditandoId(usuario.id)
@@ -267,9 +271,8 @@ export function UsuariosTab() {
                                 </div>
                             </div>
 
-                            {erroCriar && <p className="text-sm text-destructive">{erroCriar}</p>}
-
                             <Button type="submit" className="w-fit" disabled={criarMutation.isPending}>
+                                {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                                 {criarMutation.isPending ? 'Salvando...' : 'Salvar usuário'}
                             </Button>
                         </form>
@@ -277,9 +280,6 @@ export function UsuariosTab() {
                 )}
 
                 <CardContent className="flex flex-col gap-3 pt-6">
-                    {erroStatus && <p className="text-sm text-destructive">{erroStatus}</p>}
-                    {erroAtualizar && <p className="text-sm text-destructive">{erroAtualizar}</p>}
-
                     {usuarios?.map((usuario) =>
                         editandoId === usuario.id ? (
                             <div
@@ -352,6 +352,9 @@ export function UsuariosTab() {
                                         disabled={atualizarMutation.isPending}
                                         onClick={() => atualizarMutation.mutate({ id: usuario.id, ...edicao })}
                                     >
+                                        {atualizarMutation.isPending && (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        )}
                                         {atualizarMutation.isPending ? 'Salvando...' : 'Salvar'}
                                     </Button>
                                     <Button size="sm" variant="ghost" onClick={() => setEditandoId(null)}>
@@ -394,6 +397,10 @@ export function UsuariosTab() {
                                                 })
                                             }
                                         >
+                                            {statusMutation.isPending &&
+                                                statusMutation.variables?.id === usuario.id && (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                )}
                                             {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
                                         </Button>
                                     )}

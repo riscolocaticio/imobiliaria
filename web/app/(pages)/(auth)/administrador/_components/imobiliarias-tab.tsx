@@ -2,9 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import { CnpjInput } from '@/components/ui/cnpj-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
+import { getErrorMessage } from '@/lib/get-error-message'
 import {
     imobiliariaService,
     ImobiliariaComContagem
@@ -52,8 +54,12 @@ export function ImobiliariasTab() {
         mutationFn: (values: ImobiliariaFormValues) => imobiliariaService.criar(values),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
+            toast.success('Imobiliária criada com sucesso.')
             reset()
             setMostrarFormulario(false)
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível criar a imobiliária. Verifique os dados e tente novamente.'))
         }
     })
 
@@ -65,15 +71,17 @@ export function ImobiliariasTab() {
             id: number
             input: { razaoSocial?: string; nomeFantasia?: string; email?: string; status?: 'ATIVO' | 'INATIVO' }
         }) => imobiliariaService.atualizar(id, input),
-        onSuccess: () => {
+        onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
+            toast.success(
+                variables.input.status ? 'Status atualizado com sucesso.' : 'Imobiliária atualizada com sucesso.'
+            )
             setEditandoId(null)
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível atualizar a imobiliária.'))
         }
     })
-
-    const erroAtualizar = isAxiosError<{ message?: string }>(atualizarMutation.error)
-        ? atualizarMutation.error.response?.data?.message
-        : null
 
     function iniciarEdicao(imobiliaria: ImobiliariaComContagem) {
         setEditandoId(imobiliaria.id)
@@ -139,12 +147,8 @@ export function ImobiliariasTab() {
                                     )}
                                 </div>
                             </div>
-                            {criarMutation.isError && (
-                                <p className="text-sm text-destructive">
-                                    Não foi possível criar a imobiliária. Verifique os dados e tente novamente.
-                                </p>
-                            )}
                             <Button type="submit" className="w-fit" disabled={criarMutation.isPending}>
+                                {criarMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                                 {criarMutation.isPending ? 'Salvando...' : 'Salvar imobiliária'}
                             </Button>
                         </form>
@@ -152,8 +156,6 @@ export function ImobiliariasTab() {
                 )}
 
                 <CardContent className="flex flex-col gap-3 pt-6">
-                    {erroAtualizar && <p className="text-sm text-destructive">{erroAtualizar}</p>}
-
                     {imobiliarias?.map((imobiliaria) => (
                         <div
                             key={imobiliaria.id}
@@ -199,7 +201,14 @@ export function ImobiliariasTab() {
                                                 atualizarMutation.mutate({ id: imobiliaria.id, input: edicao })
                                             }
                                         >
-                                            {atualizarMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                            {atualizarMutation.isPending &&
+                                                atualizarMutation.variables?.id === imobiliaria.id && (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                )}
+                                            {atualizarMutation.isPending &&
+                                            atualizarMutation.variables?.id === imobiliaria.id
+                                                ? 'Salvando...'
+                                                : 'Salvar'}
                                         </Button>
                                         <Button size="sm" variant="ghost" onClick={() => setEditandoId(null)}>
                                             Cancelar
@@ -243,6 +252,10 @@ export function ImobiliariasTab() {
                                                 })
                                             }
                                         >
+                                            {atualizarMutation.isPending &&
+                                                atualizarMutation.variables?.id === imobiliaria.id && (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                )}
                                             {imobiliaria.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
                                         </Button>
                                     </div>

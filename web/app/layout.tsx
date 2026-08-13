@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { AppToaster } from '@/components/app-toaster'
 import { ReactQueryProvider } from './providers/react-query-provider'
 import { UserProvider } from './providers/user-provider'
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ReactQueryProvider>
                     <UserProvider>{children}</UserProvider>
                 </ReactQueryProvider>
+                <AppToaster />
                 <Analytics />
             </body>
         </html>

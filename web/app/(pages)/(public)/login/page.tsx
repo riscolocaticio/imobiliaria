@@ -1,10 +1,11 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Suspense, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -29,7 +30,6 @@ export default function LoginPage() {
 }
 
 function LoginForm() {
-    const [erro, setErro] = useState<string | null>(null)
     const [enviando, setEnviando] = useState(false)
     const [mostrarSenha, setMostrarSenha] = useState(false)
     const searchParams = useSearchParams()
@@ -41,14 +41,13 @@ function LoginForm() {
     } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) })
 
     async function onSubmit(values: LoginFormValues) {
-        setErro(null)
         setEnviando(true)
         try {
             await authService.login(values.login, values.password)
             const returnTo = searchParams.get('returnTo')
             window.location.href = returnTo || ROUTES.CONSULTAR
         } catch {
-            setErro('Login ou senha incorretos')
+            toast.error('Login ou senha incorretos')
             setEnviando(false)
         }
     }
@@ -97,9 +96,8 @@ function LoginForm() {
                         )}
                     </div>
 
-                    {erro && <p className="text-sm text-destructive">{erro}</p>}
-
                     <Button type="submit" size="lg" disabled={enviando}>
+                        {enviando && <Loader2 className="h-4 w-4 animate-spin" />}
                         {enviando ? 'Entrando...' : 'Entrar'}
                     </Button>
                 </form>
