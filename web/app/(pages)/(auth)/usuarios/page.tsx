@@ -12,8 +12,10 @@ import { CpfInput } from '@/components/ui/cpf-input'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { isAxiosError } from 'axios'
 import { isCpfComplete } from '@/lib/format-cpf'
+import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { usuarioService } from '@/app/services/usuario.service'
 
 const usuarioSchema = z.object({
@@ -34,6 +36,12 @@ export default function UsuariosPage() {
     const { data: usuarios } = useQuery({
         queryKey: ['usuarios'],
         queryFn: () => usuarioService.listar()
+    })
+
+    const { data: imobiliariaAtual } = useQuery({
+        queryKey: ['imobiliaria-me'],
+        queryFn: () => imobiliariaService.me(),
+        enabled: mostrarFormulario
     })
 
     const {
@@ -125,6 +133,30 @@ export default function UsuariosPage() {
                             className="flex flex-col gap-4"
                             onSubmit={handleSubmit((values) => criarMutation.mutate(values))}
                         >
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="imobiliaria">Imobiliária</Label>
+                                <Select
+                                    value={imobiliariaAtual ? String(imobiliariaAtual.id) : undefined}
+                                    onValueChange={() => {}}
+                                >
+                                    <SelectTrigger id="imobiliaria">
+                                        <SelectValue placeholder="Carregando..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {imobiliariaAtual && (
+                                            <SelectItem value={String(imobiliariaAtual.id)}>
+                                                {imobiliariaAtual.nomeFantasia ?? imobiliariaAtual.razaoSocial}
+                                            </SelectItem>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-xs text-muted-foreground">
+                                    Por enquanto, o usuário é sempre criado na sua própria imobiliária. A opção
+                                    de escolher outra será ativada quando o painel de administração da
+                                    plataforma for implementado.
+                                </p>
+                            </div>
+
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="flex flex-col gap-1.5">
                                     <Label htmlFor="nomeCompleto" required>
@@ -180,7 +212,7 @@ export default function UsuariosPage() {
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="flex flex-col gap-1.5">
                                     <Label htmlFor="login" required>
-                                        Login
+                                        Usuário
                                     </Label>
                                     <Input id="login" {...register('login')} />
                                     {errors.login && (
