@@ -1,33 +1,16 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { CpfInput } from '@/components/ui/cpf-input'
-import { Label } from '@/components/ui/label'
-import { isCpfComplete } from '@/lib/format-cpf'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CpfSearchCard } from '@/components/cpf-search-card'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
-
-const cpfSchema = z.object({
-    cpf: z.string().refine(isCpfComplete, 'Informe um CPF válido')
-})
-
-type CpfFormValues = z.infer<typeof cpfSchema>
 
 export default function ExcluirPage() {
     const [registros, setRegistros] = useState<OcorrenciaExcluivel[] | null>(null)
     const [excluindoId, setExcluindoId] = useState<number | null>(null)
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<CpfFormValues>({ resolver: zodResolver(cpfSchema) })
 
     const listarMutation = useMutation({
         mutationFn: (cpf: string) => ocorrenciaService.listarExcluiveis(cpf),
@@ -44,34 +27,12 @@ export default function ExcluirPage() {
 
     return (
         <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Excluir informações</CardTitle>
-                    <CardDescription>
-                        Consulte o CPF para ver os registros que sua imobiliária pode administrar
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form
-                        className="flex flex-col gap-4"
-                        onSubmit={handleSubmit((values) => listarMutation.mutate(values.cpf))}
-                    >
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="cpf" required>
-                                CPF do inquilino
-                            </Label>
-                            <CpfInput id="cpf" {...register('cpf')} />
-                            {errors.cpf && (
-                                <p className="text-xs text-destructive">{errors.cpf.message}</p>
-                            )}
-                        </div>
-
-                        <Button type="submit" disabled={listarMutation.isPending}>
-                            {listarMutation.isPending ? 'Consultando...' : 'Consultar'}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+            <CpfSearchCard
+                title="Excluir informações"
+                description="Consulte o CPF da sua imobiliária"
+                isPending={listarMutation.isPending}
+                onSubmit={(cpf) => listarMutation.mutate(cpf)}
+            />
 
             {registros ? (
                 <Card>

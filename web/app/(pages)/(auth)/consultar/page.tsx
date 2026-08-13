@@ -1,35 +1,19 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { CpfInput } from '@/components/ui/cpf-input'
-import { Label } from '@/components/ui/label'
-import { formatCpf, isCpfComplete } from '@/lib/format-cpf'
+import { CpfSearchCard } from '@/components/cpf-search-card'
+import { formatCpf } from '@/lib/format-cpf'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
-
-const cpfSchema = z.object({
-    cpf: z.string().refine(isCpfComplete, 'Informe um CPF válido')
-})
-
-type CpfFormValues = z.infer<typeof cpfSchema>
 
 export default function ConsultarPage() {
     const [resultado, setResultado] = useState<ConsultaResult | null>(null)
     const [cpfConsultado, setCpfConsultado] = useState('')
     const [detalhes, setDetalhes] = useState<OcorrenciaDetalhe[] | null>(null)
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<CpfFormValues>({ resolver: zodResolver(cpfSchema) })
 
     const consultaMutation = useMutation({
         mutationFn: (cpf: string) => ocorrenciaService.consultar(cpf),
@@ -47,32 +31,12 @@ export default function ConsultarPage() {
 
     return (
         <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[360px_1fr]">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Consultar informações</CardTitle>
-                    <CardDescription>Informe o CPF do inquilino</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form
-                        className="flex flex-col gap-4"
-                        onSubmit={handleSubmit((values) => consultaMutation.mutate(values.cpf))}
-                    >
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="cpf" required>
-                                CPF do inquilino
-                            </Label>
-                            <CpfInput id="cpf" {...register('cpf')} />
-                            {errors.cpf && (
-                                <p className="text-xs text-destructive">{errors.cpf.message}</p>
-                            )}
-                        </div>
-
-                        <Button type="submit" disabled={consultaMutation.isPending}>
-                            {consultaMutation.isPending ? 'Consultando...' : 'Consultar'}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+            <CpfSearchCard
+                title="Consultar informações"
+                description="Informe o CPF do inquilino"
+                isPending={consultaMutation.isPending}
+                onSubmit={(cpf) => consultaMutation.mutate(cpf)}
+            />
 
             {resultado ? (
                 <Card>
