@@ -72,12 +72,12 @@ export default function UsuariosPage() {
                             className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                         >
                             <div>
-                                <p className="font-medium">
-                                    {usuario.nomeCompleto}{' '}
+                                <div className="flex items-center gap-2 font-medium">
+                                    {usuario.nomeCompleto}
                                     <Badge variant={usuario.status === 'ACTIVE' ? 'default' : 'outline'}>
                                         {usuario.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                                     </Badge>
-                                </p>
+                                </div>
                                 <p className="text-muted-foreground">
                                     {usuario.login} · {usuario.email}
                                 </p>
