@@ -49,7 +49,7 @@ export default function InserirPage() {
     })
 
     return (
-        <Card className="mx-auto max-w-md">
+        <Card className="mx-auto max-w-3xl">
             <CardHeader>
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de forma simples e objetiva</CardDescription>
@@ -62,26 +62,28 @@ export default function InserirPage() {
                         inserirMutation.mutate(values)
                     })}
                 >
-                    <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="nomeInquilinoInformado" required>
-                            Nome completo do inquilino
-                        </Label>
-                        <Input id="nomeInquilinoInformado" {...register('nomeInquilinoInformado')} />
-                        {errors.nomeInquilinoInformado && (
-                            <p className="text-xs text-destructive">
-                                {errors.nomeInquilinoInformado.message}
-                            </p>
-                        )}
-                    </div>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="nomeInquilinoInformado" required>
+                                Nome completo do inquilino
+                            </Label>
+                            <Input id="nomeInquilinoInformado" {...register('nomeInquilinoInformado')} />
+                            {errors.nomeInquilinoInformado && (
+                                <p className="text-xs text-destructive">
+                                    {errors.nomeInquilinoInformado.message}
+                                </p>
+                            )}
+                        </div>
 
-                    <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="cpfInquilino" required>
-                            CPF
-                        </Label>
-                        <CpfInput id="cpfInquilino" {...register('cpfInquilino')} />
-                        {errors.cpfInquilino && (
-                            <p className="text-xs text-destructive">{errors.cpfInquilino.message}</p>
-                        )}
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="cpfInquilino" required>
+                                CPF
+                            </Label>
+                            <CpfInput id="cpfInquilino" {...register('cpfInquilino')} />
+                            {errors.cpfInquilino && (
+                                <p className="text-xs text-destructive">{errors.cpfInquilino.message}</p>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-1.5">
@@ -113,7 +115,7 @@ export default function InserirPage() {
                         <Label htmlFor="descricao" required>
                             Descreva a ocorrência
                         </Label>
-                        <Textarea id="descricao" {...register('descricao')} />
+                        <Textarea id="descricao" className="min-h-40" {...register('descricao')} />
                         {errors.descricao && (
                             <p className="text-xs text-destructive">{errors.descricao.message}</p>
                         )}

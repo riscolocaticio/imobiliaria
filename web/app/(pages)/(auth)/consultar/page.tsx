@@ -46,7 +46,7 @@ export default function ConsultarPage() {
     })
 
     return (
-        <div className="mx-auto flex max-w-md flex-col gap-6">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_1fr]">
             <Card>
                 <CardHeader>
                     <CardTitle>Consultar informações</CardTitle>
@@ -74,24 +74,27 @@ export default function ConsultarPage() {
                 </CardContent>
             </Card>
 
-            {resultado && (
+            {resultado ? (
                 <Card>
-                    <CardHeader>
-                        <CardTitle>
-                            {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
-                        </CardTitle>
-                        <CardDescription>CPF {formatCpf(cpfConsultado)}</CardDescription>
-                    </CardHeader>
-                    {resultado.constamInformacoes && (
-                        <CardContent className="flex flex-col gap-4">
-                            <div className="flex flex-wrap gap-2">
+                    <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <CardTitle>
+                                {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
+                            </CardTitle>
+                            <CardDescription>CPF {formatCpf(cpfConsultado)}</CardDescription>
+                        </div>
+                        {resultado.constamInformacoes && (
+                            <div className="flex flex-wrap gap-2 sm:justify-end">
                                 {resultado.tipos.map((tipo) => (
                                     <Badge key={tipo} variant="secondary">
                                         {TIPO_OCORRENCIA_LABEL[tipo]}
                                     </Badge>
                                 ))}
                             </div>
-
+                        )}
+                    </CardHeader>
+                    {resultado.constamInformacoes && (
+                        <CardContent className="flex flex-col gap-4">
                             {!detalhes && (
                                 <Button
                                     variant="outline"
@@ -103,11 +106,11 @@ export default function ConsultarPage() {
                             )}
 
                             {detalhes && (
-                                <ul className="flex flex-col gap-3">
+                                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     {detalhes.map((ocorrencia) => (
                                         <li
                                             key={ocorrencia.id}
-                                            className="rounded-md border border-border p-3 text-sm"
+                                            className="rounded-md border border-border p-4 text-sm"
                                         >
                                             <p className="font-medium">
                                                 {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
@@ -124,6 +127,12 @@ export default function ConsultarPage() {
                             )}
                         </CardContent>
                     )}
+                </Card>
+            ) : (
+                <Card className="flex min-h-[220px] items-center justify-center border-dashed p-6 lg:min-h-[280px]">
+                    <p className="max-w-xs text-center text-sm text-muted-foreground">
+                        Informe um CPF para consultar as ocorrências registradas
+                    </p>
                 </Card>
             )}
         </div>

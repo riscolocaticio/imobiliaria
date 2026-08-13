@@ -43,7 +43,7 @@ export default function ExcluirPage() {
     })
 
     return (
-        <div className="mx-auto flex max-w-md flex-col gap-6">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_1fr]">
             <Card>
                 <CardHeader>
                     <CardTitle>Excluir informações</CardTitle>
@@ -73,7 +73,7 @@ export default function ExcluirPage() {
                 </CardContent>
             </Card>
 
-            {registros && (
+            {registros ? (
                 <Card>
                     <CardHeader>
                         <CardTitle>
@@ -87,18 +87,23 @@ export default function ExcluirPage() {
                             {registros.map((registro) => (
                                 <div
                                     key={registro.id}
-                                    className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                                    className="flex flex-col gap-4 rounded-md border border-border p-4 text-sm md:grid md:grid-cols-[1fr_auto] md:items-center"
                                 >
-                                    <div>
-                                        <p className="font-medium">{TIPO_OCORRENCIA_LABEL[registro.tipo]}</p>
+                                    <div className="flex flex-col gap-2 md:grid md:grid-cols-[200px_1fr] md:items-center md:gap-4">
+                                        <div>
+                                            <p className="font-medium">
+                                                {TIPO_OCORRENCIA_LABEL[registro.tipo]}
+                                            </p>
+                                            <p className="mt-1 text-xs text-muted-foreground">
+                                                {new Date(registro.createdAt).toLocaleDateString('pt-BR')}
+                                            </p>
+                                        </div>
                                         <p className="text-muted-foreground">{registro.descricao}</p>
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            {new Date(registro.createdAt).toLocaleDateString('pt-BR')}
-                                        </p>
                                     </div>
                                     <Button
                                         variant="destructive"
                                         size="sm"
+                                        className="w-full md:w-auto"
                                         disabled={excluirMutation.isPending && excluindoId === registro.id}
                                         onClick={() => {
                                             setExcluindoId(registro.id)
@@ -113,6 +118,12 @@ export default function ExcluirPage() {
                             ))}
                         </CardContent>
                     )}
+                </Card>
+            ) : (
+                <Card className="flex min-h-[220px] items-center justify-center border-dashed p-6 lg:min-h-[280px]">
+                    <p className="max-w-xs text-center text-sm text-muted-foreground">
+                        Informe um CPF para ver os registros administráveis pela sua imobiliária
+                    </p>
                 </Card>
             )}
         </div>

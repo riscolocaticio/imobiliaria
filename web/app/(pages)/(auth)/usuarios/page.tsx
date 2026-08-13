@@ -59,7 +59,7 @@ export default function UsuariosPage() {
     const usuariosAtivos = usuarios?.filter((usuario) => usuario.status === 'ACTIVE').length ?? 0
 
     return (
-        <div className="mx-auto flex max-w-2xl flex-col gap-6">
+        <div className="mx-auto flex max-w-4xl flex-col gap-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Usuários da imobiliária</CardTitle>
@@ -116,62 +116,68 @@ export default function UsuariosPage() {
                             className="flex flex-col gap-4"
                             onSubmit={handleSubmit((values) => criarMutation.mutate(values))}
                         >
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="nomeCompleto" required>
-                                    Nome completo
-                                </Label>
-                                <Input id="nomeCompleto" {...register('nomeCompleto')} />
-                                {errors.nomeCompleto && (
-                                    <p className="text-xs text-destructive">{errors.nomeCompleto.message}</p>
-                                )}
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="flex flex-col gap-1.5">
+                                    <Label htmlFor="nomeCompleto" required>
+                                        Nome completo
+                                    </Label>
+                                    <Input id="nomeCompleto" {...register('nomeCompleto')} />
+                                    {errors.nomeCompleto && (
+                                        <p className="text-xs text-destructive">{errors.nomeCompleto.message}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col gap-1.5">
+                                    <Label htmlFor="cpf" required>
+                                        CPF
+                                    </Label>
+                                    <CpfInput id="cpf" {...register('cpf')} />
+                                    {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
+                                </div>
                             </div>
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="cpf" required>
-                                    CPF
-                                </Label>
-                                <CpfInput id="cpf" {...register('cpf')} />
-                                {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="flex flex-col gap-1.5">
+                                    <Label htmlFor="dataNascimento" required>
+                                        Data de nascimento
+                                    </Label>
+                                    <Input id="dataNascimento" type="date" {...register('dataNascimento')} />
+                                    {errors.dataNascimento && (
+                                        <p className="text-xs text-destructive">{errors.dataNascimento.message}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col gap-1.5">
+                                    <Label htmlFor="email" required>
+                                        E-mail
+                                    </Label>
+                                    <Input id="email" type="email" {...register('email')} />
+                                    {errors.email && (
+                                        <p className="text-xs text-destructive">{errors.email.message}</p>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="dataNascimento" required>
-                                    Data de nascimento
-                                </Label>
-                                <Input id="dataNascimento" type="date" {...register('dataNascimento')} />
-                                {errors.dataNascimento && (
-                                    <p className="text-xs text-destructive">{errors.dataNascimento.message}</p>
-                                )}
-                            </div>
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="flex flex-col gap-1.5">
+                                    <Label htmlFor="login" required>
+                                        Login
+                                    </Label>
+                                    <Input id="login" {...register('login')} />
+                                    {errors.login && (
+                                        <p className="text-xs text-destructive">{errors.login.message}</p>
+                                    )}
+                                </div>
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="email" required>
-                                    E-mail
-                                </Label>
-                                <Input id="email" type="email" {...register('email')} />
-                                {errors.email && (
-                                    <p className="text-xs text-destructive">{errors.email.message}</p>
-                                )}
-                            </div>
-
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="login" required>
-                                    Login
-                                </Label>
-                                <Input id="login" {...register('login')} />
-                                {errors.login && (
-                                    <p className="text-xs text-destructive">{errors.login.message}</p>
-                                )}
-                            </div>
-
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="password" required>
-                                    Senha
-                                </Label>
-                                <Input id="password" type="password" {...register('password')} />
-                                {errors.password && (
-                                    <p className="text-xs text-destructive">{errors.password.message}</p>
-                                )}
+                                <div className="flex flex-col gap-1.5">
+                                    <Label htmlFor="password" required>
+                                        Senha
+                                    </Label>
+                                    <Input id="password" type="password" {...register('password')} />
+                                    {errors.password && (
+                                        <p className="text-xs text-destructive">{errors.password.message}</p>
+                                    )}
+                                </div>
                             </div>
 
                             {criarMutation.isError && (
