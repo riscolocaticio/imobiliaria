@@ -121,7 +121,7 @@ export function LogsTab() {
                 )}
 
                 {resultado && resultado.logs.length > 0 && (
-                    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                    <div className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
                         {resultado.logs.map((log) => (
                             <div
                                 key={log.id}

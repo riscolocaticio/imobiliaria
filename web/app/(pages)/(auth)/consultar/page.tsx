@@ -73,7 +73,7 @@ export default function ConsultarPage() {
                         )}
                     </CardHeader>
                     {resultado.constamInformacoes && (
-                        <CardContent className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
                             {!detalhes && (
                                 <Button
                                     variant="outline"

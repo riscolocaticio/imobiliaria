@@ -74,3 +74,17 @@
         background-clip: padding-box;
     }
 }
+
+@layer utilities {
+    .scroll-fade-y {
+        background-image:
+            linear-gradient(to bottom, hsl(var(--card)) 30%, transparent),
+            linear-gradient(to top, hsl(var(--card)) 30%, transparent),
+            radial-gradient(farthest-side at 50% 0, hsl(var(--foreground) / 0.14), transparent),
+            radial-gradient(farthest-side at 50% 100%, hsl(var(--foreground) / 0.14), transparent);
+        background-repeat: no-repeat;
+        background-position: top, bottom, top, bottom;
+        background-size: 100% 28px, 100% 28px, 100% 10px, 100% 10px;
+        background-attachment: local, local, scroll, scroll;
+    }
+}

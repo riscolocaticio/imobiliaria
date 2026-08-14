@@ -110,7 +110,7 @@ export default function UsuariosPage() {
                         </Button>
                     )}
                 </CardHeader>
-                <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
                     {usuarios?.map((usuario) => (
                         <div
                             key={usuario.id}

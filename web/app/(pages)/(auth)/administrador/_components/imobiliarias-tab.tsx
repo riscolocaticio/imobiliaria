@@ -116,7 +116,7 @@ export function ImobiliariasTab() {
                 </Button>
             </CardHeader>
 
-            <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+            <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
                 {imobiliarias?.map((imobiliaria) => (
                     <div
                         key={imobiliaria.id}
