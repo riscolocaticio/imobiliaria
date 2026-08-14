@@ -6,7 +6,6 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
@@ -53,19 +52,13 @@ export function LogsTab() {
 
     return (
         <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-            <CardHeader className="shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
                 <div>
                     <CardTitle>Logs de auditoria</CardTitle>
                     <CardDescription>{resultado?.total ?? 0} registro(s) no total</CardDescription>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    <div className="flex flex-col gap-1.5">
-                        <Label className="flex items-center gap-1.5">
-                            Imobiliária
-                            {mostrarCarregando && ultimaAcao === 'filtro' && (
-                                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                            )}
-                        </Label>
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="relative">
                         <Select
                             value={filtroImobiliaria}
                             onValueChange={aplicarFiltro(setFiltroImobiliaria)}
@@ -75,7 +68,7 @@ export function LogsTab() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={TODAS_IMOBILIARIAS}>Todas</SelectItem>
+                                <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
                                 {imobiliarias?.map((imobiliaria) => (
                                     <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
                                         {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
@@ -83,27 +76,27 @@ export function LogsTab() {
                                 ))}
                             </SelectContent>
                         </Select>
+                        {mostrarCarregando && ultimaAcao === 'filtro' && (
+                            <Loader2 className="pointer-events-none absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                        )}
                     </div>
-                    <div className="flex flex-col gap-1.5">
-                        <Label>Ação</Label>
-                        <Select
-                            value={filtroAcao}
-                            onValueChange={aplicarFiltro(setFiltroAcao)}
-                            disabled={mostrarCarregando}
-                        >
-                            <SelectTrigger className="w-52">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value={TODAS_ACOES}>Todas</SelectItem>
-                                {Object.entries(ACAO_LOG_LABEL).map(([valor, label]) => (
-                                    <SelectItem key={valor} value={valor}>
-                                        {label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Select
+                        value={filtroAcao}
+                        onValueChange={aplicarFiltro(setFiltroAcao)}
+                        disabled={mostrarCarregando}
+                    >
+                        <SelectTrigger className="w-52">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={TODAS_ACOES}>Todas as ações</SelectItem>
+                            {Object.entries(ACAO_LOG_LABEL).map(([valor, label]) => (
+                                <SelectItem key={valor} value={valor}>
+                                    {label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </CardHeader>
             <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
