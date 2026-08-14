@@ -334,7 +334,7 @@ export function UsuariosTab() {
                                 required
                                 error={formCriar.formState.errors.email?.message}
                             >
-                                <Input type="email" {...formCriar.register('email')} />
+                                <Input type="email" autoComplete="off" {...formCriar.register('email')} />
                             </FloatingField>
                         </div>
 
@@ -345,7 +345,7 @@ export function UsuariosTab() {
                                 required
                                 error={formCriar.formState.errors.login?.message}
                             >
-                                <Input {...formCriar.register('login')} />
+                                <Input autoComplete="off" {...formCriar.register('login')} />
                             </FloatingField>
                             <FloatingField
                                 label="Senha"
@@ -353,7 +353,11 @@ export function UsuariosTab() {
                                 required
                                 error={formCriar.formState.errors.password?.message}
                             >
-                                <Input type="password" {...formCriar.register('password')} />
+                                <Input
+                                    type="password"
+                                    autoComplete="new-password"
+                                    {...formCriar.register('password')}
+                                />
                             </FloatingField>
                         </div>
 
@@ -397,7 +401,7 @@ export function UsuariosTab() {
                                 htmlFor="email-editar"
                                 error={formEditar.formState.errors.email?.message}
                             >
-                                <Input type="email" {...formEditar.register('email')} />
+                                <Input type="email" autoComplete="off" {...formEditar.register('email')} />
                             </FloatingField>
                         </div>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -424,6 +428,7 @@ export function UsuariosTab() {
                             <FloatingField label="Nova senha (opcional)" htmlFor="password-editar">
                                 <Input
                                     type="password"
+                                    autoComplete="new-password"
                                     placeholder="Deixe em branco pra manter"
                                     {...formEditar.register('password')}
                                 />

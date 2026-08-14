@@ -201,7 +201,7 @@ export function ImobiliariasTab() {
                             required
                             error={formCriar.formState.errors.email?.message}
                         >
-                            <Input type="email" {...formCriar.register('email')} />
+                            <Input type="email" autoComplete="off" {...formCriar.register('email')} />
                         </FloatingField>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={criarMutation.isPending}>
@@ -250,7 +250,7 @@ export function ImobiliariasTab() {
                             required
                             error={formEditar.formState.errors.email?.message}
                         >
-                            <Input type="email" {...formEditar.register('email')} />
+                            <Input type="email" autoComplete="off" {...formEditar.register('email')} />
                         </FloatingField>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={atualizarMutation.isPending}>

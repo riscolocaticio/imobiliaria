@@ -222,7 +222,7 @@ export default function UsuariosPage() {
                             />
 
                             <FloatingField label="E-mail" htmlFor="email" required error={errors.email?.message}>
-                                <Input type="email" {...register('email')} />
+                                <Input type="email" autoComplete="off" {...register('email')} />
                             </FloatingField>
                         </div>
 
@@ -237,7 +237,7 @@ export default function UsuariosPage() {
                                 required
                                 error={errors.password?.message}
                             >
-                                <Input type="password" {...register('password')} />
+                                <Input type="password" autoComplete="new-password" {...register('password')} />
                             </FloatingField>
                         </div>
 
