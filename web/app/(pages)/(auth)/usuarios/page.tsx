@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
-import { DatePicker } from '@/components/ui/date-picker'
+import { DateInput } from '@/components/ui/date-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
@@ -25,7 +25,10 @@ import { usuarioService } from '@/app/services/usuario.service'
 const usuarioSchema = z.object({
     nomeCompleto: z.string().min(1, 'Informe o nome completo'),
     cpf: z.string().refine(isCpfComplete, 'Informe um CPF válido'),
-    dataNascimento: z.string().min(1, 'Informe a data de nascimento'),
+    dataNascimento: z
+        .string()
+        .min(1, 'Informe a data de nascimento')
+        .refine((valor) => new Date(valor) <= new Date(), 'Data de nascimento não pode ser no futuro'),
     email: z.string().email('E-mail inválido'),
     login: z.string().min(1, 'Informe o login'),
     password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres')
@@ -35,6 +38,7 @@ type UsuarioFormValues = z.infer<typeof usuarioSchema>
 
 export default function UsuariosPage() {
     const [dialogAberto, setDialogAberto] = useState(false)
+    const [formKey, setFormKey] = useState(0)
     const queryClient = useQueryClient()
 
     const { data: usuarios } = useQuery({
@@ -74,6 +78,7 @@ export default function UsuariosPage() {
             queryClient.invalidateQueries({ queryKey: ['usuarios'] })
             toast.success('Usuário criado com sucesso.')
             reset()
+            setFormKey((atual) => atual + 1)
             setDialogAberto(false)
         },
         onError: (error) => {
@@ -196,23 +201,25 @@ export default function UsuariosPage() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Controller
-                                    name="dataNascimento"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <DatePicker
-                                            id="dataNascimento"
+                            <Controller
+                                key={formKey}
+                                name="dataNascimento"
+                                control={control}
+                                render={({ field }) => (
+                                    <FloatingField
+                                        label="Data de nascimento"
+                                        htmlFor="dataNascimento"
+                                        required
+                                        error={errors.dataNascimento?.message}
+                                    >
+                                        <DateInput
                                             value={field.value}
                                             onChange={field.onChange}
-                                            placeholder="Data de nascimento"
+                                            placeholder="DD/MM/AAAA"
                                         />
-                                    )}
-                                />
-                                {errors.dataNascimento && (
-                                    <p className="text-xs text-destructive">{errors.dataNascimento.message}</p>
+                                    </FloatingField>
                                 )}
-                            </div>
+                            />
 
                             <FloatingField label="E-mail" htmlFor="email" required error={errors.email?.message}>
                                 <Input type="email" {...register('email')} />

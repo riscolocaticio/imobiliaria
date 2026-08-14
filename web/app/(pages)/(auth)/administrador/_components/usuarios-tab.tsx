@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
-import { DatePicker } from '@/components/ui/date-picker'
+import { DateInput } from '@/components/ui/date-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
@@ -26,7 +26,10 @@ const criarSchema = z.object({
     imobiliariaId: z.string().min(1, 'Selecione a imobiliária'),
     nomeCompleto: z.string().min(1, 'Informe o nome completo'),
     cpf: z.string().refine(isCpfComplete, 'Informe um CPF válido'),
-    dataNascimento: z.string().min(1, 'Informe a data de nascimento'),
+    dataNascimento: z
+        .string()
+        .min(1, 'Informe a data de nascimento')
+        .refine((valor) => new Date(valor) <= new Date(), 'Data de nascimento não pode ser no futuro'),
     email: z.string().email('E-mail inválido'),
     login: z.string().min(1, 'Informe o login'),
     password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres')
@@ -48,6 +51,7 @@ export function UsuariosTab() {
     const [dialogCriarAberto, setDialogCriarAberto] = useState(false)
     const [usuarioEditando, setUsuarioEditando] = useState<Usuario | null>(null)
     const [filtroImobiliaria, setFiltroImobiliaria] = useState<string>(TODAS_IMOBILIARIAS)
+    const [formCriarKey, setFormCriarKey] = useState(0)
     const queryClient = useQueryClient()
 
     const { data: imobiliarias } = useQuery({
@@ -94,6 +98,7 @@ export function UsuariosTab() {
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
             toast.success('Usuário criado com sucesso.')
             formCriar.reset()
+            setFormCriarKey((atual) => atual + 1)
             setDialogCriarAberto(false)
         },
         onError: (error) => {
@@ -265,7 +270,7 @@ export function UsuariosTab() {
                                 render={({ field }) => (
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger id="imobiliariaId">
-                                            <SelectValue placeholder="Imobiliária" />
+                                            <SelectValue placeholder="Selecione uma imobiliária" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {imobiliarias?.map((imobiliaria) => (
@@ -304,25 +309,25 @@ export function UsuariosTab() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Controller
-                                    name="dataNascimento"
-                                    control={formCriar.control}
-                                    render={({ field }) => (
-                                        <DatePicker
-                                            id="dataNascimento"
+                            <Controller
+                                key={formCriarKey}
+                                name="dataNascimento"
+                                control={formCriar.control}
+                                render={({ field }) => (
+                                    <FloatingField
+                                        label="Data de nascimento"
+                                        htmlFor="dataNascimento"
+                                        required
+                                        error={formCriar.formState.errors.dataNascimento?.message}
+                                    >
+                                        <DateInput
                                             value={field.value}
                                             onChange={field.onChange}
-                                            placeholder="Data de nascimento"
+                                            placeholder="DD/MM/AAAA"
                                         />
-                                    )}
-                                />
-                                {formCriar.formState.errors.dataNascimento && (
-                                    <p className="text-xs text-destructive">
-                                        {formCriar.formState.errors.dataNascimento.message}
-                                    </p>
+                                    </FloatingField>
                                 )}
-                            </div>
+                            />
                             <FloatingField
                                 label="E-mail"
                                 htmlFor="email"
@@ -403,7 +408,7 @@ export function UsuariosTab() {
                                     render={({ field }) => (
                                         <Select value={field.value} onValueChange={field.onChange}>
                                             <SelectTrigger id="imobiliariaId-editar">
-                                                <SelectValue placeholder="Imobiliária" />
+                                                <SelectValue placeholder="Selecione uma imobiliária" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {imobiliarias?.map((imobiliaria) => (
