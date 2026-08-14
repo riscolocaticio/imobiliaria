@@ -21,9 +21,6 @@ export class UsuarioUpdateUsecase {
         if (usuarioAtual.role !== 'MASTER' && usuario.imobiliariaId !== usuarioAtual.imobiliariaId) {
             throw new ForbiddenException('Usuário não pertence à sua imobiliária')
         }
-        if (usuario.role === 'MASTER' && input.status === 'INATIVO') {
-            throw new ForbiddenException('Não é possível desativar um usuário administrador da plataforma')
-        }
 
         const novaImobiliariaId =
             usuarioAtual.role === 'MASTER' && input.imobiliariaId

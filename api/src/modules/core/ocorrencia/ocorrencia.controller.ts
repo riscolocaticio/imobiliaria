@@ -6,11 +6,14 @@ import {
     Param,
     ParseIntPipe,
     Post,
+    Query,
     UseGuards
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { StatusOcorrencia, TipoOcorrencia } from '@prisma/client'
 import { CurrentUser } from '../../../infra/system/security/decorators/current-user.decorator'
 import { JwtAuthGuard } from '../../../infra/system/security/guards/jwt-auth.guard'
+import { MasterGuard } from '../../../infra/system/security/guards/master.guard'
 import { UsuarioFromJwtDto } from '../usuario/types/usuario-from-jwt.input'
 import { OcorrenciaCreateInput } from './types/ocorrencia-create.input'
 import { OcorrenciaConsultarPorCpfUsecase } from './usecases/ocorrencia-consultar-por-cpf.usecase'
@@ -18,6 +21,7 @@ import { OcorrenciaDetalharPorCpfUsecase } from './usecases/ocorrencia-detalhar-
 import { OcorrenciaExcluirUsecase } from './usecases/ocorrencia-excluir.usecase'
 import { OcorrenciaInserirUsecase } from './usecases/ocorrencia-inserir.usecase'
 import { OcorrenciaListarExcluiveisUsecase } from './usecases/ocorrencia-listar-excluiveis.usecase'
+import { OcorrenciaListarTodasUsecase } from './usecases/ocorrencia-listar-todas.usecase'
 
 @ApiTags('ocorrencia')
 @ApiBearerAuth()
@@ -29,8 +33,35 @@ export class OcorrenciaController {
         private readonly ocorrenciaDetalharPorCpfUsecase: OcorrenciaDetalharPorCpfUsecase,
         private readonly ocorrenciaInserirUsecase: OcorrenciaInserirUsecase,
         private readonly ocorrenciaListarExcluiveisUsecase: OcorrenciaListarExcluiveisUsecase,
+        private readonly ocorrenciaListarTodasUsecase: OcorrenciaListarTodasUsecase,
         private readonly ocorrenciaExcluirUsecase: OcorrenciaExcluirUsecase
     ) {}
+
+    @UseGuards(MasterGuard)
+    @Get('admin')
+    async listarTodas(
+        @Query('imobiliariaId') imobiliariaId?: string,
+        @Query('usuarioId') usuarioId?: string,
+        @Query('tipo') tipo?: TipoOcorrencia,
+        @Query('status') status?: StatusOcorrencia,
+        @Query('cpf') cpf?: string,
+        @Query('de') de?: string,
+        @Query('ate') ate?: string,
+        @Query('page') page?: string,
+        @Query('pageSize') pageSize?: string
+    ) {
+        return this.ocorrenciaListarTodasUsecase.execute({
+            imobiliariaId: imobiliariaId ? Number(imobiliariaId) : undefined,
+            usuarioId: usuarioId ? Number(usuarioId) : undefined,
+            tipo,
+            status,
+            cpf,
+            de: de ? new Date(de) : undefined,
+            ate: ate ? new Date(ate) : undefined,
+            page: page ? Number(page) : 1,
+            pageSize: pageSize ? Number(pageSize) : 50
+        })
+    }
 
     @Get('consulta/:cpf')
     async consultar(@CurrentUser() usuario: UsuarioFromJwtDto, @Param('cpf') cpf: string) {

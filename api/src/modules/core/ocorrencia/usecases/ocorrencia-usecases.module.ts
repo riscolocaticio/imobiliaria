@@ -5,6 +5,7 @@ import { OcorrenciaDetalharPorCpfUsecase } from './ocorrencia-detalhar-por-cpf.u
 import { OcorrenciaExcluirUsecase } from './ocorrencia-excluir.usecase'
 import { OcorrenciaInserirUsecase } from './ocorrencia-inserir.usecase'
 import { OcorrenciaListarExcluiveisUsecase } from './ocorrencia-listar-excluiveis.usecase'
+import { OcorrenciaListarTodasUsecase } from './ocorrencia-listar-todas.usecase'
 
 @Module({
     imports: [AuditLogModule],
@@ -13,6 +14,7 @@ import { OcorrenciaListarExcluiveisUsecase } from './ocorrencia-listar-excluivei
         OcorrenciaDetalharPorCpfUsecase,
         OcorrenciaInserirUsecase,
         OcorrenciaListarExcluiveisUsecase,
+        OcorrenciaListarTodasUsecase,
         OcorrenciaExcluirUsecase
     ],
     exports: [
@@ -20,6 +22,7 @@ import { OcorrenciaListarExcluiveisUsecase } from './ocorrencia-listar-excluivei
         OcorrenciaDetalharPorCpfUsecase,
         OcorrenciaInserirUsecase,
         OcorrenciaListarExcluiveisUsecase,
+        OcorrenciaListarTodasUsecase,
         OcorrenciaExcluirUsecase
     ]
 })
