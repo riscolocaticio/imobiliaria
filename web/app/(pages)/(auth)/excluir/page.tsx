@@ -1,12 +1,13 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { Clock, FolderOpen, Inbox, Loader2, Trash2 } from 'lucide-react'
+import { Clock, FolderOpen, Inbox, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -15,7 +16,7 @@ import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/
 
 export default function ExcluirPage() {
     const [registros, setRegistros] = useState<OcorrenciaExcluivel[] | null>(null)
-    const [excluindoId, setExcluindoId] = useState<number | null>(null)
+    const [registroParaExcluir, setRegistroParaExcluir] = useState<OcorrenciaExcluivel | null>(null)
 
     const listarMutation = useMutation({
         mutationFn: (cpf: string) => ocorrenciaService.listarExcluiveis(cpf),
@@ -29,11 +30,10 @@ export default function ExcluirPage() {
         mutationFn: (id: number) => ocorrenciaService.excluir(id),
         onSuccess: (_data, id) => {
             setRegistros((atual) => atual?.filter((registro) => registro.id !== id) ?? null)
-            setExcluindoId(null)
+            setRegistroParaExcluir(null)
             toast.success('Registro excluído com sucesso.')
         },
         onError: (error) => {
-            setExcluindoId(null)
             toast.error(getErrorMessage(error, 'Não foi possível excluir o registro.'))
         }
     })
@@ -110,18 +110,9 @@ export default function ExcluirPage() {
                                                 variant="destructive"
                                                 size="sm"
                                                 className="w-full"
-                                                disabled={excluirMutation.isPending && excluindoId === registro.id}
-                                                onClick={() => {
-                                                    setExcluindoId(registro.id)
-                                                    excluirMutation.mutate(registro.id)
-                                                }}
+                                                onClick={() => setRegistroParaExcluir(registro)}
                                             >
-                                                {mostrarCarregandoExclusao && excluindoId === registro.id && (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                )}
-                                                {mostrarCarregandoExclusao && excluindoId === registro.id
-                                                    ? 'Excluindo...'
-                                                    : 'Excluir'}
+                                                Excluir
                                             </Button>
                                         </li>
                                     )
@@ -140,6 +131,25 @@ export default function ExcluirPage() {
                     </p>
                 </Card>
             )}
+
+            <ConfirmDialog
+                open={registroParaExcluir !== null}
+                onOpenChange={(open) => !open && setRegistroParaExcluir(null)}
+                title="Excluir este registro?"
+                description={
+                    registroParaExcluir
+                        ? `A ocorrência de "${TIPO_OCORRENCIA_LABEL[registroParaExcluir.tipo]}" será excluída. Essa ação não pode ser desfeita.`
+                        : undefined
+                }
+                confirmLabel="Sim, excluir"
+                cancelLabel="Não"
+                loading={mostrarCarregandoExclusao}
+                onConfirm={() => {
+                    if (registroParaExcluir) {
+                        excluirMutation.mutate(registroParaExcluir.id)
+                    }
+                }}
+            />
         </div>
     )
 }
