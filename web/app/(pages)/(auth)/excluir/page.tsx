@@ -77,7 +77,7 @@ export default function ExcluirPage() {
 
                     {registros.length > 0 && (
                         <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
-                            <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                            <ul className="flex flex-col gap-4">
                                 {registros.map((registro) => {
                                     const Icon = TIPO_OCORRENCIA_ICON[registro.tipo]
                                     return (

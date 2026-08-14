@@ -92,7 +92,7 @@ export default function ConsultarPage() {
                                 )}
 
                                 {detalhes && (
-                                    <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                                    <ul className="flex flex-col gap-4">
                                         {detalhes.map((ocorrencia) => {
                                             const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
                                             return (
