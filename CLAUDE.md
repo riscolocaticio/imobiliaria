@@ -1,4 +1,4 @@
-# Plataforma de Risco Locatício — Monorepo
+# Safeloc — Monorepo
 
 ## Escopo de Leitura
 

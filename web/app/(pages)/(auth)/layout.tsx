@@ -51,7 +51,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <header className="shrink-0 border-b border-border bg-card">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                     <div>
-                        <p className="text-sm font-semibold">Plataforma de Risco Locatício</p>
+                        <p className="text-sm font-semibold">Safeloc</p>
                         <p className="text-xs text-muted-foreground">{usuario.nomeCompleto}</p>
                     </div>
 

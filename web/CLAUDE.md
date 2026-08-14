@@ -1,4 +1,4 @@
-# web — Frontend da Plataforma de Risco Locatício
+# web — Frontend do Safeloc
 
 ## Escopo de Leitura
 

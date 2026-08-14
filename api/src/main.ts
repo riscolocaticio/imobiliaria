@@ -35,7 +35,7 @@ export async function createApp(): Promise<INestApplication> {
 
     if (process.env.NODE_ENV !== 'production') {
         const config = new DocumentBuilder()
-            .setTitle('Plataforma de Risco Locatício API')
+            .setTitle('Safeloc API')
             .setDescription('Documentação da API')
             .setVersion('1.0')
             .addBearerAuth()

@@ -40,7 +40,7 @@ async function main() {
         update: {},
         create: {
             razaoSocial: 'Administração da Plataforma',
-            nomeFantasia: 'Plataforma de Risco Locatício',
+            nomeFantasia: 'Safeloc',
             cnpj: '00000000000272',
             email: 'admin@plataformariscolocaticio.com.br'
         }

@@ -6,7 +6,7 @@ import { ReactQueryProvider } from './providers/react-query-provider'
 import { UserProvider } from './providers/user-provider'
 
 export const metadata: Metadata = {
-    title: 'Plataforma de Risco Locatício',
+    title: 'Safeloc',
     description: 'Consulta, inserção e exclusão de ocorrências locatícias'
 }
 

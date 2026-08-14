@@ -57,7 +57,7 @@ function LoginForm() {
     return (
         <Card className="w-full max-w-sm">
             <CardHeader>
-                <CardTitle>Plataforma de Risco Locatício</CardTitle>
+                <CardTitle>Safeloc</CardTitle>
                 <CardDescription>Acesso restrito a imobiliárias cadastradas</CardDescription>
             </CardHeader>
             <CardContent>

@@ -1,4 +1,4 @@
-# api — Backend da Plataforma de Risco Locatício
+# api — Backend do Safeloc
 
 ## Escopo de Leitura
 
