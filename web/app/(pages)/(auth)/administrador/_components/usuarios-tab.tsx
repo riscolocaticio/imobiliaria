@@ -229,7 +229,7 @@ export function UsuariosTab() {
                                     </Button>
                                     {usuario.role !== 'MASTER' && (
                                         <Button
-                                            variant="outline"
+                                            variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
                                             size="sm"
                                             disabled={statusMutation.isPending}
                                             onClick={() =>

@@ -134,7 +134,7 @@ export default function UsuariosPage() {
                                 </p>
                             </div>
                             <Button
-                                variant="outline"
+                                variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
                                 size="sm"
                                 disabled={statusMutation.isPending}
                                 onClick={() =>
