@@ -18,12 +18,12 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
                 month: 'flex flex-col gap-3',
                 caption: 'flex justify-center pt-1 relative items-center w-full',
                 caption_label: 'text-sm font-semibold',
-                caption_dropdowns: 'flex items-center justify-center gap-2',
+                caption_dropdowns: 'flex w-full items-center justify-center gap-2',
                 vhidden: 'sr-only',
                 dropdown_month:
-                    'relative inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-ring',
+                    'relative flex flex-1 items-center justify-center gap-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-ring',
                 dropdown_year:
-                    'relative inline-flex items-center gap-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-ring',
+                    'relative flex flex-1 items-center justify-center gap-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-ring',
                 dropdown: 'absolute inset-0 z-10 h-full w-full cursor-pointer appearance-none opacity-0',
                 dropdown_icon: 'h-3.5 w-3.5 opacity-60',
                 nav: 'flex items-center gap-1',
