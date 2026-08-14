@@ -1,16 +1,17 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { FolderOpen, Inbox, Loader2, Trash2 } from 'lucide-react'
+import { Clock, FolderOpen, Inbox, Loader2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
-import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
+import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
 export default function ExcluirPage() {
     const [registros, setRegistros] = useState<OcorrenciaExcluivel[] | null>(null)
@@ -59,6 +60,9 @@ export default function ExcluirPage() {
                                 ? 'Nenhum registro administrável por sua imobiliária'
                                 : 'Registros da sua imobiliária'}
                         </CardTitle>
+                        {registros.length > 0 && (
+                            <CardDescription>{registros.length} registro(s) encontrado(s)</CardDescription>
+                        )}
                     </CardHeader>
                     {registros.length === 0 && (
                         <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
@@ -72,42 +76,57 @@ export default function ExcluirPage() {
                     )}
 
                     {registros.length > 0 && (
-                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                            {registros.map((registro) => (
-                                <div
-                                    key={registro.id}
-                                    className="flex flex-col gap-4 rounded-md border border-border p-4 text-sm md:grid md:grid-cols-[1fr_auto] md:items-center"
-                                >
-                                    <div className="flex flex-col gap-2 md:grid md:grid-cols-[200px_1fr] md:items-center md:gap-4">
-                                        <div>
-                                            <p className="font-medium">
-                                                {TIPO_OCORRENCIA_LABEL[registro.tipo]}
-                                            </p>
-                                            <p className="mt-1 text-xs text-muted-foreground">
-                                                {new Date(registro.createdAt).toLocaleDateString('pt-BR')}
-                                            </p>
-                                        </div>
-                                        <p className="text-muted-foreground">{registro.descricao}</p>
-                                    </div>
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        className="w-full md:w-auto"
-                                        disabled={excluirMutation.isPending && excluindoId === registro.id}
-                                        onClick={() => {
-                                            setExcluindoId(registro.id)
-                                            excluirMutation.mutate(registro.id)
-                                        }}
-                                    >
-                                        {mostrarCarregandoExclusao && excluindoId === registro.id && (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        )}
-                                        {mostrarCarregandoExclusao && excluindoId === registro.id
-                                            ? 'Excluindo...'
-                                            : 'Excluir'}
-                                    </Button>
-                                </div>
-                            ))}
+                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
+                            <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                                {registros.map((registro) => {
+                                    const Icon = TIPO_OCORRENCIA_ICON[registro.tipo]
+                                    return (
+                                        <li
+                                            key={registro.id}
+                                            className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                                        >
+                                            <div className="flex items-start gap-4">
+                                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                                    <Icon className="h-5 w-5" />
+                                                </span>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                                        <Badge variant="secondary">
+                                                            {TIPO_OCORRENCIA_LABEL[registro.tipo]}
+                                                        </Badge>
+                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                            <Clock className="h-3 w-3" />
+                                                            {new Date(registro.createdAt).toLocaleDateString(
+                                                                'pt-BR'
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-3 text-sm leading-relaxed text-foreground">
+                                                        {registro.descricao}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                className="w-full"
+                                                disabled={excluirMutation.isPending && excluindoId === registro.id}
+                                                onClick={() => {
+                                                    setExcluindoId(registro.id)
+                                                    excluirMutation.mutate(registro.id)
+                                                }}
+                                            >
+                                                {mostrarCarregandoExclusao && excluindoId === registro.id && (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                )}
+                                                {mostrarCarregandoExclusao && excluindoId === registro.id
+                                                    ? 'Excluindo...'
+                                                    : 'Excluir'}
+                                            </Button>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
                         </CardContent>
                     )}
                 </Card>

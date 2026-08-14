@@ -1,23 +1,30 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { FileSearch, Loader2, Search, ShieldCheck } from 'lucide-react'
+import { Building2, Clock, FileSearch, Loader2, Search, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfSearchCard } from '@/components/cpf-search-card'
 import { formatCpf } from '@/lib/format-cpf'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
-import { TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
+import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
 
 export default function ConsultarPage() {
     const [resultado, setResultado] = useState<ConsultaResult | null>(null)
     const [cpfConsultado, setCpfConsultado] = useState('')
     const [detalhes, setDetalhes] = useState<OcorrenciaDetalhe[] | null>(null)
+
+    const detalhesMutation = useMutation({
+        mutationFn: (cpf: string) => ocorrenciaService.detalhar(cpf),
+        onSuccess: (data) => setDetalhes(data),
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível carregar os detalhes.'))
+        }
+    })
 
     const consultaMutation = useMutation({
         mutationFn: (cpf: string) => ocorrenciaService.consultar(cpf),
@@ -25,17 +32,12 @@ export default function ConsultarPage() {
             setResultado(data)
             setCpfConsultado(cpf)
             setDetalhes(null)
+            if (data.constamInformacoes) {
+                detalhesMutation.mutate(cpf)
+            }
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível consultar o CPF. Tente novamente.'))
-        }
-    })
-
-    const detalhesMutation = useMutation({
-        mutationFn: () => ocorrenciaService.detalhar(cpfConsultado),
-        onSuccess: (data) => setDetalhes(data),
-        onError: (error) => {
-            toast.error(getErrorMessage(error, 'Não foi possível carregar os detalhes.'))
         }
     })
 
@@ -60,7 +62,10 @@ export default function ConsultarPage() {
                             <CardTitle>
                                 {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
                             </CardTitle>
-                            <CardDescription>CPF {formatCpf(cpfConsultado)}</CardDescription>
+                            <CardDescription>
+                                CPF {formatCpf(cpfConsultado)}
+                                {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
+                            </CardDescription>
                         </div>
                         {resultado.constamInformacoes && (
                             <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -84,43 +89,59 @@ export default function ConsultarPage() {
                     )}
 
                     {resultado.constamInformacoes && (
-                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
                             {!detalhes && (
-                                <Button
-                                    variant="outline"
-                                    className="w-fit"
-                                    onClick={() => detalhesMutation.mutate()}
-                                    disabled={detalhesMutation.isPending}
-                                >
+                                <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
                                     {mostrarCarregandoDetalhes && (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                                     )}
-                                    {mostrarCarregandoDetalhes ? 'Carregando...' : 'Ver detalhes'}
-                                </Button>
+                                    <p className="text-sm text-muted-foreground">Carregando detalhes...</p>
+                                </div>
                             )}
 
                             {detalhes && (
-                                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                    {detalhes.map((ocorrencia) => (
-                                        <li
-                                            key={ocorrencia.id}
-                                            className="rounded-md border border-border p-4 text-sm"
-                                        >
-                                            <p className="font-medium">
-                                                {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
-                                            </p>
-                                            <p className="mt-1 text-muted-foreground">{ocorrencia.descricao}</p>
-                                            <p className="mt-2 text-xs text-muted-foreground">
-                                                {ocorrencia.imobiliaria.nomeFantasia ??
-                                                    ocorrencia.imobiliaria.razaoSocial}{' '}
-                                                · {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                                                {new Date(ocorrencia.createdAt).toLocaleTimeString('pt-BR', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
-                                            </p>
-                                        </li>
-                                    ))}
+                                <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                                    {detalhes.map((ocorrencia) => {
+                                        const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
+                                        return (
+                                            <li
+                                                key={ocorrencia.id}
+                                                className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                                        <Icon className="h-5 w-5" />
+                                                    </span>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                                            <Badge variant="secondary">
+                                                                {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
+                                                            </Badge>
+                                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                                <Clock className="h-3 w-3" />
+                                                                {new Date(ocorrencia.createdAt).toLocaleDateString(
+                                                                    'pt-BR'
+                                                                )}{' '}
+                                                                às{' '}
+                                                                {new Date(ocorrencia.createdAt).toLocaleTimeString(
+                                                                    'pt-BR',
+                                                                    { hour: '2-digit', minute: '2-digit' }
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                        <p className="mt-3 text-sm leading-relaxed text-foreground">
+                                                            {ocorrencia.descricao}
+                                                        </p>
+                                                        <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                            <Building2 className="h-3.5 w-3.5" />
+                                                            {ocorrencia.imobiliaria.nomeFantasia ??
+                                                                ocorrencia.imobiliaria.razaoSocial}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
                                 </ul>
                             )}
                         </CardContent>
