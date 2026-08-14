@@ -101,7 +101,6 @@ export default function UsuariosPage() {
                 <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
                     <div>
                         <CardTitle>Usuários da imobiliária</CardTitle>
-                        <CardDescription>Cada imobiliária pode ter no máximo 2 usuários ativos</CardDescription>
                     </div>
                     {usuariosAtivos < 2 && (
                         <Button onClick={() => setDialogAberto(true)}>

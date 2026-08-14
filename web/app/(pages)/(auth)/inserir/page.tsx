@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -32,6 +33,8 @@ const inserirSchema = z.object({
 type InserirFormValues = z.infer<typeof inserirSchema>
 
 export default function InserirPage() {
+    const [formKey, setFormKey] = useState(0)
+
     const {
         register,
         control,
@@ -54,6 +57,7 @@ export default function InserirPage() {
         onSuccess: () => {
             toast.success('Ocorrência registrada com sucesso.')
             reset()
+            setFormKey((atual) => atual + 1)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível registrar a ocorrência. Tente novamente.'))
@@ -102,6 +106,7 @@ export default function InserirPage() {
                                 Tipo de ocorrência
                             </Label>
                             <Controller
+                                key={formKey}
                                 name="tipo"
                                 control={control}
                                 render={({ field }) => (
