@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { FolderOpen, Loader2, Trash2 } from 'lucide-react'
+import { FolderOpen, Inbox, Loader2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -60,6 +60,17 @@ export default function ExcluirPage() {
                                 : 'Registros da sua imobiliária'}
                         </CardTitle>
                     </CardHeader>
+                    {registros.length === 0 && (
+                        <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                                <Inbox className="h-7 w-7 text-muted-foreground" />
+                            </span>
+                            <p className="max-w-xs text-center text-sm text-muted-foreground">
+                                Nenhuma ocorrência registrada por sua imobiliária foi encontrada para esse CPF.
+                            </p>
+                        </CardContent>
+                    )}
+
                     {registros.length > 0 && (
                         <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
                             {registros.map((registro) => (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { FileSearch, Loader2, Search } from 'lucide-react'
+import { FileSearch, Loader2, Search, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -72,6 +72,17 @@ export default function ConsultarPage() {
                             </div>
                         )}
                     </CardHeader>
+                    {!resultado.constamInformacoes && (
+                        <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                                <ShieldCheck className="h-7 w-7 text-primary" />
+                            </span>
+                            <p className="max-w-xs text-center text-sm text-muted-foreground">
+                                Nenhuma ocorrência foi registrada para esse CPF até o momento.
+                            </p>
+                        </CardContent>
+                    )}
+
                     {resultado.constamInformacoes && (
                         <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
                             {!detalhes && (
