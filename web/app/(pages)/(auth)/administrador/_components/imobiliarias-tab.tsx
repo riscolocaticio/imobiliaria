@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CnpjInput } from '@/components/ui/cnpj-input'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
@@ -41,6 +42,9 @@ type EditarFormValues = z.infer<typeof editarSchema>
 export function ImobiliariasTab() {
     const [dialogCriarAberto, setDialogCriarAberto] = useState(false)
     const [imobiliariaEditando, setImobiliariaEditando] = useState<ImobiliariaComContagem | null>(null)
+    const [imobiliariaParaDesativar, setImobiliariaParaDesativar] = useState<ImobiliariaComContagem | null>(
+        null
+    )
     const queryClient = useQueryClient()
 
     const { data: imobiliarias } = useQuery({
@@ -89,6 +93,7 @@ export function ImobiliariasTab() {
                 variables.input.status ? 'Status atualizado com sucesso.' : 'Imobiliária atualizada com sucesso.'
             )
             setImobiliariaEditando(null)
+            setImobiliariaParaDesativar(null)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível atualizar a imobiliária.'))
@@ -149,12 +154,16 @@ export function ImobiliariasTab() {
                                 variant={imobiliaria.status === 'ATIVO' ? 'destructive' : 'outline'}
                                 size="sm"
                                 disabled={atualizarMutation.isPending}
-                                onClick={() =>
-                                    atualizarMutation.mutate({
-                                        id: imobiliaria.id,
-                                        input: { status: imobiliaria.status === 'ATIVO' ? 'INATIVO' : 'ATIVO' }
-                                    })
-                                }
+                                onClick={() => {
+                                    if (imobiliaria.status === 'ATIVO') {
+                                        setImobiliariaParaDesativar(imobiliaria)
+                                    } else {
+                                        atualizarMutation.mutate({
+                                            id: imobiliaria.id,
+                                            input: { status: 'ATIVO' }
+                                        })
+                                    }
+                                }}
                             >
                                 {mostrarCarregandoAtualizar &&
                                     atualizarMutation.variables?.id === imobiliaria.id && (
@@ -265,6 +274,28 @@ export function ImobiliariasTab() {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <ConfirmDialog
+                open={imobiliariaParaDesativar !== null}
+                onOpenChange={(open) => !open && setImobiliariaParaDesativar(null)}
+                title="Excluir esta imobiliária?"
+                description={
+                    imobiliariaParaDesativar
+                        ? `${imobiliariaParaDesativar.nomeFantasia ?? imobiliariaParaDesativar.razaoSocial} e seus usuários vão perder o acesso ao sistema até ser reativada.`
+                        : undefined
+                }
+                confirmLabel="Sim, excluir"
+                cancelLabel="Não"
+                loading={mostrarCarregandoAtualizar}
+                onConfirm={() => {
+                    if (imobiliariaParaDesativar) {
+                        atualizarMutation.mutate({
+                            id: imobiliariaParaDesativar.id,
+                            input: { status: 'INATIVO' }
+                        })
+                    }
+                }}
+            />
         </>
     )
 }

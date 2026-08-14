@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { DateInput } from '@/components/ui/date-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -20,7 +21,7 @@ import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
-import { usuarioService } from '@/app/services/usuario.service'
+import { usuarioService, Usuario } from '@/app/services/usuario.service'
 
 const usuarioSchema = z.object({
     nomeCompleto: z.string().min(1, 'Informe o nome completo'),
@@ -39,6 +40,7 @@ type UsuarioFormValues = z.infer<typeof usuarioSchema>
 export default function UsuariosPage() {
     const [dialogAberto, setDialogAberto] = useState(false)
     const [formKey, setFormKey] = useState(0)
+    const [usuarioParaDesativar, setUsuarioParaDesativar] = useState<Usuario | null>(null)
     const queryClient = useQueryClient()
 
     const { data: usuarios } = useQuery({
@@ -92,6 +94,7 @@ export default function UsuariosPage() {
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['usuarios'] })
             toast.success(variables.status === 'ATIVO' ? 'Usuário reativado.' : 'Usuário desativado.')
+            setUsuarioParaDesativar(null)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível atualizar o usuário.'))
@@ -138,12 +141,13 @@ export default function UsuariosPage() {
                             variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
                             size="sm"
                             disabled={statusMutation.isPending}
-                            onClick={() =>
-                                statusMutation.mutate({
-                                    id: usuario.id,
-                                    status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                })
-                            }
+                            onClick={() => {
+                                if (usuario.status === 'ATIVO') {
+                                    setUsuarioParaDesativar(usuario)
+                                } else {
+                                    statusMutation.mutate({ id: usuario.id, status: 'ATIVO' })
+                                }
+                            }}
                         >
                             {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -253,6 +257,25 @@ export default function UsuariosPage() {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <ConfirmDialog
+                open={usuarioParaDesativar !== null}
+                onOpenChange={(open) => !open && setUsuarioParaDesativar(null)}
+                title="Desativar este usuário?"
+                description={
+                    usuarioParaDesativar
+                        ? `${usuarioParaDesativar.nomeCompleto} não vai conseguir mais acessar o sistema até ser reativado.`
+                        : undefined
+                }
+                confirmLabel="Sim, desativar"
+                cancelLabel="Não"
+                loading={mostrarCarregandoStatus}
+                onConfirm={() => {
+                    if (usuarioParaDesativar) {
+                        statusMutation.mutate({ id: usuarioParaDesativar.id, status: 'INATIVO' })
+                    }
+                }}
+            />
         </div>
     )
 }
