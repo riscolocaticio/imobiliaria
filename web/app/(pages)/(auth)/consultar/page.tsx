@@ -57,20 +57,15 @@ export default function ConsultarPage() {
 
             {resultado ? (
                 <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-                    <CardHeader className="shrink-0">
-                        <CardTitle>
-                            {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
-                        </CardTitle>
-                        <CardDescription>
-                            CPF {formatCpf(cpfConsultado)}
-                            {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
-                        </CardDescription>
-                    </CardHeader>
                     {!resultado.constamInformacoes && (
-                        <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
-                            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                                <ShieldCheck className="h-7 w-7 text-primary" />
+                        <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6">
+                            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                                <ShieldCheck className="h-10 w-10 text-primary" />
                             </span>
+                            <div className="flex flex-col items-center gap-1.5">
+                                <p className="text-xl font-bold tracking-tight">Não constam informações</p>
+                                <p className="text-sm text-muted-foreground">CPF {formatCpf(cpfConsultado)}</p>
+                            </div>
                             <p className="max-w-xs text-center text-sm text-muted-foreground">
                                 Nenhuma ocorrência foi registrada para esse CPF até o momento.
                             </p>
@@ -78,62 +73,73 @@ export default function ConsultarPage() {
                     )}
 
                     {resultado.constamInformacoes && (
-                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
-                            {!detalhes && (
-                                <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
-                                    {mostrarCarregandoDetalhes && (
-                                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                    )}
-                                    <p className="text-sm text-muted-foreground">Carregando detalhes...</p>
-                                </div>
-                            )}
+                        <>
+                            <CardHeader className="shrink-0">
+                                <CardTitle>CONSTAM INFORMAÇÕES</CardTitle>
+                                <CardDescription>
+                                    CPF {formatCpf(cpfConsultado)}
+                                    {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
+                                {!detalhes && (
+                                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                                        {mostrarCarregandoDetalhes && (
+                                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                        )}
+                                        <p className="text-sm text-muted-foreground">Carregando detalhes...</p>
+                                    </div>
+                                )}
 
-                            {detalhes && (
-                                <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                                    {detalhes.map((ocorrencia) => {
-                                        const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
-                                        return (
-                                            <li
-                                                key={ocorrencia.id}
-                                                className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
-                                            >
-                                                <div className="flex items-start gap-4">
-                                                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                                                        <Icon className="h-5 w-5" />
-                                                    </span>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="flex flex-wrap items-center justify-between gap-2">
-                                                            <Badge variant="secondary">
-                                                                {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
-                                                            </Badge>
-                                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                                <Clock className="h-3 w-3" />
-                                                                {new Date(ocorrencia.createdAt).toLocaleDateString(
-                                                                    'pt-BR'
-                                                                )}{' '}
-                                                                às{' '}
-                                                                {new Date(ocorrencia.createdAt).toLocaleTimeString(
-                                                                    'pt-BR',
-                                                                    { hour: '2-digit', minute: '2-digit' }
-                                                                )}
-                                                            </span>
+                                {detalhes && (
+                                    <ul className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                                        {detalhes.map((ocorrencia) => {
+                                            const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
+                                            return (
+                                                <li
+                                                    key={ocorrencia.id}
+                                                    className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                                                >
+                                                    <div className="flex items-start gap-4">
+                                                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                                            <Icon className="h-5 w-5" />
+                                                        </span>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                                <Badge variant="secondary">
+                                                                    {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
+                                                                </Badge>
+                                                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                                    <Clock className="h-3 w-3" />
+                                                                    {new Date(
+                                                                        ocorrencia.createdAt
+                                                                    ).toLocaleDateString('pt-BR')}{' '}
+                                                                    às{' '}
+                                                                    {new Date(
+                                                                        ocorrencia.createdAt
+                                                                    ).toLocaleTimeString('pt-BR', {
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit'
+                                                                    })}
+                                                                </span>
+                                                            </div>
+                                                            <p className="mt-3 text-sm leading-relaxed text-foreground">
+                                                                {ocorrencia.descricao}
+                                                            </p>
+                                                            <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                                                                <Building2 className="h-3.5 w-3.5" />
+                                                                {ocorrencia.imobiliaria.nomeFantasia ??
+                                                                    ocorrencia.imobiliaria.razaoSocial}
+                                                            </p>
                                                         </div>
-                                                        <p className="mt-3 text-sm leading-relaxed text-foreground">
-                                                            {ocorrencia.descricao}
-                                                        </p>
-                                                        <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                            <Building2 className="h-3.5 w-3.5" />
-                                                            {ocorrencia.imobiliaria.nomeFantasia ??
-                                                                ocorrencia.imobiliaria.razaoSocial}
-                                                        </p>
                                                     </div>
-                                                </div>
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
-                            )}
-                        </CardContent>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                )}
+                            </CardContent>
+                        </>
                     )}
                 </Card>
             ) : (
