@@ -57,25 +57,14 @@ export default function ConsultarPage() {
 
             {resultado ? (
                 <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-                    <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
-                        <div>
-                            <CardTitle>
-                                {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
-                            </CardTitle>
-                            <CardDescription>
-                                CPF {formatCpf(cpfConsultado)}
-                                {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
-                            </CardDescription>
-                        </div>
-                        {resultado.constamInformacoes && (
-                            <div className="flex flex-wrap gap-2 sm:justify-end">
-                                {resultado.tipos.map((tipo) => (
-                                    <Badge key={tipo} variant="secondary">
-                                        {TIPO_OCORRENCIA_LABEL[tipo]}
-                                    </Badge>
-                                ))}
-                            </div>
-                        )}
+                    <CardHeader className="shrink-0">
+                        <CardTitle>
+                            {resultado.constamInformacoes ? 'CONSTAM INFORMAÇÕES' : 'NÃO CONSTAM INFORMAÇÕES'}
+                        </CardTitle>
+                        <CardDescription>
+                            CPF {formatCpf(cpfConsultado)}
+                            {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
+                        </CardDescription>
                     </CardHeader>
                     {!resultado.constamInformacoes && (
                         <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
