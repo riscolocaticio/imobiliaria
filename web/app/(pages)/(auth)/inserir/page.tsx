@@ -43,6 +43,8 @@ export default function InserirPage() {
         formState: { errors }
     } = useForm<InserirFormValues>({
         resolver: zodResolver(inserirSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: {
             nomeInquilinoInformado: '',
             cpfInquilino: '',

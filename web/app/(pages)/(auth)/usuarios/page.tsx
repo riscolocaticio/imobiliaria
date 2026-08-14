@@ -56,6 +56,8 @@ export default function UsuariosPage() {
         formState: { errors }
     } = useForm<UsuarioFormValues>({
         resolver: zodResolver(usuarioSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: {
             nomeCompleto: '',
             cpf: '',

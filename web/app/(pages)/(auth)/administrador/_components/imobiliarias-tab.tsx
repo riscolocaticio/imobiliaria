@@ -50,11 +50,15 @@ export function ImobiliariasTab() {
 
     const formCriar = useForm<CriarFormValues>({
         resolver: zodResolver(criarSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: { razaoSocial: '', nomeFantasia: '', cnpj: '', email: '' }
     })
 
     const formEditar = useForm<EditarFormValues>({
         resolver: zodResolver(editarSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: { razaoSocial: '', nomeFantasia: '', email: '' }
     })
 

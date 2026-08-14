@@ -66,6 +66,8 @@ export function UsuariosTab() {
 
     const formCriar = useForm<CriarFormValues>({
         resolver: zodResolver(criarSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: {
             imobiliariaId: '',
             nomeCompleto: '',
@@ -79,6 +81,8 @@ export function UsuariosTab() {
 
     const formEditar = useForm<EditarFormValues>({
         resolver: zodResolver(editarSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
         defaultValues: { imobiliariaId: '', nomeCompleto: '', email: '', password: '' }
     })
 

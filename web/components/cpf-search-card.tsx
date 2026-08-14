@@ -41,7 +41,11 @@ export function CpfSearchCard({
         register,
         handleSubmit,
         formState: { errors }
-    } = useForm<CpfFormValues>({ resolver: zodResolver(cpfSchema) })
+    } = useForm<CpfFormValues>({
+        resolver: zodResolver(cpfSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit'
+    })
     const mostrarCarregando = useDelayedLoading(isPending)
 
     return (

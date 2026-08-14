@@ -40,7 +40,11 @@ function LoginForm() {
         register,
         handleSubmit,
         formState: { errors }
-    } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) })
+    } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit'
+    })
 
     async function onSubmit(values: LoginFormValues) {
         setEnviando(true)
