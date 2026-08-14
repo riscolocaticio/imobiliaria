@@ -1,7 +1,7 @@
 'use client'
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { FileClock, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -107,43 +107,52 @@ export function LogsTab() {
                 </div>
             </CardHeader>
             <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
-                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                    {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
+                {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
 
-                    {resultado?.logs.map((log) => (
-                        <div
-                            key={log.id}
-                            className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
-                        >
-                            <Badge variant="secondary" className="w-fit">
-                                {ACAO_LOG_LABEL[log.acao] ?? log.acao}
-                            </Badge>
-                            <div>
-                                <p className="font-medium">
-                                    {log.usuario.nomeCompleto}{' '}
-                                    <span className="font-normal text-muted-foreground">
-                                        ({log.usuario.login})
-                                    </span>
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
-                                    {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
+                {resultado && resultado.logs.length === 0 && (
+                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                            <FileClock className="h-7 w-7 text-muted-foreground" />
+                        </span>
+                        <p className="max-w-xs text-center text-sm text-muted-foreground">
+                            Nenhum log encontrado com esses filtros.
+                        </p>
+                    </div>
+                )}
+
+                {resultado && resultado.logs.length > 0 && (
+                    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                        {resultado.logs.map((log) => (
+                            <div
+                                key={log.id}
+                                className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
+                            >
+                                <Badge variant="secondary" className="w-fit">
+                                    {ACAO_LOG_LABEL[log.acao] ?? log.acao}
+                                </Badge>
+                                <div>
+                                    <p className="font-medium">
+                                        {log.usuario.nomeCompleto}{' '}
+                                        <span className="font-normal text-muted-foreground">
+                                            ({log.usuario.login})
+                                        </span>
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
+                                        {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
+                                    </p>
+                                </div>
+                                <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
+                                    {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                                    {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
                                 </p>
                             </div>
-                            <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
-                                {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                                {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}
-                            </p>
-                        </div>
-                    ))}
-
-                    {resultado && resultado.logs.length === 0 && (
-                        <p className="text-sm text-muted-foreground">Nenhum log encontrado com esses filtros.</p>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {resultado && totalPaginas > 1 && (
                     <div className="flex shrink-0 items-center justify-between border-t border-border pt-3">

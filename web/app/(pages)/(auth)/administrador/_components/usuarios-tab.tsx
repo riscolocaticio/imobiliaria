@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2, Plus, Users } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -179,51 +179,69 @@ export function UsuariosTab() {
                 </div>
             </CardHeader>
 
-            <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                {usuarios?.map((usuario) => (
-                    <div
-                        key={usuario.id}
-                        className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
-                    >
-                        <div>
-                            <div className="flex items-center gap-2 font-medium">
-                                {usuario.nomeCompleto}
-                                <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
-                                    {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                                </Badge>
-                                {usuario.role === 'MASTER' && <Badge variant="secondary">Master</Badge>}
-                            </div>
-                            <p className="text-muted-foreground">
-                                {usuario.login} · {usuario.email}
-                                {usuario.imobiliaria &&
-                                    ` · ${usuario.imobiliaria.nomeFantasia ?? usuario.imobiliaria.razaoSocial}`}
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => iniciarEdicao(usuario)}>
-                                Editar
-                            </Button>
-                            {usuario.role !== 'MASTER' && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={statusMutation.isPending}
-                                    onClick={() =>
-                                        statusMutation.mutate({
-                                            id: usuario.id,
-                                            status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                        })
-                                    }
-                                >
-                                    {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    )}
-                                    {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
-                                </Button>
-                            )}
-                        </div>
+            <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
+                {usuarios && usuarios.length === 0 && (
+                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                            <Users className="h-7 w-7 text-muted-foreground" />
+                        </span>
+                        <p className="max-w-xs text-center text-sm text-muted-foreground">
+                            Nenhum usuário encontrado com esse filtro.
+                        </p>
                     </div>
-                ))}
+                )}
+
+                {usuarios && usuarios.length > 0 && (
+                    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                        {usuarios.map((usuario) => (
+                            <div
+                                key={usuario.id}
+                                className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                            >
+                                <div>
+                                    <div className="flex items-center gap-2 font-medium">
+                                        {usuario.nomeCompleto}
+                                        <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                            {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                                        </Badge>
+                                        {usuario.role === 'MASTER' && (
+                                            <Badge variant="secondary">Master</Badge>
+                                        )}
+                                    </div>
+                                    <p className="text-muted-foreground">
+                                        {usuario.login} · {usuario.email}
+                                        {usuario.imobiliaria &&
+                                            ` · ${usuario.imobiliaria.nomeFantasia ?? usuario.imobiliaria.razaoSocial}`}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => iniciarEdicao(usuario)}>
+                                        Editar
+                                    </Button>
+                                    {usuario.role !== 'MASTER' && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            disabled={statusMutation.isPending}
+                                            onClick={() =>
+                                                statusMutation.mutate({
+                                                    id: usuario.id,
+                                                    status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
+                                                })
+                                            }
+                                        >
+                                            {mostrarCarregandoStatus &&
+                                                statusMutation.variables?.id === usuario.id && (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                )}
+                                            {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </CardContent>
 
             <Dialog open={dialogCriarAberto} onOpenChange={setDialogCriarAberto}>
