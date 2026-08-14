@@ -149,54 +149,52 @@ export function OcorrenciasTab() {
                 </>
             }
         >
-            <ul className="flex flex-col gap-4">
-                {resultado?.ocorrencias.map((ocorrencia) => {
-                    const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
-                    return (
-                        <li key={ocorrencia.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
-                            <div className="flex items-start gap-4">
-                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                                    <Icon className="h-5 w-5" />
-                                </span>
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <Badge variant="secondary">{TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}</Badge>
-                                            {ocorrencia.status === 'EXCLUIDA' && (
-                                                <Badge variant="outline">Excluída</Badge>
-                                            )}
-                                        </div>
-                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                            <Clock className="h-3 w-3" />
-                                            {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                                            {new Date(ocorrencia.createdAt).toLocaleTimeString('pt-BR', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </span>
+            {resultado?.ocorrencias.map((ocorrencia) => {
+                const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
+                return (
+                    <div key={ocorrencia.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                        <div className="flex items-start gap-4">
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                <Icon className="h-5 w-5" />
+                            </span>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <Badge variant="secondary">{TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}</Badge>
+                                        {ocorrencia.status === 'EXCLUIDA' && (
+                                            <Badge variant="outline">Excluída</Badge>
+                                        )}
                                     </div>
-                                    <p className="mt-2 text-sm font-medium">
-                                        {formatCpf(ocorrencia.cpfInquilino)} · {ocorrencia.nomeInquilinoInformado}
-                                    </p>
-                                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                                        {ocorrencia.descricao}
-                                    </p>
-                                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                                        <span className="flex items-center gap-1.5">
-                                            <Building2 className="h-3.5 w-3.5" />
-                                            {ocorrencia.imobiliaria.nomeFantasia ?? ocorrencia.imobiliaria.razaoSocial}
-                                        </span>
-                                        <span className="flex items-center gap-1.5">
-                                            <User className="h-3.5 w-3.5" />
-                                            {ocorrencia.usuario.nomeCompleto} ({ocorrencia.usuario.login})
-                                        </span>
-                                    </div>
+                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Clock className="h-3 w-3" />
+                                        {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                                        {new Date(ocorrencia.createdAt).toLocaleTimeString('pt-BR', {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                                <p className="mt-2 text-sm font-medium">
+                                    {formatCpf(ocorrencia.cpfInquilino)} · {ocorrencia.nomeInquilinoInformado}
+                                </p>
+                                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                                    {ocorrencia.descricao}
+                                </p>
+                                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1.5">
+                                        <Building2 className="h-3.5 w-3.5" />
+                                        {ocorrencia.imobiliaria.nomeFantasia ?? ocorrencia.imobiliaria.razaoSocial}
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                        <User className="h-3.5 w-3.5" />
+                                        {ocorrencia.usuario.nomeCompleto} ({ocorrencia.usuario.login})
+                                    </span>
                                 </div>
                             </div>
-                        </li>
-                    )
-                })}
-            </ul>
+                        </div>
+                    </div>
+                )
+            })}
         </ListagemCard>
     )
 }

@@ -118,7 +118,7 @@ export function LogsTab() {
             {resultado?.logs.map((log) => (
                 <div
                     key={log.id}
-                    className="mb-3 grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm last:mb-0 md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
+                    className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
                 >
                     <Badge variant="secondary" className="w-fit">
                         {ACAO_LOG_LABEL[log.acao] ?? log.acao}

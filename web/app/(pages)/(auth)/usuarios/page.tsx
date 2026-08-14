@@ -121,7 +121,7 @@ export default function UsuariosPage() {
                 {usuarios?.map((usuario) => (
                     <div
                         key={usuario.id}
-                        className="mb-3 flex flex-col gap-2 rounded-md border border-border p-3 text-sm last:mb-0 sm:flex-row sm:items-center sm:justify-between"
+                        className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
                             <div className="flex items-center gap-2 font-medium">

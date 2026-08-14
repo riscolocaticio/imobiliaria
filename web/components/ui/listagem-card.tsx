@@ -39,7 +39,7 @@ const ListagemCard = ({
 }: ListagemCardProps) => {
     return (
         <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-            <CardHeader className="shrink-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
                 <div>
                     <CardTitle>{title}</CardTitle>
                     {description && <CardDescription>{description}</CardDescription>}
@@ -59,7 +59,9 @@ const ListagemCard = ({
                 )}
 
                 {!isLoading && !isEmpty && (
-                    <div className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">{children}</div>
+                    <div className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                        {children}
+                    </div>
                 )}
 
                 {pagination && pagination.totalPaginas > 1 && (
