@@ -2,19 +2,19 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2, Plus, Users } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { DateInput } from '@/components/ui/date-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
+import { ListagemCard } from '@/components/ui/listagem-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
@@ -104,55 +104,55 @@ export default function UsuariosPage() {
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-                <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
-                    <div>
-                        <CardTitle>Usuários da imobiliária</CardTitle>
-                    </div>
-                    {usuariosAtivos < 2 && (
+            <ListagemCard
+                title="Usuários da imobiliária"
+                isEmpty={usuarios?.length === 0}
+                emptyIcon={Users}
+                emptyMessage="Nenhum usuário cadastrado."
+                headerActions={
+                    usuariosAtivos < 2 ? (
                         <Button onClick={() => setDialogAberto(true)}>
                             <Plus className="h-4 w-4" />
                             Adicionar usuário
                         </Button>
-                    )}
-                </CardHeader>
-                <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                    {usuarios?.map((usuario) => (
-                        <div
-                            key={usuario.id}
-                            className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
-                        >
-                            <div>
-                                <div className="flex items-center gap-2 font-medium">
-                                    {usuario.nomeCompleto}
-                                    <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
-                                        {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                                    </Badge>
-                                </div>
-                                <p className="text-muted-foreground">
-                                    {usuario.login} · {usuario.email}
-                                </p>
+                    ) : undefined
+                }
+            >
+                {usuarios?.map((usuario) => (
+                    <div
+                        key={usuario.id}
+                        className="mb-3 flex flex-col gap-2 rounded-md border border-border p-3 text-sm last:mb-0 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <div>
+                            <div className="flex items-center gap-2 font-medium">
+                                {usuario.nomeCompleto}
+                                <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                    {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                                </Badge>
                             </div>
-                            <Button
-                                variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
-                                size="sm"
-                                disabled={statusMutation.isPending}
-                                onClick={() =>
-                                    statusMutation.mutate({
-                                        id: usuario.id,
-                                        status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                    })
-                                }
-                            >
-                                {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                )}
-                                {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
-                            </Button>
+                            <p className="text-muted-foreground">
+                                {usuario.login} · {usuario.email}
+                            </p>
                         </div>
-                    ))}
-                </CardContent>
-            </Card>
+                        <Button
+                            variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
+                            size="sm"
+                            disabled={statusMutation.isPending}
+                            onClick={() =>
+                                statusMutation.mutate({
+                                    id: usuario.id,
+                                    status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
+                                })
+                            }
+                        >
+                            {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            )}
+                            {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
+                        </Button>
+                    </div>
+                ))}
+            </ListagemCard>
 
             <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
                 <DialogContent>

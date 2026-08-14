@@ -1,6 +1,6 @@
 'use client'
 
-import { Building2, FileClock, Users } from 'lucide-react'
+import { Building2, FileClock, FileSearch, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -8,11 +8,13 @@ import { useUser } from '@/app/providers/user-provider'
 import { ROUTES } from '@/shared/enums/routes.enum'
 import { ImobiliariasTab } from './_components/imobiliarias-tab'
 import { UsuariosTab } from './_components/usuarios-tab'
+import { OcorrenciasTab } from './_components/ocorrencias-tab'
 import { LogsTab } from './_components/logs-tab'
 
 const ABAS = [
     { id: 'imobiliarias', label: 'Imobiliárias', icon: Building2 },
     { id: 'usuarios', label: 'Usuários', icon: Users },
+    { id: 'ocorrencias', label: 'Ocorrências', icon: FileSearch },
     { id: 'logs', label: 'Logs', icon: FileClock }
 ] as const
 
@@ -38,8 +40,8 @@ export default function AdministradorPage() {
             <div className="shrink-0">
                 <h1 className="text-2xl font-bold tracking-tight">Administrador</h1>
                 <p className="text-sm text-muted-foreground">
-                    Gerencie imobiliárias, usuários de qualquer imobiliária e acompanhe todos os
-                    logs de auditoria da plataforma
+                    Gerencie imobiliárias, usuários de qualquer imobiliária, acompanhe todas as
+                    ocorrências registradas e os logs de auditoria da plataforma
                 </p>
             </div>
 
@@ -68,6 +70,7 @@ export default function AdministradorPage() {
             <div className="min-h-0 flex-1">
                 {aba === 'imobiliarias' && <ImobiliariasTab />}
                 {aba === 'usuarios' && <UsuariosTab />}
+                {aba === 'ocorrencias' && <OcorrenciasTab />}
                 {aba === 'logs' && <LogsTab />}
             </div>
         </div>

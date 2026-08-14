@@ -2,18 +2,18 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus } from 'lucide-react'
+import { Building2, Loader2, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CnpjInput } from '@/components/ui/cnpj-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
+import { ListagemCard } from '@/components/ui/listagem-card'
 import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -108,23 +108,24 @@ export function ImobiliariasTab() {
     }
 
     return (
-        <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-            <CardHeader className="shrink-0 flex-row items-center justify-between gap-4 space-y-0">
-                <div>
-                    <CardTitle>Imobiliárias cadastradas</CardTitle>
-                    <CardDescription>{imobiliarias?.length ?? 0} imobiliária(s)</CardDescription>
-                </div>
-                <Button onClick={() => setDialogCriarAberto(true)}>
-                    <Plus className="h-4 w-4" />
-                    Nova imobiliária
-                </Button>
-            </CardHeader>
-
-            <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+        <>
+            <ListagemCard
+                title="Imobiliárias cadastradas"
+                description={`${imobiliarias?.length ?? 0} imobiliária(s)`}
+                isEmpty={imobiliarias?.length === 0}
+                emptyIcon={Building2}
+                emptyMessage="Nenhuma imobiliária cadastrada."
+                headerActions={
+                    <Button onClick={() => setDialogCriarAberto(true)}>
+                        <Plus className="h-4 w-4" />
+                        Nova imobiliária
+                    </Button>
+                }
+            >
                 {imobiliarias?.map((imobiliaria) => (
                     <div
                         key={imobiliaria.id}
-                        className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                        className="mb-3 flex flex-col gap-2 rounded-md border border-border p-3 text-sm last:mb-0 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
                             <div className="flex items-center gap-2 font-medium">
@@ -164,7 +165,7 @@ export function ImobiliariasTab() {
                         </div>
                     </div>
                 ))}
-            </CardContent>
+            </ListagemCard>
 
             <Dialog open={dialogCriarAberto} onOpenChange={setDialogCriarAberto}>
                 <DialogContent>
@@ -264,6 +265,6 @@ export function ImobiliariasTab() {
                     </form>
                 </DialogContent>
             </Dialog>
-        </Card>
+        </>
     )
 }

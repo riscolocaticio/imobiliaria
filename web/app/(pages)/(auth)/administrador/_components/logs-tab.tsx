@@ -4,8 +4,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { FileClock, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { ListagemCard } from '@/components/ui/listagem-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
@@ -51,13 +50,29 @@ export function LogsTab() {
     }
 
     return (
-        <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-            <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
-                <div>
-                    <CardTitle>Logs de auditoria</CardTitle>
-                    <CardDescription>{resultado?.total ?? 0} registro(s) no total</CardDescription>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
+        <ListagemCard
+            title="Logs de auditoria"
+            description={`${resultado?.total ?? 0} registro(s) no total`}
+            isLoading={isLoading}
+            isEmpty={resultado?.logs.length === 0}
+            emptyIcon={FileClock}
+            emptyMessage="Nenhum log encontrado com esses filtros."
+            pagination={{
+                page,
+                totalPaginas,
+                mostrarCarregando,
+                ultimaAcao,
+                onAnterior: () => {
+                    setUltimaAcao('anterior')
+                    setPage((p) => p - 1)
+                },
+                onProxima: () => {
+                    setUltimaAcao('proxima')
+                    setPage((p) => p + 1)
+                }
+            }}
+            headerActions={
+                <>
                     <div className="relative">
                         <Select
                             value={filtroImobiliaria}
@@ -97,92 +112,36 @@ export function LogsTab() {
                             ))}
                         </SelectContent>
                     </Select>
-                </div>
-            </CardHeader>
-            <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
-                {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
-
-                {resultado && resultado.logs.length === 0 && (
-                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
-                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                            <FileClock className="h-7 w-7 text-muted-foreground" />
-                        </span>
-                        <p className="max-w-xs text-center text-sm text-muted-foreground">
-                            Nenhum log encontrado com esses filtros.
+                </>
+            }
+        >
+            {resultado?.logs.map((log) => (
+                <div
+                    key={log.id}
+                    className="mb-3 grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm last:mb-0 md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
+                >
+                    <Badge variant="secondary" className="w-fit">
+                        {ACAO_LOG_LABEL[log.acao] ?? log.acao}
+                    </Badge>
+                    <div>
+                        <p className="font-medium">
+                            {log.usuario.nomeCompleto}{' '}
+                            <span className="font-normal text-muted-foreground">({log.usuario.login})</span>
                         </p>
-                    </div>
-                )}
-
-                {resultado && resultado.logs.length > 0 && (
-                    <div className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                        {resultado.logs.map((log) => (
-                            <div
-                                key={log.id}
-                                className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
-                            >
-                                <Badge variant="secondary" className="w-fit">
-                                    {ACAO_LOG_LABEL[log.acao] ?? log.acao}
-                                </Badge>
-                                <div>
-                                    <p className="font-medium">
-                                        {log.usuario.nomeCompleto}{' '}
-                                        <span className="font-normal text-muted-foreground">
-                                            ({log.usuario.login})
-                                        </span>
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
-                                        {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
-                                    </p>
-                                </div>
-                                <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
-                                    {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                                    {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {resultado && totalPaginas > 1 && (
-                    <div className="flex shrink-0 items-center justify-between border-t border-border pt-3">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={page <= 1 || mostrarCarregando}
-                            onClick={() => {
-                                setUltimaAcao('anterior')
-                                setPage((p) => p - 1)
-                            }}
-                        >
-                            {mostrarCarregando && ultimaAcao === 'anterior' && (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            )}
-                            Anterior
-                        </Button>
                         <p className="text-xs text-muted-foreground">
-                            Página {page} de {totalPaginas}
+                            {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
+                            {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
                         </p>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={page >= totalPaginas || mostrarCarregando}
-                            onClick={() => {
-                                setUltimaAcao('proxima')
-                                setPage((p) => p + 1)
-                            }}
-                        >
-                            {mostrarCarregando && ultimaAcao === 'proxima' && (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            )}
-                            Próxima
-                        </Button>
                     </div>
-                )}
-            </CardContent>
-        </Card>
+                    <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
+                        {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                        {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                    </p>
+                </div>
+            ))}
+        </ListagemCard>
     )
 }

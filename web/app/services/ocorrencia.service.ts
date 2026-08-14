@@ -29,6 +29,34 @@ export interface OcorrenciaCreateInput {
     descricao: string
 }
 
+export interface OcorrenciaAdmin {
+    id: number
+    cpfInquilino: string
+    nomeInquilinoInformado: string
+    tipo: TipoOcorrencia
+    descricao: string
+    status: 'ATIVA' | 'EXCLUIDA'
+    createdAt: string
+    imobiliaria: { id: number; nomeFantasia: string | null; razaoSocial: string }
+    usuario: { id: number; nomeCompleto: string; login: string }
+}
+
+export interface OcorrenciaAdminListResult {
+    ocorrencias: OcorrenciaAdmin[]
+    total: number
+    page: number
+    pageSize: number
+}
+
+export interface OcorrenciaAdminFiltros {
+    imobiliariaId?: number
+    tipo?: TipoOcorrencia
+    status?: 'ATIVA' | 'EXCLUIDA'
+    cpf?: string
+    page?: number
+    pageSize?: number
+}
+
 export const ocorrenciaService = {
     async consultar(cpf: string): Promise<ConsultaResult> {
         const { data } = await apiClient.get<ConsultaResult>(`/ocorrencias/consulta/${cpf}`)
@@ -53,5 +81,12 @@ export const ocorrenciaService = {
 
     async excluir(id: number): Promise<void> {
         await apiClient.delete(`/ocorrencias/${id}`)
+    },
+
+    async listarTodasAdmin(filtros: OcorrenciaAdminFiltros): Promise<OcorrenciaAdminListResult> {
+        const { data } = await apiClient.get<OcorrenciaAdminListResult>('/ocorrencias/admin', {
+            params: filtros
+        })
+        return data
     }
 }

@@ -9,12 +9,12 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { DateInput } from '@/components/ui/date-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
+import { ListagemCard } from '@/components/ui/listagem-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
@@ -152,106 +152,87 @@ export function UsuariosTab() {
     }
 
     return (
-        <Card className="flex h-full min-h-0 flex-col overflow-hidden">
-            <CardHeader className="shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <CardTitle>Usuários</CardTitle>
-                    <CardDescription>{usuarios?.length ?? 0} usuário(s)</CardDescription>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <div className="relative">
-                        <Select
-                            value={filtroImobiliaria}
-                            onValueChange={setFiltroImobiliaria}
-                            disabled={mostrarCarregandoFiltro}
-                        >
-                            <SelectTrigger className="w-56">
-                                <SelectValue placeholder="Filtrar por imobiliária" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
-                                {imobiliarias?.map((imobiliaria) => (
-                                    <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
-                                        {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {mostrarCarregandoFiltro && (
-                            <Loader2 className="pointer-events-none absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-                        )}
-                    </div>
-                    <Button onClick={() => setDialogCriarAberto(true)}>
-                        <Plus className="h-4 w-4" />
-                        Novo usuário
-                    </Button>
-                </div>
-            </CardHeader>
-
-            <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
-                {usuarios && usuarios.length === 0 && (
-                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
-                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                            <Users className="h-7 w-7 text-muted-foreground" />
-                        </span>
-                        <p className="max-w-xs text-center text-sm text-muted-foreground">
-                            Nenhum usuário encontrado com esse filtro.
-                        </p>
-                    </div>
-                )}
-
-                {usuarios && usuarios.length > 0 && (
-                    <div className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                        {usuarios.map((usuario) => (
-                            <div
-                                key={usuario.id}
-                                className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+        <>
+            <ListagemCard
+                title="Usuários"
+                description={`${usuarios?.length ?? 0} usuário(s)`}
+                isEmpty={usuarios?.length === 0}
+                emptyIcon={Users}
+                emptyMessage="Nenhum usuário encontrado com esse filtro."
+                headerActions={
+                    <>
+                        <div className="relative">
+                            <Select
+                                value={filtroImobiliaria}
+                                onValueChange={setFiltroImobiliaria}
+                                disabled={mostrarCarregandoFiltro}
                             >
-                                <div>
-                                    <div className="flex items-center gap-2 font-medium">
-                                        {usuario.nomeCompleto}
-                                        <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
-                                            {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                                        </Badge>
-                                        {usuario.role === 'MASTER' && (
-                                            <Badge variant="secondary">Master</Badge>
-                                        )}
-                                    </div>
-                                    <p className="text-muted-foreground">
-                                        {usuario.login} · {usuario.email}
-                                        {usuario.imobiliaria &&
-                                            ` · ${usuario.imobiliaria.nomeFantasia ?? usuario.imobiliaria.razaoSocial}`}
-                                    </p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" onClick={() => iniciarEdicao(usuario)}>
-                                        Editar
-                                    </Button>
-                                    {usuario.role !== 'MASTER' && (
-                                        <Button
-                                            variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
-                                            size="sm"
-                                            disabled={statusMutation.isPending}
-                                            onClick={() =>
-                                                statusMutation.mutate({
-                                                    id: usuario.id,
-                                                    status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
-                                                })
-                                            }
-                                        >
-                                            {mostrarCarregandoStatus &&
-                                                statusMutation.variables?.id === usuario.id && (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                )}
-                                            {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
-                                        </Button>
-                                    )}
-                                </div>
+                                <SelectTrigger className="w-56">
+                                    <SelectValue placeholder="Filtrar por imobiliária" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
+                                    {imobiliarias?.map((imobiliaria) => (
+                                        <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
+                                            {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {mostrarCarregandoFiltro && (
+                                <Loader2 className="pointer-events-none absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                            )}
+                        </div>
+                        <Button onClick={() => setDialogCriarAberto(true)}>
+                            <Plus className="h-4 w-4" />
+                            Novo usuário
+                        </Button>
+                    </>
+                }
+            >
+                {usuarios?.map((usuario) => (
+                    <div
+                        key={usuario.id}
+                        className="mb-3 flex flex-col gap-2 rounded-md border border-border p-3 text-sm last:mb-0 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <div>
+                            <div className="flex items-center gap-2 font-medium">
+                                {usuario.nomeCompleto}
+                                <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                    {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                                </Badge>
+                                {usuario.role === 'MASTER' && <Badge variant="secondary">Master</Badge>}
                             </div>
-                        ))}
+                            <p className="text-muted-foreground">
+                                {usuario.login} · {usuario.email}
+                                {usuario.imobiliaria &&
+                                    ` · ${usuario.imobiliaria.nomeFantasia ?? usuario.imobiliaria.razaoSocial}`}
+                            </p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => iniciarEdicao(usuario)}>
+                                Editar
+                            </Button>
+                            <Button
+                                variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
+                                size="sm"
+                                disabled={statusMutation.isPending}
+                                onClick={() =>
+                                    statusMutation.mutate({
+                                        id: usuario.id,
+                                        status: usuario.status === 'ATIVO' ? 'INATIVO' : 'ATIVO'
+                                    })
+                                }
+                            >
+                                {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                )}
+                                {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                            </Button>
+                        </div>
                     </div>
-                )}
-            </CardContent>
+                ))}
+            </ListagemCard>
 
             <Dialog open={dialogCriarAberto} onOpenChange={setDialogCriarAberto}>
                 <DialogContent>
@@ -446,6 +427,6 @@ export function UsuariosTab() {
                     </form>
                 </DialogContent>
             </Dialog>
-        </Card>
+        </>
     )
 }
