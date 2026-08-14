@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
-import { Label } from '@/components/ui/label'
+import { FloatingField } from '@/components/ui/floating-field'
 import { cn } from '@/lib/utils'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -67,20 +67,18 @@ export function CpfSearchCard({
                     noValidate
                     onSubmit={handleSubmit((values) => onSubmit(values.cpf))}
                 >
-                    <div className="flex flex-col gap-2">
-                        <Label htmlFor="cpf" required>
-                            CPF do inquilino
-                        </Label>
-                        <div className="relative">
-                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <CpfInput
-                                id="cpf"
-                                className={cn('h-11 pl-9', errors.cpf && 'border-destructive')}
-                                {...register('cpf')}
-                            />
-                        </div>
-                        {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
-                    </div>
+                    <FloatingField
+                        label="CPF do inquilino"
+                        htmlFor="cpf"
+                        required
+                        error={errors.cpf?.message}
+                        icon={Search}
+                    >
+                        <CpfInput
+                            className={cn('h-11', errors.cpf && 'border-destructive')}
+                            {...register('cpf')}
+                        />
+                    </FloatingField>
 
                     <Button type="submit" size="lg" disabled={isPending}>
                         {mostrarCarregando && <Loader2 className="h-4 w-4 animate-spin" />}

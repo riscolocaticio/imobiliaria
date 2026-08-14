@@ -13,8 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { CpfInput } from '@/components/ui/cpf-input'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
@@ -160,7 +160,6 @@ export default function UsuariosPage() {
                         onSubmit={handleSubmit((values) => criarMutation.mutate(values))}
                     >
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="imobiliaria">Imobiliária</Label>
                             <Select
                                 value={imobiliariaAtual ? String(imobiliariaAtual.id) : undefined}
                                 onValueChange={() => {}}
@@ -182,30 +181,22 @@ export default function UsuariosPage() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="nomeCompleto" required>
-                                    Nome completo
-                                </Label>
-                                <Input id="nomeCompleto" {...register('nomeCompleto')} />
-                                {errors.nomeCompleto && (
-                                    <p className="text-xs text-destructive">{errors.nomeCompleto.message}</p>
-                                )}
-                            </div>
+                            <FloatingField
+                                label="Nome completo"
+                                htmlFor="nomeCompleto"
+                                required
+                                error={errors.nomeCompleto?.message}
+                            >
+                                <Input {...register('nomeCompleto')} />
+                            </FloatingField>
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="cpf" required>
-                                    CPF
-                                </Label>
-                                <CpfInput id="cpf" {...register('cpf')} />
-                                {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
-                            </div>
+                            <FloatingField label="CPF" htmlFor="cpf" required error={errors.cpf?.message}>
+                                <CpfInput {...register('cpf')} />
+                            </FloatingField>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="dataNascimento" required>
-                                    Data de nascimento
-                                </Label>
                                 <Controller
                                     name="dataNascimento"
                                     control={control}
@@ -214,6 +205,7 @@ export default function UsuariosPage() {
                                             id="dataNascimento"
                                             value={field.value}
                                             onChange={field.onChange}
+                                            placeholder="Data de nascimento"
                                         />
                                     )}
                                 />
@@ -222,37 +214,24 @@ export default function UsuariosPage() {
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="email" required>
-                                    E-mail
-                                </Label>
-                                <Input id="email" type="email" {...register('email')} />
-                                {errors.email && (
-                                    <p className="text-xs text-destructive">{errors.email.message}</p>
-                                )}
-                            </div>
+                            <FloatingField label="E-mail" htmlFor="email" required error={errors.email?.message}>
+                                <Input type="email" {...register('email')} />
+                            </FloatingField>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="login" required>
-                                    Usuário
-                                </Label>
-                                <Input id="login" {...register('login')} />
-                                {errors.login && (
-                                    <p className="text-xs text-destructive">{errors.login.message}</p>
-                                )}
-                            </div>
+                            <FloatingField label="Usuário" htmlFor="login" required error={errors.login?.message}>
+                                <Input {...register('login')} />
+                            </FloatingField>
 
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="password" required>
-                                    Senha
-                                </Label>
-                                <Input id="password" type="password" {...register('password')} />
-                                {errors.password && (
-                                    <p className="text-xs text-destructive">{errors.password.message}</p>
-                                )}
-                            </div>
+                            <FloatingField
+                                label="Senha"
+                                htmlFor="password"
+                                required
+                                error={errors.password?.message}
+                            >
+                                <Input type="password" {...register('password')} />
+                            </FloatingField>
                         </div>
 
                         <div className="flex gap-2">

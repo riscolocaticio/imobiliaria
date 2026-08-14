@@ -9,8 +9,8 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { authService } from '@/app/services/auth.service'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ROUTES } from '@/shared/enums/routes.enum'
@@ -81,28 +81,16 @@ function LoginForm() {
                 </CardHeader>
                 <CardContent>
                     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="login" required>
-                                Login
-                            </Label>
-                            <Input id="login" autoComplete="username" {...register('login')} />
-                            {errors.login && (
-                                <p className="text-xs text-destructive">{errors.login.message}</p>
-                            )}
-                        </div>
+                        <FloatingField label="Login" htmlFor="login" required error={errors.login?.message}>
+                            <Input autoComplete="username" {...register('login')} />
+                        </FloatingField>
 
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="password" required>
-                                Senha
-                            </Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    type={mostrarSenha ? 'text' : 'password'}
-                                    autoComplete="current-password"
-                                    className="pr-10"
-                                    {...register('password')}
-                                />
+                        <FloatingField
+                            label="Senha"
+                            htmlFor="password"
+                            required
+                            error={errors.password?.message}
+                            trailing={
                                 <button
                                     type="button"
                                     onClick={() => setMostrarSenha((valor) => !valor)}
@@ -115,11 +103,15 @@ function LoginForm() {
                                         <Eye className="h-4 w-4" />
                                     )}
                                 </button>
-                            </div>
-                            {errors.password && (
-                                <p className="text-xs text-destructive">{errors.password.message}</p>
-                            )}
-                        </div>
+                            }
+                        >
+                            <Input
+                                type={mostrarSenha ? 'text' : 'password'}
+                                autoComplete="current-password"
+                                className="pr-10"
+                                {...register('password')}
+                            />
+                        </FloatingField>
 
                         <Button type="submit" size="lg" disabled={enviando}>
                             {mostrarCarregando && <Loader2 className="h-4 w-4 animate-spin" />}

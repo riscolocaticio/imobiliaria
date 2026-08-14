@@ -10,8 +10,8 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
+import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { getErrorMessage } from '@/lib/get-error-message'
@@ -81,32 +81,25 @@ export default function InserirPage() {
                     onSubmit={handleSubmit((values) => inserirMutation.mutate(values))}
                 >
                     <div className="grid shrink-0 grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr_1fr]">
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="nomeInquilinoInformado" required>
-                                Nome completo do inquilino
-                            </Label>
-                            <Input id="nomeInquilinoInformado" {...register('nomeInquilinoInformado')} />
-                            {errors.nomeInquilinoInformado && (
-                                <p className="text-xs text-destructive">
-                                    {errors.nomeInquilinoInformado.message}
-                                </p>
-                            )}
-                        </div>
+                        <FloatingField
+                            label="Nome completo do inquilino"
+                            htmlFor="nomeInquilinoInformado"
+                            required
+                            error={errors.nomeInquilinoInformado?.message}
+                        >
+                            <Input {...register('nomeInquilinoInformado')} />
+                        </FloatingField>
+
+                        <FloatingField
+                            label="CPF"
+                            htmlFor="cpfInquilino"
+                            required
+                            error={errors.cpfInquilino?.message}
+                        >
+                            <CpfInput {...register('cpfInquilino')} />
+                        </FloatingField>
 
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="cpfInquilino" required>
-                                CPF
-                            </Label>
-                            <CpfInput id="cpfInquilino" {...register('cpfInquilino')} />
-                            {errors.cpfInquilino && (
-                                <p className="text-xs text-destructive">{errors.cpfInquilino.message}</p>
-                            )}
-                        </div>
-
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="tipo" required>
-                                Tipo de ocorrência
-                            </Label>
                             <Controller
                                 key={formKey}
                                 name="tipo"
@@ -114,7 +107,7 @@ export default function InserirPage() {
                                 render={({ field }) => (
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger id="tipo">
-                                            <SelectValue placeholder="Selecione..." />
+                                            <SelectValue placeholder="Tipo de ocorrência" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {TIPO_OCORRENCIA_OPTIONS.map((option) => (
@@ -130,20 +123,20 @@ export default function InserirPage() {
                         </div>
                     </div>
 
-                    <div className="flex min-h-0 flex-1 flex-col gap-1.5">
-                        <Label htmlFor="descricao" required>
-                            Descreva a ocorrência
-                        </Label>
+                    <FloatingField
+                        label="Descreva a ocorrência"
+                        htmlFor="descricao"
+                        required
+                        error={errors.descricao?.message}
+                        multiline
+                        className="min-h-0 flex-1"
+                    >
                         <Textarea
-                            id="descricao"
                             placeholder="Preencher com os detalhes relevantes da ocorrência..."
-                            className="min-h-40 flex-1 resize-none"
+                            className="h-full min-h-40 flex-1 resize-none"
                             {...register('descricao')}
                         />
-                        {errors.descricao && (
-                            <p className="text-xs text-destructive">{errors.descricao.message}</p>
-                        )}
-                    </div>
+                    </FloatingField>
 
                     <Button
                         type="submit"

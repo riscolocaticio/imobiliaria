@@ -12,8 +12,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CnpjInput } from '@/components/ui/cnpj-input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -176,43 +176,33 @@ export function ImobiliariasTab() {
                         noValidate
                         onSubmit={formCriar.handleSubmit((values) => criarMutation.mutate(values))}
                     >
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="razaoSocial" required>
-                                Razão social
-                            </Label>
-                            <Input id="razaoSocial" {...formCriar.register('razaoSocial')} />
-                            {formCriar.formState.errors.razaoSocial && (
-                                <p className="text-xs text-destructive">
-                                    {formCriar.formState.errors.razaoSocial.message}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="nomeFantasia">Nome fantasia</Label>
-                            <Input id="nomeFantasia" {...formCriar.register('nomeFantasia')} />
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="cnpj" required>
-                                CNPJ
-                            </Label>
-                            <CnpjInput id="cnpj" {...formCriar.register('cnpj')} />
-                            {formCriar.formState.errors.cnpj && (
-                                <p className="text-xs text-destructive">
-                                    {formCriar.formState.errors.cnpj.message}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="email" required>
-                                E-mail
-                            </Label>
-                            <Input id="email" type="email" {...formCriar.register('email')} />
-                            {formCriar.formState.errors.email && (
-                                <p className="text-xs text-destructive">
-                                    {formCriar.formState.errors.email.message}
-                                </p>
-                            )}
-                        </div>
+                        <FloatingField
+                            label="Razão social"
+                            htmlFor="razaoSocial"
+                            required
+                            error={formCriar.formState.errors.razaoSocial?.message}
+                        >
+                            <Input {...formCriar.register('razaoSocial')} />
+                        </FloatingField>
+                        <FloatingField label="Nome fantasia" htmlFor="nomeFantasia">
+                            <Input {...formCriar.register('nomeFantasia')} />
+                        </FloatingField>
+                        <FloatingField
+                            label="CNPJ"
+                            htmlFor="cnpj"
+                            required
+                            error={formCriar.formState.errors.cnpj?.message}
+                        >
+                            <CnpjInput {...formCriar.register('cnpj')} />
+                        </FloatingField>
+                        <FloatingField
+                            label="E-mail"
+                            htmlFor="email"
+                            required
+                            error={formCriar.formState.errors.email?.message}
+                        >
+                            <Input type="email" {...formCriar.register('email')} />
+                        </FloatingField>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={criarMutation.isPending}>
                                 {mostrarCarregandoCriar && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -243,32 +233,25 @@ export function ImobiliariasTab() {
                             }
                         })}
                     >
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="razaoSocial-editar" required>
-                                Razão social
-                            </Label>
-                            <Input id="razaoSocial-editar" {...formEditar.register('razaoSocial')} />
-                            {formEditar.formState.errors.razaoSocial && (
-                                <p className="text-xs text-destructive">
-                                    {formEditar.formState.errors.razaoSocial.message}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="nomeFantasia-editar">Nome fantasia</Label>
-                            <Input id="nomeFantasia-editar" {...formEditar.register('nomeFantasia')} />
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="email-editar" required>
-                                E-mail
-                            </Label>
-                            <Input id="email-editar" type="email" {...formEditar.register('email')} />
-                            {formEditar.formState.errors.email && (
-                                <p className="text-xs text-destructive">
-                                    {formEditar.formState.errors.email.message}
-                                </p>
-                            )}
-                        </div>
+                        <FloatingField
+                            label="Razão social"
+                            htmlFor="razaoSocial-editar"
+                            required
+                            error={formEditar.formState.errors.razaoSocial?.message}
+                        >
+                            <Input {...formEditar.register('razaoSocial')} />
+                        </FloatingField>
+                        <FloatingField label="Nome fantasia" htmlFor="nomeFantasia-editar">
+                            <Input {...formEditar.register('nomeFantasia')} />
+                        </FloatingField>
+                        <FloatingField
+                            label="E-mail"
+                            htmlFor="email-editar"
+                            required
+                            error={formEditar.formState.errors.email?.message}
+                        >
+                            <Input type="email" {...formEditar.register('email')} />
+                        </FloatingField>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={atualizarMutation.isPending}>
                                 {mostrarCarregandoAtualizar && <Loader2 className="h-4 w-4 animate-spin" />}

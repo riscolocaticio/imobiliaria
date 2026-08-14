@@ -13,8 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { CpfInput } from '@/components/ui/cpf-input'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
@@ -259,16 +259,13 @@ export function UsuariosTab() {
                         onSubmit={formCriar.handleSubmit((values) => criarMutation.mutate(values))}
                     >
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="imobiliariaId" required>
-                                Imobiliária
-                            </Label>
                             <Controller
                                 name="imobiliariaId"
                                 control={formCriar.control}
                                 render={({ field }) => (
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger id="imobiliariaId">
-                                            <SelectValue placeholder="Selecione..." />
+                                            <SelectValue placeholder="Imobiliária" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {imobiliarias?.map((imobiliaria) => (
@@ -288,35 +285,26 @@ export function UsuariosTab() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="nomeCompleto" required>
-                                    Nome completo
-                                </Label>
-                                <Input id="nomeCompleto" {...formCriar.register('nomeCompleto')} />
-                                {formCriar.formState.errors.nomeCompleto && (
-                                    <p className="text-xs text-destructive">
-                                        {formCriar.formState.errors.nomeCompleto.message}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="cpf" required>
-                                    CPF
-                                </Label>
-                                <CpfInput id="cpf" {...formCriar.register('cpf')} />
-                                {formCriar.formState.errors.cpf && (
-                                    <p className="text-xs text-destructive">
-                                        {formCriar.formState.errors.cpf.message}
-                                    </p>
-                                )}
-                            </div>
+                            <FloatingField
+                                label="Nome completo"
+                                htmlFor="nomeCompleto"
+                                required
+                                error={formCriar.formState.errors.nomeCompleto?.message}
+                            >
+                                <Input {...formCriar.register('nomeCompleto')} />
+                            </FloatingField>
+                            <FloatingField
+                                label="CPF"
+                                htmlFor="cpf"
+                                required
+                                error={formCriar.formState.errors.cpf?.message}
+                            >
+                                <CpfInput {...formCriar.register('cpf')} />
+                            </FloatingField>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="dataNascimento" required>
-                                    Data de nascimento
-                                </Label>
                                 <Controller
                                     name="dataNascimento"
                                     control={formCriar.control}
@@ -325,6 +313,7 @@ export function UsuariosTab() {
                                             id="dataNascimento"
                                             value={field.value}
                                             onChange={field.onChange}
+                                            placeholder="Data de nascimento"
                                         />
                                     )}
                                 />
@@ -334,42 +323,33 @@ export function UsuariosTab() {
                                     </p>
                                 )}
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="email" required>
-                                    E-mail
-                                </Label>
-                                <Input id="email" type="email" {...formCriar.register('email')} />
-                                {formCriar.formState.errors.email && (
-                                    <p className="text-xs text-destructive">
-                                        {formCriar.formState.errors.email.message}
-                                    </p>
-                                )}
-                            </div>
+                            <FloatingField
+                                label="E-mail"
+                                htmlFor="email"
+                                required
+                                error={formCriar.formState.errors.email?.message}
+                            >
+                                <Input type="email" {...formCriar.register('email')} />
+                            </FloatingField>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="login" required>
-                                    Usuário
-                                </Label>
-                                <Input id="login" {...formCriar.register('login')} />
-                                {formCriar.formState.errors.login && (
-                                    <p className="text-xs text-destructive">
-                                        {formCriar.formState.errors.login.message}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="password" required>
-                                    Senha
-                                </Label>
-                                <Input id="password" type="password" {...formCriar.register('password')} />
-                                {formCriar.formState.errors.password && (
-                                    <p className="text-xs text-destructive">
-                                        {formCriar.formState.errors.password.message}
-                                    </p>
-                                )}
-                            </div>
+                            <FloatingField
+                                label="Usuário"
+                                htmlFor="login"
+                                required
+                                error={formCriar.formState.errors.login?.message}
+                            >
+                                <Input {...formCriar.register('login')} />
+                            </FloatingField>
+                            <FloatingField
+                                label="Senha"
+                                htmlFor="password"
+                                required
+                                error={formCriar.formState.errors.password?.message}
+                            >
+                                <Input type="password" {...formCriar.register('password')} />
+                            </FloatingField>
                         </div>
 
                         <div className="flex gap-2">
@@ -400,35 +380,30 @@ export function UsuariosTab() {
                         })}
                     >
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="nomeCompleto-editar">Nome completo</Label>
-                                <Input id="nomeCompleto-editar" {...formEditar.register('nomeCompleto')} />
-                                {formEditar.formState.errors.nomeCompleto && (
-                                    <p className="text-xs text-destructive">
-                                        {formEditar.formState.errors.nomeCompleto.message}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="email-editar">E-mail</Label>
-                                <Input id="email-editar" type="email" {...formEditar.register('email')} />
-                                {formEditar.formState.errors.email && (
-                                    <p className="text-xs text-destructive">
-                                        {formEditar.formState.errors.email.message}
-                                    </p>
-                                )}
-                            </div>
+                            <FloatingField
+                                label="Nome completo"
+                                htmlFor="nomeCompleto-editar"
+                                error={formEditar.formState.errors.nomeCompleto?.message}
+                            >
+                                <Input {...formEditar.register('nomeCompleto')} />
+                            </FloatingField>
+                            <FloatingField
+                                label="E-mail"
+                                htmlFor="email-editar"
+                                error={formEditar.formState.errors.email?.message}
+                            >
+                                <Input type="email" {...formEditar.register('email')} />
+                            </FloatingField>
                         </div>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="imobiliariaId-editar">Imobiliária</Label>
                                 <Controller
                                     name="imobiliariaId"
                                     control={formEditar.control}
                                     render={({ field }) => (
                                         <Select value={field.value} onValueChange={field.onChange}>
                                             <SelectTrigger id="imobiliariaId-editar">
-                                                <SelectValue />
+                                                <SelectValue placeholder="Imobiliária" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {imobiliarias?.map((imobiliaria) => (
@@ -441,15 +416,13 @@ export function UsuariosTab() {
                                     )}
                                 />
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                                <Label htmlFor="password-editar">Nova senha (opcional)</Label>
+                            <FloatingField label="Nova senha (opcional)" htmlFor="password-editar">
                                 <Input
-                                    id="password-editar"
                                     type="password"
                                     placeholder="Deixe em branco pra manter"
                                     {...formEditar.register('password')}
                                 />
-                            </div>
+                            </FloatingField>
                         </div>
                         <div className="flex gap-2">
                             <Button type="submit" disabled={atualizarMutation.isPending}>
