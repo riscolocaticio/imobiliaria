@@ -130,8 +130,10 @@ export function ImobiliariasTab() {
                                 </Badge>
                             </div>
                             <p className="text-muted-foreground">
-                                {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} · {imobiliaria._count.usuarios}{' '}
-                                usuário(s)
+                                {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} ·{' '}
+                                {imobiliaria._count.usuarios === 0
+                                    ? 'nenhum usuário'
+                                    : `${imobiliaria._count.usuarios} usuário(s)`}
                             </p>
                         </div>
                         <div className="flex gap-2">

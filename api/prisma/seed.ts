@@ -40,9 +40,9 @@ async function main() {
         update: {},
         create: {
             razaoSocial: 'Administração da Plataforma',
-            nomeFantasia: 'Safeloc',
+            nomeFantasia: 'Safeloc - Imobiliária',
             cnpj: '00000000000272',
-            email: 'admin@plataformariscolocaticio.com.br'
+            email: 'admin@safeloc.com.br'
         }
     })
 
@@ -56,7 +56,7 @@ async function main() {
             nomeCompleto: 'Administrador da Plataforma',
             cpf: '00000000099',
             dataNascimento: new Date('1990-01-01'),
-            email: 'master@plataformariscolocaticio.com.br',
+            email: 'master@safeloc.com.br',
             login: 'master',
             passwordHash: masterPasswordHash,
             role: 'MASTER'
