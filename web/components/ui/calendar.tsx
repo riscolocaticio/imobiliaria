@@ -12,19 +12,20 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
     return (
         <DayPicker
             showOutsideDays={showOutsideDays}
-            className={cn('p-0', className)}
+            className={cn('p-3', className)}
             classNames={{
                 months: 'flex flex-col sm:flex-row gap-2',
-                month: 'flex flex-col gap-4',
+                month: 'flex flex-col gap-3',
                 caption: 'flex justify-center pt-1 relative items-center w-full',
-                caption_label:
-                    'inline-flex items-center gap-1 rounded-md border border-input bg-background px-2.5 py-1.5 text-sm font-medium',
+                caption_label: 'text-sm font-semibold',
                 caption_dropdowns: 'flex items-center justify-center gap-2',
                 vhidden: 'sr-only',
-                dropdown_month: 'relative inline-flex items-center',
-                dropdown_year: 'relative inline-flex items-center',
-                dropdown: 'absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0',
-                dropdown_icon: 'ml-1 inline h-2 w-2 opacity-60',
+                dropdown_month:
+                    'relative inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-ring',
+                dropdown_year:
+                    'relative inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent has-[select:focus-visible]:ring-2 has-[select:focus-visible]:ring-ring',
+                dropdown: 'absolute inset-0 z-10 h-full w-full cursor-pointer appearance-none opacity-0',
+                dropdown_icon: 'h-3.5 w-3.5 opacity-60',
                 nav: 'flex items-center gap-1',
                 nav_button: cn(
                     buttonVariants({ variant: 'outline' }),
@@ -32,20 +33,20 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
                 ),
                 nav_button_previous: 'left-1',
                 nav_button_next: 'right-1',
-                table: 'w-full border-collapse space-x-1',
+                table: 'w-full border-collapse',
                 head_row: 'flex',
-                head_cell: 'text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]',
-                row: 'flex w-full mt-2',
-                cell: 'relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent',
+                head_cell: 'text-muted-foreground w-9 font-medium text-xs uppercase tracking-wide',
+                row: 'flex w-full mt-1.5',
+                cell: 'relative p-0 text-center text-sm focus-within:relative focus-within:z-20',
                 day: cn(
                     buttonVariants({ variant: 'ghost' }),
-                    'h-8 w-8 p-0 font-normal aria-selected:opacity-100'
+                    'h-9 w-9 rounded-full p-0 font-normal aria-selected:opacity-100'
                 ),
                 day_selected:
                     'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-                day_today: 'bg-accent text-accent-foreground',
+                day_today: 'ring-2 ring-primary/50 font-semibold',
                 day_outside: 'text-muted-foreground opacity-50',
-                day_disabled: 'text-muted-foreground opacity-50',
+                day_disabled: 'text-muted-foreground opacity-40',
                 day_hidden: 'invisible',
                 ...classNames
             }}
