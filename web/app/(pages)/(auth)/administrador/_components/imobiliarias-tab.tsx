@@ -120,7 +120,7 @@ export function ImobiliariasTab() {
                 {imobiliarias?.map((imobiliaria) => (
                     <div
                         key={imobiliaria.id}
-                        className="flex flex-col gap-2 rounded-md border border-border p-4 text-sm sm:flex-row sm:items-center sm:justify-between"
+                        className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
                             <div className="flex items-center gap-2 font-medium">
