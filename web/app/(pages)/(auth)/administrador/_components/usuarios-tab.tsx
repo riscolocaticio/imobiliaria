@@ -39,6 +39,7 @@ const editarSchema = z.object({
     imobiliariaId: z.string().min(1, 'Selecione a imobiliária'),
     nomeCompleto: z.string().min(1, 'Informe o nome completo'),
     email: z.string().email('E-mail inválido'),
+    status: z.enum(['ATIVO', 'INATIVO']),
     password: z.string().optional()
 })
 
@@ -87,7 +88,7 @@ export function UsuariosTab() {
         resolver: zodResolver(editarSchema),
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
-        defaultValues: { imobiliariaId: '', nomeCompleto: '', email: '', password: '' }
+        defaultValues: { imobiliariaId: '', nomeCompleto: '', email: '', status: 'ATIVO', password: '' }
     })
 
     const criarMutation = useMutation({
@@ -146,6 +147,7 @@ export function UsuariosTab() {
             nomeCompleto: usuario.nomeCompleto,
             email: usuario.email,
             imobiliariaId: String(usuario.imobiliariaId ?? usuario.imobiliaria?.id ?? ''),
+            status: usuario.status,
             password: ''
         })
         setUsuarioEditando(usuario)
@@ -406,6 +408,25 @@ export function UsuariosTab() {
                                     )}
                                 />
                             </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Controller
+                                    name="status"
+                                    control={formEditar.control}
+                                    render={({ field }) => (
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger id="status-editar">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="ATIVO">Ativo</SelectItem>
+                                                <SelectItem value="INATIVO">Inativo</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
+                        </div>
+                        <div>
                             <FloatingField label="Nova senha (opcional)" htmlFor="password-editar">
                                 <Input
                                     type="password"
