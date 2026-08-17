@@ -13,8 +13,12 @@ export class OcorrenciaInserirUsecase {
             data: {
                 cpfInquilino: sanitizeCpf(input.cpfInquilino),
                 nomeInquilinoInformado: input.nomeInquilinoInformado,
+                dataNascimentoInquilino: new Date(input.dataNascimentoInquilino),
                 tipo: input.tipo,
-                descricao: input.descricao,
+                dataOcorrencia: new Date(input.dataOcorrencia),
+                situacaoAtual: input.situacaoAtual,
+                faixaValor: input.faixaValor,
+                observacoes: input.observacoes,
                 imobiliariaId,
                 usuarioId
             }

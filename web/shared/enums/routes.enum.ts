@@ -5,5 +5,7 @@ export enum ROUTES {
     EXCLUIR = '/excluir',
     USUARIOS = '/usuarios',
     CONTESTACAO = '/contestacao',
-    ADMINISTRADOR = '/administrador'
+    ADMINISTRADOR = '/administrador',
+    TERMOS_USO = '/termos-de-uso',
+    POLITICA_PRIVACIDADE = '/politica-privacidade'
 }

@@ -6,4 +6,5 @@ export class UsuarioFromJwtDto {
     nomeCompleto: string
     email: string
     role: UsuarioRole
+    termoAceito: boolean
 }

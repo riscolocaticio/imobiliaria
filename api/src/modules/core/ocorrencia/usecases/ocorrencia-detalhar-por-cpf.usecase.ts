@@ -12,7 +12,10 @@ export class OcorrenciaDetalharPorCpfUsecase {
             select: {
                 id: true,
                 tipo: true,
-                descricao: true,
+                dataOcorrencia: true,
+                situacaoAtual: true,
+                faixaValor: true,
+                observacoes: true,
                 createdAt: true,
                 imobiliaria: { select: { nomeFantasia: true, razaoSocial: true } }
             },

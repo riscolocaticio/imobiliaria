@@ -13,6 +13,7 @@ import OcorrenciaModule from './modules/core/ocorrencia/ocorrencia.module'
 import ContestacaoModule from './modules/core/contestacao/contestacao.module'
 import NotificacaoModule from './modules/core/notificacao/notificacao.module'
 import LogModule from './modules/core/log/log.module'
+import TermoAceiteModule from './modules/core/termo-aceite/termo-aceite.module'
 
 @Module({
     imports: [
@@ -42,7 +43,8 @@ import LogModule from './modules/core/log/log.module'
         OcorrenciaModule,
         ContestacaoModule,
         NotificacaoModule,
-        LogModule
+        LogModule,
+        TermoAceiteModule
     ],
     controllers: [],
     providers: [JwtStrategy, { provide: APP_GUARD, useClass: ThrottlerGuard }]

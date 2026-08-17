@@ -1,0 +1,10 @@
+model TermoAceite {
+    id        Int      @id @default(autoincrement())
+    usuarioId Int      @unique
+    aceitoEm  DateTime @default(now())
+    ip        String
+
+    usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+    @@map("termos_aceite")
+}

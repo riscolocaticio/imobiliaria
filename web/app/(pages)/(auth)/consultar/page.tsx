@@ -12,6 +12,8 @@ import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
+import { SITUACAO_OCORRENCIA_LABEL } from '@/shared/constants/situacao-ocorrencia'
+import { FAIXA_VALOR_OCORRENCIA_LABEL } from '@/shared/constants/faixa-valor-ocorrencia'
 
 export default function ConsultarPage() {
     const [resultado, setResultado] = useState<ConsultaResult | null>(null)
@@ -49,11 +51,11 @@ export default function ConsultarPage() {
     }
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+        <div className="grid grid-cols-1 gap-6 lg:h-full lg:min-h-0 lg:grid-cols-[360px_1fr]">
             <div className="lg:self-start">
                 <CpfSearchCard
                     icon={Search}
-                    title="Consultar informações"
+                    title="Consultar Ocorrências"
                     description="Informe o CPF do inquilino"
                     isPending={consultaMutation.isPending}
                     onSubmit={buscar}
@@ -61,9 +63,9 @@ export default function ConsultarPage() {
             </div>
 
             {resultado ? (
-                <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <Card className="flex flex-col lg:min-h-0 lg:flex-1 lg:overflow-hidden">
                     {!resultado.constamInformacoes && (
-                        <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6">
+                        <CardContent className="flex flex-col items-center justify-center gap-4 p-6 lg:min-h-0 lg:flex-1">
                             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                                 <ShieldCheck className="h-10 w-10 text-primary" />
                             </span>
@@ -86,10 +88,10 @@ export default function ConsultarPage() {
                                     {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
                                 </CardDescription>
                             </CardHeader>
-                            <div className="min-h-0 flex-1">
-                                <CardContent className="flex h-full min-h-0 flex-col overflow-y-auto">
+                            <div className="lg:min-h-0 lg:flex-1">
+                                <CardContent className="flex flex-col lg:h-full lg:min-h-0 lg:overflow-y-auto">
                                     {!detalhes && (
-                                        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                                        <div className="flex flex-col items-center justify-center gap-3 lg:min-h-0 lg:flex-1">
                                             {mostrarCarregandoDetalhes && (
                                                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                                             )}
@@ -117,22 +119,23 @@ export default function ConsultarPage() {
                                                             </div>
                                                             <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                                                 <Clock className="h-3 w-3" />
-                                                                {new Date(ocorrencia.createdAt).toLocaleDateString(
+                                                                Ocorrido em{' '}
+                                                                {new Date(ocorrencia.dataOcorrencia).toLocaleDateString(
                                                                     'pt-BR'
-                                                                )}{' '}
-                                                                às{' '}
-                                                                {new Date(ocorrencia.createdAt).toLocaleTimeString(
-                                                                    'pt-BR',
-                                                                    {
-                                                                        hour: '2-digit',
-                                                                        minute: '2-digit'
-                                                                    }
                                                                 )}
                                                             </span>
                                                         </div>
                                                         <div className="pl-11">
+                                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                                <Badge variant="outline">
+                                                                    {SITUACAO_OCORRENCIA_LABEL[ocorrencia.situacaoAtual]}
+                                                                </Badge>
+                                                                <Badge variant="outline">
+                                                                    {FAIXA_VALOR_OCORRENCIA_LABEL[ocorrencia.faixaValor]}
+                                                                </Badge>
+                                                            </div>
                                                             <p className="mt-3 text-sm leading-relaxed text-foreground">
-                                                                {ocorrencia.descricao}
+                                                                {ocorrencia.observacoes}
                                                             </p>
                                                             <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
                                                                 <Building2 className="h-3.5 w-3.5" />

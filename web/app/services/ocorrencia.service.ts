@@ -1,5 +1,7 @@
 import { apiClient } from './api.service'
 import { TipoOcorrencia } from '@/shared/constants/tipo-ocorrencia'
+import { SituacaoOcorrencia } from '@/shared/constants/situacao-ocorrencia'
+import { FaixaValorOcorrencia } from '@/shared/constants/faixa-valor-ocorrencia'
 
 export interface ConsultaResult {
     constamInformacoes: boolean
@@ -9,7 +11,10 @@ export interface ConsultaResult {
 export interface OcorrenciaDetalhe {
     id: number
     tipo: TipoOcorrencia
-    descricao: string
+    dataOcorrencia: string
+    situacaoAtual: SituacaoOcorrencia
+    faixaValor: FaixaValorOcorrencia
+    observacoes: string
     createdAt: string
     imobiliaria: { nomeFantasia: string | null; razaoSocial: string }
 }
@@ -18,15 +23,22 @@ export interface OcorrenciaExcluivel {
     id: number
     nomeInquilinoInformado: string
     tipo: TipoOcorrencia
-    descricao: string
+    dataOcorrencia: string
+    situacaoAtual: SituacaoOcorrencia
+    faixaValor: FaixaValorOcorrencia
+    observacoes: string
     createdAt: string
 }
 
 export interface OcorrenciaCreateInput {
     nomeInquilinoInformado: string
     cpfInquilino: string
+    dataNascimentoInquilino: string
     tipo: TipoOcorrencia
-    descricao: string
+    dataOcorrencia: string
+    situacaoAtual: SituacaoOcorrencia
+    faixaValor: FaixaValorOcorrencia
+    observacoes: string
 }
 
 export interface OcorrenciaAdmin {
@@ -34,7 +46,10 @@ export interface OcorrenciaAdmin {
     cpfInquilino: string
     nomeInquilinoInformado: string
     tipo: TipoOcorrencia
-    descricao: string
+    dataOcorrencia: string
+    situacaoAtual: SituacaoOcorrencia
+    faixaValor: FaixaValorOcorrencia
+    observacoes: string
     status: 'ATIVA' | 'EXCLUIDA'
     createdAt: string
     imobiliaria: { id: number; nomeFantasia: string | null; razaoSocial: string }

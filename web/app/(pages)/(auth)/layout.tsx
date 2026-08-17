@@ -1,29 +1,32 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Search, PlusCircle, Trash2, Users, MessageSquareWarning, ShieldCheck, LogOut } from 'lucide-react'
+import { Menu, Search, PlusCircle, Trash2, Users, MessageSquareWarning, ShieldCheck, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { AppFooter } from '@/components/app-footer'
+import { MobileNavDrawer } from '@/components/mobile-nav-drawer'
 import { NotificacaoSino } from '@/components/notificacao-sino'
+import { TermoAceiteGate } from '@/components/termo-aceite-gate'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useUser } from '@/app/providers/user-provider'
 import { authService } from '@/app/services/auth.service'
+import { APP_VERSION } from '@/shared/constants/versao'
 import { ROUTES } from '@/shared/enums/routes.enum'
 
 const NAV_ITEMS = [
-    { href: ROUTES.CONSULTAR, label: 'Consultar', shortLabel: 'Consultar', icon: Search },
-    { href: ROUTES.INSERIR, label: 'Inserir', shortLabel: 'Inserir', icon: PlusCircle },
-    { href: ROUTES.EXCLUIR, label: 'Excluir', shortLabel: 'Excluir', icon: Trash2 },
-    { href: ROUTES.USUARIOS, label: 'Usuários', shortLabel: 'Usuários', icon: Users },
-    { href: ROUTES.CONTESTACAO, label: 'Contestação', shortLabel: 'Contestação', icon: MessageSquareWarning }
+    { href: ROUTES.CONSULTAR, label: 'Consultar Ocorrências', icon: Search },
+    { href: ROUTES.INSERIR, label: 'Inserir Ocorrências', icon: PlusCircle },
+    { href: ROUTES.EXCLUIR, label: 'Excluir Ocorrências', icon: Trash2 },
+    { href: ROUTES.USUARIOS, label: 'Usuários', icon: Users },
+    { href: ROUTES.CONTESTACAO, label: 'Contestação', icon: MessageSquareWarning }
 ]
 
 const ADMIN_NAV_ITEM = {
     href: ROUTES.ADMINISTRADOR,
     label: 'Administrador',
-    shortLabel: 'Admin',
     icon: ShieldCheck
 }
 
@@ -31,6 +34,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     const { usuario, carregando } = useUser()
     const router = useRouter()
     const pathname = usePathname()
+    const [menuAberto, setMenuAberto] = useState(false)
 
     useEffect(() => {
         if (!carregando && !usuario) {
@@ -38,8 +42,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         }
     }, [carregando, usuario, pathname, router])
 
+    useEffect(() => {
+        setMenuAberto(false)
+    }, [pathname])
+
     if (carregando || !usuario) {
         return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>
+    }
+
+    if (!usuario.termoAceito) {
+        return <TermoAceiteGate />
     }
 
     function sair() {
@@ -50,42 +62,63 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     const navItems = usuario.role === 'MASTER' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
 
     return (
-        <div className="flex h-dvh flex-col overflow-hidden">
-            <header className="shrink-0 border-b border-border bg-card">
-                <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                    <div className="flex shrink-0 items-center gap-2">
-                        <Image src="/logo.png" alt="Safeloc" width={44} height={44} className="h-11 w-11 rounded-lg" />
-                        <div>
-                            <p className="text-sm font-bold tracking-tight">
-                                Safe<span className="text-primary">loc</span>
-                            </p>
-                            <p className="text-xs text-muted-foreground">{usuario.nomeCompleto}</p>
-                        </div>
+        <div className="flex md:h-dvh md:overflow-hidden">
+            <aside className="hidden shrink-0 flex-col border-r border-border bg-card md:flex md:w-64">
+                <div className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
+                    <Image src="/logo.png" alt="Safeloc" width={36} height={36} className="h-9 w-9 rounded-lg" />
+                    <p className="text-sm font-bold tracking-tight">
+                        Safe<span className="text-primary">loc</span>
+                    </p>
+                </div>
+
+                <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">
+                    {navItems.map((item) => {
+                        const Icon = item.icon
+                        const ativo = pathname === item.href
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                    ativo
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                )}
+                            >
+                                <Icon className="h-4 w-4 shrink-0" />
+                                {item.label}
+                            </Link>
+                        )
+                    })}
+                </nav>
+
+                <div className="shrink-0 border-t border-border px-4 py-3 text-center">
+                    <p className="truncate text-sm font-medium leading-5 text-foreground">{usuario.nomeCompleto}</p>
+                    <p className="mt-1 text-xs leading-4 text-muted-foreground">v{APP_VERSION}</p>
+                </div>
+            </aside>
+
+            <div className="flex w-full flex-1 flex-col md:min-h-0 md:overflow-hidden">
+                <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b border-border bg-card px-4 sm:px-6 lg:px-8">
+                    <button
+                        onClick={() => setMenuAberto(true)}
+                        aria-label="Abrir menu"
+                        className="inline-flex shrink-0 items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground md:hidden"
+                    >
+                        <Menu className="h-5 w-5" />
+                    </button>
+
+                    <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
+                        <Image src="/logo.png" alt="Safeloc" width={32} height={32} className="h-8 w-8 rounded-lg" />
+                        <p className="truncate text-sm font-bold tracking-tight">
+                            Safe<span className="text-primary">loc</span>
+                        </p>
                     </div>
 
-                    <nav className="hidden flex-1 flex-wrap items-center justify-center gap-2 md:flex">
-                        {navItems.map((item) => {
-                            const Icon = item.icon
-                            const ativo = pathname === item.href
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        'inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                                        ativo
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                                    )}
-                                >
-                                    <Icon className="h-4 w-4" />
-                                    {item.label}
-                                </Link>
-                            )
-                        })}
-                    </nav>
+                    <div className="hidden flex-1 md:block" />
 
-                    <div className="hidden shrink-0 items-center gap-2 md:flex">
+                    <div className="flex shrink-0 items-center gap-1">
                         <NotificacaoSino />
                         <ThemeToggle compact />
                         <button
@@ -97,47 +130,20 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                             <LogOut className="h-4 w-4" />
                         </button>
                     </div>
+                </header>
 
-                    <div className="flex items-center gap-1 md:hidden">
-                        <NotificacaoSino />
-                        <ThemeToggle compact />
-                        <button
-                            onClick={sair}
-                            aria-label="Sair"
-                            className="inline-flex shrink-0 items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                            <LogOut className="h-5 w-5" />
-                        </button>
-                    </div>
-                </div>
-            </header>
+                <main className="flex w-full flex-1 flex-col px-4 pt-6 sm:px-6 sm:pt-8 md:min-h-0 md:overflow-hidden lg:px-8">
+                    <div className="pb-6 md:min-h-0 md:flex-1 md:overflow-y-auto">{children}</div>
+                    <AppFooter />
+                </main>
+            </div>
 
-            <main className="mx-auto flex w-full min-h-0 max-w-7xl flex-1 flex-col overflow-hidden px-4 pb-20 pt-6 sm:px-6 sm:pt-8 md:pb-8 lg:px-8">
-                {children}
-            </main>
-
-            <nav
-                className="fixed inset-x-0 bottom-0 z-40 flex shrink-0 border-t border-border bg-card md:hidden"
-                style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-            >
-                {navItems.map((item) => {
-                    const Icon = item.icon
-                    const ativo = pathname === item.href
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                'flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-medium transition-colors',
-                                ativo ? 'text-primary' : 'text-muted-foreground'
-                            )}
-                        >
-                            <Icon className="h-5 w-5" />
-                            {item.shortLabel}
-                        </Link>
-                    )
-                })}
-            </nav>
+            <MobileNavDrawer
+                open={menuAberto}
+                onOpenChange={setMenuAberto}
+                navItems={navItems}
+                nomeUsuario={usuario.nomeCompleto}
+            />
         </div>
     )
 }

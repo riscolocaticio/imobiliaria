@@ -36,7 +36,7 @@ export default function AdministradorPage() {
     }
 
     return (
-        <div className="flex h-full min-h-0 flex-col gap-6">
+        <div className="flex flex-col gap-6 lg:h-full lg:min-h-0">
             <div className="shrink-0">
                 <h1 className="text-2xl font-bold tracking-tight">Administrador</h1>
                 <p className="text-sm text-muted-foreground">
@@ -45,7 +45,7 @@ export default function AdministradorPage() {
                 </p>
             </div>
 
-            <div className="flex w-fit shrink-0 gap-1 rounded-lg border border-border bg-card p-1">
+            <div className="flex w-fit max-w-full shrink-0 flex-wrap gap-1 rounded-lg border border-border bg-card p-1">
                 {ABAS.map((item) => {
                     const Icon = item.icon
                     const ativa = aba === item.id
@@ -67,7 +67,7 @@ export default function AdministradorPage() {
                 })}
             </div>
 
-            <div className="min-h-0 flex-1">
+            <div className="lg:min-h-0 lg:flex-1">
                 {aba === 'imobiliarias' && <ImobiliariasTab />}
                 {aba === 'usuarios' && <UsuariosTab />}
                 {aba === 'ocorrencias' && <OcorrenciasTab />}

@@ -17,6 +17,7 @@ import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
 import { ListagemCard } from '@/components/ui/listagem-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -106,7 +107,7 @@ export default function UsuariosPage() {
     const mostrarCarregandoStatus = useDelayedLoading(statusMutation.isPending)
 
     return (
-        <div className="flex h-full min-h-0 flex-col">
+        <div className="flex flex-col lg:h-full lg:min-h-0">
             <ListagemCard
                 title="Usuários da imobiliária"
                 isEmpty={usuarios?.length === 0}
@@ -126,34 +127,39 @@ export default function UsuariosPage() {
                         key={usuario.id}
                         className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                     >
-                        <div>
-                            <div className="flex items-center gap-2 font-medium">
-                                {usuario.nomeCompleto}
-                                <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
-                                    {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
-                                </Badge>
+                        <div className="flex items-start gap-3">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <Users className="h-4 w-4" />
+                            </span>
+                            <div>
+                                <div className="flex items-center gap-2 font-medium">
+                                    {usuario.nomeCompleto}
+                                    <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                        {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                                    </Badge>
+                                </div>
+                                <p className="text-muted-foreground">
+                                    {usuario.login} · {usuario.email}
+                                </p>
                             </div>
-                            <p className="text-muted-foreground">
-                                {usuario.login} · {usuario.email}
-                            </p>
                         </div>
-                        <Button
-                            variant={usuario.status === 'ATIVO' ? 'destructive' : 'outline'}
-                            size="sm"
-                            disabled={statusMutation.isPending}
-                            onClick={() => {
-                                if (usuario.status === 'ATIVO') {
-                                    setUsuarioParaDesativar(usuario)
-                                } else {
-                                    statusMutation.mutate({ id: usuario.id, status: 'ATIVO' })
-                                }
-                            }}
-                        >
+                        <div className="flex items-center gap-2">
                             {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                             )}
-                            {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
-                        </Button>
+                            <Switch
+                                checked={usuario.status === 'ATIVO'}
+                                disabled={statusMutation.isPending}
+                                onCheckedChange={(checked) => {
+                                    if (checked) {
+                                        statusMutation.mutate({ id: usuario.id, status: 'ATIVO' })
+                                    } else {
+                                        setUsuarioParaDesativar(usuario)
+                                    }
+                                }}
+                                aria-label={usuario.status === 'ATIVO' ? 'Desativar usuário' : 'Reativar usuário'}
+                            />
+                        </div>
                     </div>
                 ))}
             </ListagemCard>

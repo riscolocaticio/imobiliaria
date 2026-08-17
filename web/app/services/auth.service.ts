@@ -8,6 +8,7 @@ export interface UsuarioLogado {
     nomeCompleto: string
     email: string
     role: 'IMOBILIARIA' | 'MASTER'
+    termoAceito: boolean
 }
 
 export const authService = {
@@ -26,6 +27,10 @@ export const authService = {
     async me(): Promise<UsuarioLogado> {
         const { data } = await apiClient.get<UsuarioLogado>('/auth/me')
         return data
+    },
+
+    async aceitarTermo(): Promise<void> {
+        await apiClient.post('/termo-aceite')
     },
 
     logout(): void {

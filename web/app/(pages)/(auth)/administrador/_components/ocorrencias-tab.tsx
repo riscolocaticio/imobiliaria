@@ -17,6 +17,8 @@ import {
     TIPO_OCORRENCIA_OPTIONS,
     type TipoOcorrencia
 } from '@/shared/constants/tipo-ocorrencia'
+import { SITUACAO_OCORRENCIA_LABEL } from '@/shared/constants/situacao-ocorrencia'
+import { FAIXA_VALOR_OCORRENCIA_LABEL } from '@/shared/constants/faixa-valor-ocorrencia'
 
 const TODAS_IMOBILIARIAS = 'todas'
 const TODOS_TIPOS = 'todos'
@@ -160,16 +162,14 @@ export function OcorrenciasTab() {
                                 </span>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <Badge variant="secondary">{TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}</Badge>
+                                    <Badge variant="outline">{SITUACAO_OCORRENCIA_LABEL[ocorrencia.situacaoAtual]}</Badge>
+                                    <Badge variant="outline">{FAIXA_VALOR_OCORRENCIA_LABEL[ocorrencia.faixaValor]}</Badge>
                                     {ocorrencia.status === 'EXCLUIDA' && <Badge variant="outline">Excluída</Badge>}
                                 </div>
                             </div>
                             <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Clock className="h-3 w-3" />
-                                {new Date(ocorrencia.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                                {new Date(ocorrencia.createdAt).toLocaleTimeString('pt-BR', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}
+                                Ocorrido em {new Date(ocorrencia.dataOcorrencia).toLocaleDateString('pt-BR')}
                             </span>
                         </div>
                         <div className="mt-2 pl-11">
@@ -177,7 +177,7 @@ export function OcorrenciasTab() {
                                 {formatCpf(ocorrencia.cpfInquilino)} · {ocorrencia.nomeInquilinoInformado}
                             </p>
                             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                                {ocorrencia.descricao}
+                                {ocorrencia.observacoes}
                             </p>
                             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                                 <span className="flex items-center gap-1.5">

@@ -132,19 +132,24 @@ export function ImobiliariasTab() {
                         key={imobiliaria.id}
                         className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                     >
-                        <div>
-                            <div className="flex items-center gap-2 font-medium">
-                                {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
-                                <Badge variant={imobiliaria.status === 'ATIVO' ? 'default' : 'outline'}>
-                                    {imobiliaria.status === 'ATIVO' ? 'Ativa' : 'Inativa'}
-                                </Badge>
+                        <div className="flex items-start gap-3">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <Building2 className="h-4 w-4" />
+                            </span>
+                            <div>
+                                <div className="flex items-center gap-2 font-medium">
+                                    {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
+                                    <Badge variant={imobiliaria.status === 'ATIVO' ? 'default' : 'outline'}>
+                                        {imobiliaria.status === 'ATIVO' ? 'Ativa' : 'Inativa'}
+                                    </Badge>
+                                </div>
+                                <p className="text-muted-foreground">
+                                    {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} ·{' '}
+                                    {imobiliaria._count.usuarios === 0
+                                        ? 'nenhum usuário'
+                                        : `${imobiliaria._count.usuarios} usuário(s)`}
+                                </p>
                             </div>
-                            <p className="text-muted-foreground">
-                                {formatCnpj(imobiliaria.cnpj)} · {imobiliaria.email} ·{' '}
-                                {imobiliaria._count.usuarios === 0
-                                    ? 'nenhum usuário'
-                                    : `${imobiliaria._count.usuarios} usuário(s)`}
-                            </p>
                         </div>
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" onClick={() => iniciarEdicao(imobiliaria)}>

@@ -38,7 +38,7 @@ const ListagemCard = ({
     children
 }: ListagemCardProps) => {
     return (
-        <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+        <Card className="flex flex-col lg:h-full lg:min-h-0 lg:overflow-hidden">
             <CardHeader className="shrink-0 flex-row flex-wrap items-center justify-between gap-4 space-y-0">
                 <div>
                     <CardTitle>{title}</CardTitle>
@@ -46,11 +46,11 @@ const ListagemCard = ({
                 </div>
                 {headerActions && <div className="flex flex-wrap items-center gap-2">{headerActions}</div>}
             </CardHeader>
-            <CardContent className="flex min-h-0 flex-1 flex-col gap-3">
+            <CardContent className="flex flex-col gap-3 lg:min-h-0 lg:flex-1">
                 {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
 
                 {!isLoading && isEmpty && (
-                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                    <div className="flex flex-col items-center justify-center gap-3 py-6 lg:min-h-0 lg:flex-1">
                         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                             <EmptyIcon className="h-7 w-7 text-muted-foreground" />
                         </span>
@@ -59,7 +59,7 @@ const ListagemCard = ({
                 )}
 
                 {!isLoading && !isEmpty && (
-                    <div className="min-h-0 flex-1 overflow-y-auto">
+                    <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
                         <div className="flex flex-col gap-3 pb-4">{children}</div>
                     </div>
                 )}

@@ -120,7 +120,7 @@ export function ContestacaoDetalheDialog({
                                     {TIPO_OCORRENCIA_LABEL[contestacao.ocorrencia.tipo]} ·{' '}
                                     {contestacao.imobiliaria.nomeFantasia ?? contestacao.imobiliaria.razaoSocial}
                                 </p>
-                                <p className="mt-2 text-muted-foreground">{contestacao.ocorrencia.descricao}</p>
+                                <p className="mt-2 text-muted-foreground">{contestacao.ocorrencia.observacoes}</p>
                             </div>
 
                             <div>
@@ -242,7 +242,7 @@ export function ContestacaoDetalheDialog({
                 }
                 description={
                     decisaoPendente === 'PROCEDENTE'
-                        ? 'O consumidor tinha razão. Isso não exclui a ocorrência automaticamente — se necessário, faça isso manualmente.'
+                        ? 'O consumidor tinha razão, mas isso não exclui a ocorrência automaticamente.'
                         : 'A imobiliária comprovou a veracidade do registro. A ocorrência permanece válida.'
                 }
                 confirmLabel="Confirmar"

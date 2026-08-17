@@ -1,5 +1,5 @@
-import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator'
-import { TipoOcorrencia } from '@prisma/client'
+import { IsDateString, IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator'
+import { FaixaValorOcorrencia, SituacaoOcorrencia, TipoOcorrencia } from '@prisma/client'
 
 export class OcorrenciaCreateInput {
     @IsString()
@@ -10,11 +10,23 @@ export class OcorrenciaCreateInput {
     @IsNotEmpty({ message: 'O CPF é obrigatório' })
     cpfInquilino: string
 
+    @IsDateString({}, { message: 'Data de nascimento inválida' })
+    dataNascimentoInquilino: string
+
     @IsEnum(TipoOcorrencia, { message: 'Tipo de ocorrência inválido' })
     tipo: TipoOcorrencia
 
+    @IsDateString({}, { message: 'Data da ocorrência inválida' })
+    dataOcorrencia: string
+
+    @IsEnum(SituacaoOcorrencia, { message: 'Situação atual inválida' })
+    situacaoAtual: SituacaoOcorrencia
+
+    @IsEnum(FaixaValorOcorrencia, { message: 'Faixa de valor inválida' })
+    faixaValor: FaixaValorOcorrencia
+
     @IsString()
-    @IsNotEmpty({ message: 'A descrição da ocorrência é obrigatória' })
-    @MaxLength(1000, { message: 'A descrição deve ter no máximo 1000 caracteres' })
-    descricao: string
+    @IsNotEmpty({ message: 'As observações são obrigatórias' })
+    @MaxLength(300, { message: 'As observações devem ter no máximo 300 caracteres' })
+    observacoes: string
 }

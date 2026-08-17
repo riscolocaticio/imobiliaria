@@ -1,15 +1,19 @@
 model Ocorrencia {
-    id                     Int               @id @default(autoincrement())
-    cpfInquilino           String
-    nomeInquilinoInformado String
-    tipo                   TipoOcorrencia
-    descricao              String
-    imobiliariaId          Int
-    usuarioId              Int
-    status                 StatusOcorrencia  @default(ATIVA)
-    excluidoEm             DateTime?
-    excluidoPorUsuarioId   Int?
-    createdAt              DateTime          @default(now())
+    id                      Int                  @id @default(autoincrement())
+    cpfInquilino            String
+    nomeInquilinoInformado  String
+    dataNascimentoInquilino DateTime
+    tipo                    TipoOcorrencia
+    dataOcorrencia          DateTime
+    situacaoAtual           SituacaoOcorrencia
+    faixaValor              FaixaValorOcorrencia
+    observacoes             String
+    imobiliariaId           Int
+    usuarioId               Int
+    status                  StatusOcorrencia     @default(ATIVA)
+    excluidoEm              DateTime?
+    excluidoPorUsuarioId    Int?
+    createdAt               DateTime             @default(now())
 
     imobiliaria       Imobiliaria @relation(fields: [imobiliariaId], references: [id])
     usuario           Usuario     @relation("OcorrenciaRegistradaPor", fields: [usuarioId], references: [id])

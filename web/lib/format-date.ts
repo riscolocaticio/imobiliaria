@@ -1,4 +1,4 @@
-import { format, isValid, parse, parseISO } from 'date-fns'
+import { format, getDaysInMonth, isValid, parse, parseISO } from 'date-fns'
 
 const DISPLAY_FORMAT = 'dd/MM/yyyy'
 const ISO_FORMAT = 'yyyy-MM-dd'
@@ -6,9 +6,31 @@ const ISO_FORMAT = 'yyyy-MM-dd'
 export function maskDateInput(value: string): string {
     const digits = value.replace(/\D/g, '').slice(0, 8)
 
-    if (digits.length > 4) return digits.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3')
-    if (digits.length > 2) return digits.replace(/(\d{2})(\d{1,2})/, '$1/$2')
-    return digits
+    let dia = digits.slice(0, 2)
+    let mes = digits.slice(2, 4)
+    const ano = digits.slice(4, 8)
+
+    if (dia.length === 2) {
+        const diaNum = Number(dia)
+        if (diaNum === 0) dia = '01'
+        else if (diaNum > 31) dia = '31'
+    }
+
+    if (mes.length === 2) {
+        const mesNum = Number(mes)
+        if (mesNum === 0) mes = '01'
+        else if (mesNum > 12) mes = '12'
+    }
+
+    if (dia.length === 2 && mes.length === 2 && ano.length === 4) {
+        const ultimoDiaDoMes = getDaysInMonth(new Date(Number(ano), Number(mes) - 1))
+        if (Number(dia) > ultimoDiaDoMes) dia = String(ultimoDiaDoMes).padStart(2, '0')
+    }
+
+    let resultado = dia
+    if (mes) resultado += `/${mes}`
+    if (ano) resultado += `/${ano}`
+    return resultado
 }
 
 export function isDateInputComplete(value: string): boolean {

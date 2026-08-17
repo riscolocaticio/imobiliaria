@@ -40,7 +40,7 @@ const FloatingField = ({
     })
 
     return (
-        <div className={cn('flex flex-col gap-1.5', className)}>
+        <div className={cn('mt-3 flex flex-col gap-1.5', className)}>
             <div className={cn('group relative', multiline && 'flex min-h-0 flex-1 flex-col')}>
                 {Icon && (
                     <Icon className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

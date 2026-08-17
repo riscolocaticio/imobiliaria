@@ -9,7 +9,9 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { CpfInput } from '@/components/ui/cpf-input'
+import { DateInput } from '@/components/ui/date-input'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -19,18 +21,50 @@ import { isCpfComplete } from '@/lib/format-cpf'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, OcorrenciaCreateInput } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_OPTIONS } from '@/shared/constants/tipo-ocorrencia'
+import { SITUACAO_OCORRENCIA_OPTIONS } from '@/shared/constants/situacao-ocorrencia'
+import { FAIXA_VALOR_OCORRENCIA_OPTIONS } from '@/shared/constants/faixa-valor-ocorrencia'
+
+const dataNaoFutura = (valor: string) => new Date(valor) <= new Date()
 
 const inserirSchema = z.object({
     nomeInquilinoInformado: z.string().min(1, 'Informe o nome completo do inquilino'),
     cpfInquilino: z.string().refine(isCpfComplete, 'Informe um CPF válido'),
+    dataNascimentoInquilino: z
+        .string()
+        .min(1, 'Informe a data de nascimento')
+        .refine(dataNaoFutura, 'Data de nascimento não pode ser no futuro'),
     tipo: z.string().min(1, 'Selecione o tipo de ocorrência'),
-    descricao: z
+    dataOcorrencia: z
+        .string()
+        .min(1, 'Informe a data da ocorrência')
+        .refine(dataNaoFutura, 'Data da ocorrência não pode ser no futuro'),
+    situacaoAtual: z.string().min(1, 'Selecione a situação atual'),
+    faixaValor: z.string().min(1, 'Selecione a faixa de valor'),
+    observacoes: z
         .string()
         .min(1, 'Descreva a ocorrência')
-        .max(1000, 'A descrição deve ter no máximo 1000 caracteres')
+        .max(300, 'As observações devem ter no máximo 300 caracteres'),
+    declaracaoFundamento: z.boolean().refine((valor) => valor, 'Confirme esta declaração'),
+    declaracaoVeracidade: z.boolean().refine((valor) => valor, 'Confirme esta declaração'),
+    declaracaoCiencia: z.boolean().refine((valor) => valor, 'Confirme esta declaração')
 })
 
 type InserirFormValues = z.infer<typeof inserirSchema>
+
+const DECLARACOES: { name: 'declaracaoFundamento' | 'declaracaoVeracidade' | 'declaracaoCiencia'; texto: string }[] = [
+    {
+        name: 'declaracaoFundamento',
+        texto: 'Declaro que a ocorrência registrada possui fundamento contratual ou documental.'
+    },
+    {
+        name: 'declaracaoVeracidade',
+        texto: 'Declaro que as informações inseridas são verdadeiras e de responsabilidade exclusiva da imobiliária registrante.'
+    },
+    {
+        name: 'declaracaoCiencia',
+        texto: 'Estou ciente de que todas as operações são registradas e auditadas.'
+    }
+]
 
 export default function InserirPage() {
     const [formKey, setFormKey] = useState(0)
@@ -48,14 +82,23 @@ export default function InserirPage() {
         defaultValues: {
             nomeInquilinoInformado: '',
             cpfInquilino: '',
+            dataNascimentoInquilino: '',
             tipo: '',
-            descricao: ''
+            dataOcorrencia: '',
+            situacaoAtual: '',
+            faixaValor: '',
+            observacoes: '',
+            declaracaoFundamento: false,
+            declaracaoVeracidade: false,
+            declaracaoCiencia: false
         }
     })
 
     const inserirMutation = useMutation({
-        mutationFn: (values: InserirFormValues) =>
-            ocorrenciaService.inserir(values as OcorrenciaCreateInput),
+        mutationFn: (values: InserirFormValues) => {
+            const { declaracaoFundamento, declaracaoVeracidade, declaracaoCiencia, ...input } = values
+            return ocorrenciaService.inserir(input as OcorrenciaCreateInput)
+        },
         onSuccess: () => {
             toast.success('Ocorrência registrada com sucesso.')
             reset()
@@ -68,75 +111,228 @@ export default function InserirPage() {
 
     const mostrarCarregando = useDelayedLoading(inserirMutation.isPending)
 
+    const errosDeclaracao =
+        errors.declaracaoFundamento || errors.declaracaoVeracidade || errors.declaracaoCiencia
+
     return (
-        <Card className="flex h-full min-h-0 flex-col">
+        <Card className="flex flex-col lg:h-full">
             <CardHeader className="shrink-0">
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de um inquilino</CardDescription>
             </CardHeader>
-            <CardContent className="flex min-h-0 flex-1 flex-col">
+            <CardContent className="flex flex-col lg:min-h-0 lg:flex-1">
                 <form
-                    className="flex h-full min-h-0 flex-col gap-5"
+                    className="flex w-full flex-col gap-6 lg:min-h-0 lg:flex-1"
                     noValidate
                     onSubmit={handleSubmit((values) => inserirMutation.mutate(values))}
                 >
-                    <div className="grid shrink-0 grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr_1fr]">
-                        <FloatingField
-                            label="Nome completo do inquilino"
-                            htmlFor="nomeInquilinoInformado"
-                            required
-                            error={errors.nomeInquilinoInformado?.message}
-                        >
-                            <Input {...register('nomeInquilinoInformado')} />
-                        </FloatingField>
+                    <div className="flex shrink-0 flex-col gap-4">
+                        <p className="text-sm font-semibold text-foreground">Dados do inquilino</p>
+                        <div className="grid grid-cols-12 gap-4">
+                            <div className="col-span-12 lg:col-span-6">
+                                <FloatingField
+                                    label="Nome completo do inquilino"
+                                    htmlFor="nomeInquilinoInformado"
+                                    required
+                                    error={errors.nomeInquilinoInformado?.message}
+                                    className="mt-0"
+                                >
+                                    <Input {...register('nomeInquilinoInformado')} />
+                                </FloatingField>
+                            </div>
 
-                        <FloatingField
-                            label="CPF"
-                            htmlFor="cpfInquilino"
-                            required
-                            error={errors.cpfInquilino?.message}
-                        >
-                            <CpfInput {...register('cpfInquilino')} />
-                        </FloatingField>
+                            <div className="col-span-6 lg:col-span-3">
+                                <FloatingField
+                                    label="CPF"
+                                    htmlFor="cpfInquilino"
+                                    required
+                                    error={errors.cpfInquilino?.message}
+                                    className="mt-0"
+                                >
+                                    <CpfInput {...register('cpfInquilino')} />
+                                </FloatingField>
+                            </div>
 
-                        <div className="flex flex-col gap-1.5">
-                            <Controller
-                                key={formKey}
-                                name="tipo"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select value={field.value} onValueChange={field.onChange}>
-                                        <SelectTrigger id="tipo">
-                                            <SelectValue placeholder="Tipo de ocorrência" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {TIPO_OCORRENCIA_OPTIONS.map((option) => (
-                                                <SelectItem key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                            {errors.tipo && <p className="text-xs text-destructive">{errors.tipo.message}</p>}
+                            <div className="col-span-6 lg:col-span-3">
+                                <Controller
+                                    key={formKey}
+                                    name="dataNascimentoInquilino"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <FloatingField
+                                            label="Data de nascimento"
+                                            htmlFor="dataNascimentoInquilino"
+                                            required
+                                            error={errors.dataNascimentoInquilino?.message}
+                                            className="mt-0"
+                                        >
+                                            <DateInput
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                placeholder="DD/MM/AAAA"
+                                            />
+                                        </FloatingField>
+                                    )}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <FloatingField
-                        label="Descreva a ocorrência"
-                        htmlFor="descricao"
-                        required
-                        error={errors.descricao?.message}
-                        multiline
-                        className="min-h-0 flex-1"
-                    >
-                        <Textarea
-                            placeholder="Preencher com os detalhes relevantes da ocorrência..."
-                            className="h-full min-h-40 flex-1 resize-none"
-                            {...register('descricao')}
-                        />
-                    </FloatingField>
+                    <div className="flex shrink-0 flex-col gap-4">
+                        <p className="text-sm font-semibold text-foreground">Dados da ocorrência</p>
+                        <div className="grid grid-cols-12 gap-4">
+                            <div className="col-span-12 flex flex-col gap-1.5 sm:col-span-6 lg:col-span-3">
+                                <Controller
+                                    key={formKey}
+                                    name="tipo"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger id="tipo">
+                                                <SelectValue placeholder="Tipo de ocorrência" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {TIPO_OCORRENCIA_OPTIONS.map((option) => (
+                                                    <SelectItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {errors.tipo && <p className="text-xs text-destructive">{errors.tipo.message}</p>}
+                            </div>
+
+                            <div className="col-span-12 sm:col-span-6 lg:col-span-3">
+                                <Controller
+                                    key={formKey}
+                                    name="dataOcorrencia"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <FloatingField
+                                            label="Data da ocorrência"
+                                            htmlFor="dataOcorrencia"
+                                            required
+                                            error={errors.dataOcorrencia?.message}
+                                            className="mt-0"
+                                        >
+                                            <DateInput
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                placeholder="DD/MM/AAAA"
+                                            />
+                                        </FloatingField>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="col-span-12 flex flex-col gap-1.5 sm:col-span-6 lg:col-span-3">
+                                <Controller
+                                    key={formKey}
+                                    name="situacaoAtual"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger id="situacaoAtual">
+                                                <SelectValue placeholder="Situação atual" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {SITUACAO_OCORRENCIA_OPTIONS.map((option) => (
+                                                    <SelectItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {errors.situacaoAtual && (
+                                    <p className="text-xs text-destructive">{errors.situacaoAtual.message}</p>
+                                )}
+                            </div>
+
+                            <div className="col-span-12 flex flex-col gap-1.5 sm:col-span-6 lg:col-span-3">
+                                <Controller
+                                    key={formKey}
+                                    name="faixaValor"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger id="faixaValor">
+                                                <SelectValue placeholder="Faixa de valor" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {FAIXA_VALOR_OCORRENCIA_OPTIONS.map((option) => (
+                                                    <SelectItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                                {errors.faixaValor && (
+                                    <p className="text-xs text-destructive">{errors.faixaValor.message}</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="lg:min-h-0 lg:flex-1">
+                        <FloatingField
+                            label="Observações"
+                            htmlFor="observacoes"
+                            required
+                            error={errors.observacoes?.message}
+                            multiline
+                            className="mt-0 lg:h-full"
+                        >
+                            <Textarea
+                                placeholder="Preencher com os detalhes relevantes da ocorrência..."
+                                className="min-h-32 resize-none lg:h-full lg:min-h-0"
+                                maxLength={300}
+                                {...register('observacoes')}
+                            />
+                        </FloatingField>
+                    </div>
+
+                    <div className="flex shrink-0 flex-col gap-3 rounded-lg border border-border bg-muted/30 p-4">
+                        <p className="text-xs leading-relaxed text-muted-foreground">
+                            Descreva apenas fatos objetivos relacionados à ocorrência. É proibida a inclusão de
+                            opiniões, julgamentos pessoais ou informações não relacionadas à locação.
+                        </p>
+                        <div className="flex flex-col gap-3 border-t border-border pt-3">
+                            <p className="text-sm font-medium text-foreground">Declaração obrigatória</p>
+                            {DECLARACOES.map((declaracao) => (
+                                <label
+                                    key={declaracao.name}
+                                    htmlFor={declaracao.name}
+                                    className="flex cursor-pointer items-start gap-2.5 text-sm text-muted-foreground"
+                                >
+                                    <Controller
+                                        key={formKey}
+                                        name={declaracao.name}
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Checkbox
+                                                id={declaracao.name}
+                                                className="mt-0.5"
+                                                checked={field.value}
+                                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                            />
+                                        )}
+                                    />
+                                    <span>{declaracao.texto}</span>
+                                </label>
+                            ))}
+                        </div>
+                        {errosDeclaracao && (
+                            <p className="text-xs text-destructive">
+                                Confirme todas as declarações para registrar a ocorrência.
+                            </p>
+                        )}
+                    </div>
 
                     <Button
                         type="submit"

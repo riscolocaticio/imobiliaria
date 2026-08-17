@@ -19,6 +19,7 @@ model Usuario {
     contestacoesAbertas    Contestacao[] @relation("ContestacaoAbertaPor")
     contestacoesDecididas  Contestacao[] @relation("ContestacaoDecididaPor")
     documentosEnviados     ContestacaoDocumento[]
+    termoAceite            TermoAceite?
 
     @@index([imobiliariaId])
     @@map("usuarios")

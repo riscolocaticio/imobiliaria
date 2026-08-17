@@ -8,6 +8,8 @@ import { GlobalExceptionFilter } from './infra/system/security/global-exceptions
 export async function createApp(): Promise<INestApplication> {
     const app = await NestFactory.create(AppModule)
 
+    app.getHttpAdapter().getInstance().set('trust proxy', 1)
+
     app.use(
         helmet({
             contentSecurityPolicy: false

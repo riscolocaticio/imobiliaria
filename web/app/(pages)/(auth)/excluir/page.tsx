@@ -13,6 +13,8 @@ import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
 import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
+import { SITUACAO_OCORRENCIA_LABEL } from '@/shared/constants/situacao-ocorrencia'
+import { FAIXA_VALOR_OCORRENCIA_LABEL } from '@/shared/constants/faixa-valor-ocorrencia'
 
 export default function ExcluirPage() {
     const [registros, setRegistros] = useState<OcorrenciaExcluivel[] | null>(null)
@@ -50,7 +52,7 @@ export default function ExcluirPage() {
     }
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+        <div className="grid grid-cols-1 gap-6 lg:h-full lg:min-h-0 lg:grid-cols-[360px_1fr]">
             <div className="lg:self-start">
                 <CpfSearchCard
                     icon={Trash2}
@@ -62,7 +64,7 @@ export default function ExcluirPage() {
             </div>
 
             {registros ? (
-                <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <Card className="flex flex-col lg:min-h-0 lg:flex-1 lg:overflow-hidden">
                     <CardHeader className="shrink-0">
                         <CardTitle>
                             {registros.length === 0
@@ -74,7 +76,7 @@ export default function ExcluirPage() {
                         )}
                     </CardHeader>
                     {registros.length === 0 && (
-                        <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                        <CardContent className="flex flex-col items-center justify-center gap-3 lg:min-h-0 lg:flex-1">
                             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                                 <Inbox className="h-7 w-7 text-muted-foreground" />
                             </span>
@@ -85,43 +87,55 @@ export default function ExcluirPage() {
                     )}
 
                     {registros.length > 0 && (
-                        <div className="min-h-0 flex-1">
-                            <CardContent className="flex h-full min-h-0 flex-col overflow-y-auto">
+                        <div className="lg:min-h-0 lg:flex-1">
+                            <CardContent className="flex flex-col lg:h-full lg:min-h-0 lg:overflow-y-auto">
                                 <ul className="flex flex-col gap-4 pb-6">
                                 {registros.map((registro) => {
                                     const Icon = TIPO_OCORRENCIA_ICON[registro.tipo]
                                     return (
                                         <li
                                             key={registro.id}
-                                            className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                                            className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
                                         >
-                                            <div>
-                                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                                                            <Icon className="h-4 w-4" />
-                                                        </span>
-                                                        <Badge variant="secondary">
-                                                            {TIPO_OCORRENCIA_LABEL[registro.tipo]}
-                                                        </Badge>
-                                                    </div>
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                                        <Icon className="h-4 w-4" />
+                                                    </span>
+                                                    <Badge variant="secondary">
+                                                        {TIPO_OCORRENCIA_LABEL[registro.tipo]}
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex items-center gap-1">
                                                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                                         <Clock className="h-3 w-3" />
-                                                        {new Date(registro.createdAt).toLocaleDateString('pt-BR')}
+                                                        {new Date(registro.dataOcorrencia).toLocaleDateString('pt-BR')}
                                                     </span>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-7 w-7 shrink-0 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                                        onClick={() => setRegistroParaExcluir(registro)}
+                                                        aria-label="Excluir registro"
+                                                        title="Excluir registro"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
                                                 </div>
-                                                <p className="mt-3 pl-11 text-sm leading-relaxed text-foreground">
-                                                    {registro.descricao}
+                                            </div>
+                                            <div className="pl-11">
+                                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                                    <Badge variant="outline">
+                                                        {SITUACAO_OCORRENCIA_LABEL[registro.situacaoAtual]}
+                                                    </Badge>
+                                                    <Badge variant="outline">
+                                                        {FAIXA_VALOR_OCORRENCIA_LABEL[registro.faixaValor]}
+                                                    </Badge>
+                                                </div>
+                                                <p className="mt-3 text-sm leading-relaxed text-foreground">
+                                                    {registro.observacoes}
                                                 </p>
                                             </div>
-                                            <Button
-                                                variant="destructive"
-                                                size="sm"
-                                                className="w-full"
-                                                onClick={() => setRegistroParaExcluir(registro)}
-                                            >
-                                                Excluir
-                                            </Button>
                                         </li>
                                     )
                                 })}
