@@ -1,7 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff, Loader2, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { Suspense, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'next/navigation'
@@ -61,12 +62,17 @@ function LoginForm() {
     return (
         <>
             <div className="flex flex-col items-center gap-3">
-                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-[hsl(200_47%_16%)] shadow-lg shadow-primary/25">
-                    <ShieldCheck className="h-8 w-8 text-white" />
-                </span>
+                <Image
+                    src="/logo.png"
+                    alt="Safeloc"
+                    width={64}
+                    height={64}
+                    priority
+                    className="h-16 w-16 rounded-2xl shadow-lg shadow-primary/25"
+                />
                 <div className="text-center">
                     <p className="text-2xl font-bold tracking-tight">
-                        safe<span className="text-primary">loc</span>
+                        Safe<span className="text-primary">loc</span>
                     </p>
                     <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                         Locação segura para imobiliárias

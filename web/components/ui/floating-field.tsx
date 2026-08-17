@@ -52,7 +52,8 @@ const FloatingField = ({
                         multiline ? 'top-2.5' : 'top-1/2 -translate-y-1/2',
                         'peer-focus:top-0 peer-focus:translate-y-[-50%] peer-focus:scale-90 peer-focus:bg-card peer-focus:px-1 peer-focus:text-primary',
                         'peer-[&:not(:placeholder-shown)]:top-0 peer-[&:not(:placeholder-shown)]:translate-y-[-50%] peer-[&:not(:placeholder-shown)]:scale-90 peer-[&:not(:placeholder-shown)]:bg-card peer-[&:not(:placeholder-shown)]:px-1 peer-[&:not(:placeholder-shown)]:text-foreground',
-                        Icon && 'peer-focus:left-3 peer-[&:not(:placeholder-shown)]:left-3'
+                        'peer-autofill:top-0 peer-autofill:translate-y-[-50%] peer-autofill:scale-90 peer-autofill:bg-card peer-autofill:px-1 peer-autofill:text-foreground',
+                        Icon && 'peer-focus:left-3 peer-[&:not(:placeholder-shown)]:left-3 peer-autofill:left-3'
                     )}
                 >
                     {label}

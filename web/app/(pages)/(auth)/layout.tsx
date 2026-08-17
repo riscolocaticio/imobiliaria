@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Search, PlusCircle, Trash2, Users, ShieldCheck, LogOut } from 'lucide-react'
@@ -50,9 +51,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="flex h-dvh flex-col overflow-hidden">
             <header className="shrink-0 border-b border-border bg-card">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                    <div>
-                        <p className="text-sm font-semibold">Safeloc</p>
-                        <p className="text-xs text-muted-foreground">{usuario.nomeCompleto}</p>
+                    <div className="flex items-center gap-2">
+                        <Image src="/logo.png" alt="Safeloc" width={44} height={44} className="h-11 w-11 rounded-lg" />
+                        <div>
+                            <p className="text-sm font-semibold">Safeloc</p>
+                            <p className="text-xs text-muted-foreground">{usuario.nomeCompleto}</p>
+                        </div>
                     </div>
 
                     <nav className="hidden flex-wrap items-center gap-2 md:flex">
