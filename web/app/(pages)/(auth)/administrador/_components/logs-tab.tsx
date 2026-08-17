@@ -1,14 +1,14 @@
 'use client'
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { FileClock, Loader2 } from 'lucide-react'
+import { Building2, Clock, FileClock, IdCard, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { ListagemCard } from '@/components/ui/listagem-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
-import { ACAO_LOG_LABEL, formatarAcaoLog, logService } from '@/app/services/log.service'
+import { ACAO_LOG_ICON, ACAO_LOG_ICON_PADRAO, ACAO_LOG_LABEL, formatarAcaoLog, logService } from '@/app/services/log.service'
 
 const TODAS_IMOBILIARIAS = 'todas'
 const TODAS_ACOES = 'todas'
@@ -115,33 +115,47 @@ export function LogsTab() {
                 </>
             }
         >
-            {resultado?.logs.map((log) => (
-                <div
-                    key={log.id}
-                    className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[minmax(0,160px)_minmax(0,1fr)_auto] md:items-center md:gap-4"
-                >
-                    <Badge variant="secondary" className="max-w-full truncate" title={formatarAcaoLog(log.acao)}>
-                        {formatarAcaoLog(log.acao)}
-                    </Badge>
-                    <div className="min-w-0">
-                        <p className="truncate font-medium">
-                            {log.usuario.nomeCompleto}{' '}
-                            <span className="font-normal text-muted-foreground">({log.usuario.login})</span>
-                        </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                            {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
-                            {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
-                        </p>
+            {resultado?.logs.map((log) => {
+                const Icon = ACAO_LOG_ICON[log.acao] ?? ACAO_LOG_ICON_PADRAO
+                return (
+                    <div key={log.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-3">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                    <Icon className="h-4 w-4" />
+                                </span>
+                                <Badge variant="secondary">{formatarAcaoLog(log.acao)}</Badge>
+                            </div>
+                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
+                                {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </span>
+                        </div>
+                        <div className="mt-2 pl-11">
+                            <p className="truncate text-sm font-medium">
+                                {log.usuario.nomeCompleto}{' '}
+                                <span className="font-normal text-muted-foreground">({log.usuario.login})</span>
+                            </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                <span className="flex items-center gap-1.5">
+                                    <Building2 className="h-3.5 w-3.5" />
+                                    {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
+                                </span>
+                                {log.cpfConsultado && (
+                                    <span className="flex items-center gap-1.5">
+                                        <IdCard className="h-3.5 w-3.5" />
+                                        CPF consultado: {log.cpfConsultado}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <p className="whitespace-nowrap text-xs text-muted-foreground md:text-right">
-                        {new Date(log.createdAt).toLocaleDateString('pt-BR')} às{' '}
-                        {new Date(log.createdAt).toLocaleTimeString('pt-BR', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })}
-                    </p>
-                </div>
-            ))}
+                )
+            })}
         </ListagemCard>
     )
 }

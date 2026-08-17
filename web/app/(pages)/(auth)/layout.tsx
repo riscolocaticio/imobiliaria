@@ -52,8 +52,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     return (
         <div className="flex h-dvh flex-col overflow-hidden">
             <header className="shrink-0 border-b border-border bg-card">
-                <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center gap-2">
+                <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
+                    <div className="flex shrink-0 items-center gap-2">
                         <Image src="/logo.png" alt="Safeloc" width={44} height={44} className="h-11 w-11 rounded-lg" />
                         <div>
                             <p className="text-sm font-semibold">Safeloc</p>
@@ -61,7 +61,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                         </div>
                     </div>
 
-                    <nav className="hidden flex-wrap items-center gap-2 md:flex">
+                    <nav className="hidden flex-1 flex-wrap items-center justify-center gap-2 md:flex">
                         {navItems.map((item) => {
                             const Icon = item.icon
                             const ativo = pathname === item.href
@@ -81,6 +81,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                                 </Link>
                             )
                         })}
+                    </nav>
+
+                    <div className="hidden shrink-0 items-center gap-2 md:flex">
                         <NotificacaoSino />
                         <ThemeToggle compact />
                         <button
@@ -91,7 +94,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                         >
                             <LogOut className="h-4 w-4" />
                         </button>
-                    </nav>
+                    </div>
 
                     <div className="flex items-center gap-1 md:hidden">
                         <NotificacaoSino />

@@ -1,3 +1,18 @@
+import {
+    Building2,
+    FileClock,
+    FileUp,
+    Gavel,
+    LogIn,
+    MessageSquareWarning,
+    PlusCircle,
+    Search,
+    Trash2,
+    UserCog,
+    UserMinus,
+    UserPlus,
+    type LucideIcon
+} from 'lucide-react'
 import { apiClient } from './api.service'
 
 export const ACAO_LOG_LABEL: Record<string, string> = {
@@ -15,6 +30,24 @@ export const ACAO_LOG_LABEL: Record<string, string> = {
     ENVIO_DOCUMENTO_CONTESTACAO: 'Envio de documento',
     DECISAO_CONTESTACAO: 'Decisão de contestação'
 }
+
+export const ACAO_LOG_ICON: Record<string, LucideIcon> = {
+    LOGIN: LogIn,
+    CONSULTA_CPF: Search,
+    INSERCAO_OCORRENCIA: PlusCircle,
+    EXCLUSAO_OCORRENCIA: Trash2,
+    CRIACAO_IMOBILIARIA: Building2,
+    EDICAO_IMOBILIARIA: Building2,
+    EXCLUSAO_IMOBILIARIA: Building2,
+    CRIACAO_USUARIO: UserPlus,
+    EDICAO_USUARIO: UserCog,
+    EXCLUSAO_USUARIO: UserMinus,
+    ABERTURA_CONTESTACAO: MessageSquareWarning,
+    ENVIO_DOCUMENTO_CONTESTACAO: FileUp,
+    DECISAO_CONTESTACAO: Gavel
+}
+
+export const ACAO_LOG_ICON_PADRAO: LucideIcon = FileClock
 
 export function formatarAcaoLog(acao: string): string {
     if (ACAO_LOG_LABEL[acao]) return ACAO_LOG_LABEL[acao]

@@ -44,19 +44,17 @@ export default function ConsultarPage() {
     const mostrarCarregandoDetalhes = useDelayedLoading(detalhesMutation.isPending)
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
-            <div className="lg:self-start">
-                <CpfSearchCard
-                    icon={Search}
-                    title="Consultar informações"
-                    description="Informe o CPF do inquilino"
-                    isPending={consultaMutation.isPending}
-                    onSubmit={(cpf) => consultaMutation.mutate(cpf)}
-                />
-            </div>
+        <div className="flex h-full min-h-0 flex-col gap-6">
+            <CpfSearchCard
+                icon={Search}
+                title="Consultar informações"
+                description="Informe o CPF do inquilino"
+                isPending={consultaMutation.isPending}
+                onSubmit={(cpf) => consultaMutation.mutate(cpf)}
+            />
 
             {resultado ? (
-                <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+                <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
                     {!resultado.constamInformacoes && (
                         <CardContent className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6">
                             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
@@ -139,11 +137,17 @@ export default function ConsultarPage() {
                                     </ul>
                                 )}
                             </CardContent>
+                            <p className="shrink-0 border-t border-border px-6 py-2 text-[11px] leading-relaxed text-muted-foreground">
+                                As ocorrências exibidas foram registradas por imobiliárias participantes da
+                                plataforma. A responsabilidade pela veracidade das informações é exclusivamente da
+                                imobiliária registrante. A Safeloc atua apenas como provedora tecnológica e registra
+                                todas as operações realizadas no sistema.
+                            </p>
                         </>
                     )}
                 </Card>
             ) : (
-                <Card className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 border-dashed p-6">
+                <Card className="flex min-h-[280px] flex-1 flex-col items-center justify-center gap-3 border-dashed p-6">
                     <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                         <FileSearch className="h-7 w-7 text-muted-foreground" />
                     </span>

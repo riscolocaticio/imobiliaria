@@ -41,19 +41,17 @@ export default function ExcluirPage() {
     const mostrarCarregandoExclusao = useDelayedLoading(excluirMutation.isPending)
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
-            <div className="lg:self-start">
-                <CpfSearchCard
-                    icon={Trash2}
-                    title="Excluir informações"
-                    description="Consulte o CPF da sua imobiliária"
-                    isPending={listarMutation.isPending}
-                    onSubmit={(cpf) => listarMutation.mutate(cpf)}
-                />
-            </div>
+        <div className="flex h-full min-h-0 flex-col gap-6">
+            <CpfSearchCard
+                icon={Trash2}
+                title="Excluir informações"
+                description="Consulte o CPF da sua imobiliária"
+                isPending={listarMutation.isPending}
+                onSubmit={(cpf) => listarMutation.mutate(cpf)}
+            />
 
             {registros ? (
-                <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+                <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
                     <CardHeader className="shrink-0">
                         <CardTitle>
                             {registros.length === 0
@@ -122,7 +120,7 @@ export default function ExcluirPage() {
                     )}
                 </Card>
             ) : (
-                <Card className="flex h-full min-h-[280px] flex-col items-center justify-center gap-3 border-dashed p-6">
+                <Card className="flex min-h-[280px] flex-1 flex-col items-center justify-center gap-3 border-dashed p-6">
                     <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                         <FolderOpen className="h-7 w-7 text-muted-foreground" />
                     </span>
