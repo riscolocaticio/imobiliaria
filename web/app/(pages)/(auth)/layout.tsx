@@ -56,7 +56,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                     <div className="flex shrink-0 items-center gap-2">
                         <Image src="/logo.png" alt="Safeloc" width={44} height={44} className="h-11 w-11 rounded-lg" />
                         <div>
-                            <p className="text-sm font-semibold">Safeloc</p>
+                            <p className="text-sm font-bold tracking-tight">
+                                Safe<span className="text-primary">loc</span>
+                            </p>
                             <p className="text-xs text-muted-foreground">{usuario.nomeCompleto}</p>
                         </div>
                     </div>

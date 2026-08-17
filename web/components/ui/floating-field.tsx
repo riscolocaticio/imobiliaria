@@ -9,6 +9,7 @@ interface FloatingFieldProps {
     htmlFor: string
     required?: boolean
     error?: string
+    errorVariant?: 'inline' | 'tooltip'
     icon?: LucideIcon
     trailing?: React.ReactNode
     multiline?: boolean
@@ -21,6 +22,7 @@ const FloatingField = ({
     htmlFor,
     required,
     error,
+    errorVariant = 'inline',
     icon: Icon,
     trailing,
     multiline,
@@ -39,7 +41,7 @@ const FloatingField = ({
 
     return (
         <div className={cn('flex flex-col gap-1.5', className)}>
-            <div className={cn('relative', multiline && 'flex min-h-0 flex-1 flex-col')}>
+            <div className={cn('group relative', multiline && 'flex min-h-0 flex-1 flex-col')}>
                 {Icon && (
                     <Icon className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 )}
@@ -60,8 +62,18 @@ const FloatingField = ({
                     {required && <span className="ml-0.5 text-destructive">*</span>}
                 </label>
                 {trailing}
+
+                {error && errorVariant === 'tooltip' && (
+                    <span
+                        role="alert"
+                        className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-max max-w-[220px] -translate-x-1/2 rounded-md bg-destructive px-2.5 py-1.5 text-center text-xs text-destructive-foreground opacity-0 shadow-md transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100"
+                    >
+                        {error}
+                        <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-destructive" />
+                    </span>
+                )}
             </div>
-            {error && <p className="text-xs text-destructive">{error}</p>}
+            {error && errorVariant === 'inline' && <p className="text-xs text-destructive">{error}</p>}
         </div>
     )
 }

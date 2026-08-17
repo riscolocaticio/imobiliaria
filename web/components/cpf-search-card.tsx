@@ -1,11 +1,11 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Search, type LucideIcon } from 'lucide-react'
+import { Info, Loader2, Search, type LucideIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { FloatingField } from '@/components/ui/floating-field'
 import { cn } from '@/lib/utils'
@@ -50,26 +50,24 @@ export function CpfSearchCard({
 
     return (
         <Card>
-            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-end">
-                <div className="flex items-center gap-3 sm:shrink-0">
-                    {Icon && (
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <Icon className="h-5 w-5" />
-                        </span>
-                    )}
-                    <div className="flex flex-col gap-0.5">
-                        <CardTitle className="text-base">{title}</CardTitle>
-                        <CardDescription>{description}</CardDescription>
-                    </div>
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+                {Icon && (
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" />
+                    </span>
+                )}
+                <div className="flex flex-col gap-1">
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
                 </div>
-
+            </CardHeader>
+            <CardContent>
                 <form
-                    className="flex flex-col gap-3 sm:flex-1 sm:flex-row sm:items-end"
+                    className="flex flex-col gap-5"
                     noValidate
                     onSubmit={handleSubmit((values) => onSubmit(values.cpf))}
                 >
                     <FloatingField
-                        className="sm:max-w-xs"
                         label="CPF do inquilino"
                         htmlFor="cpf"
                         required
@@ -82,17 +80,20 @@ export function CpfSearchCard({
                         />
                     </FloatingField>
 
-                    <Button type="submit" size="lg" disabled={isPending} className="sm:w-auto">
+                    <Button type="submit" size="lg" disabled={isPending}>
                         {mostrarCarregando && <Loader2 className="h-4 w-4 animate-spin" />}
                         {mostrarCarregando ? buttonLoadingLabel : buttonLabel}
                     </Button>
                 </form>
             </CardContent>
 
-            <p className="border-t border-border px-5 py-2 text-[11px] leading-relaxed text-muted-foreground">
-                A consulta somente poderá ser realizada para fins de análise locatícia legítima, sendo vedada
-                qualquer utilização diversa. Todas as consultas são registradas e auditadas.
-            </p>
+            <div className="flex items-start gap-2 rounded-b-lg border-t border-border bg-muted/40 px-6 py-3">
+                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    A consulta somente poderá ser realizada para fins de análise locatícia legítima, sendo vedada
+                    qualquer utilização diversa. Todas as consultas são registradas e auditadas.
+                </p>
+            </div>
         </Card>
     )
 }

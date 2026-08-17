@@ -16,11 +16,15 @@ import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/
 
 export default function ExcluirPage() {
     const [registros, setRegistros] = useState<OcorrenciaExcluivel[] | null>(null)
+    const [cpfConsultado, setCpfConsultado] = useState('')
     const [registroParaExcluir, setRegistroParaExcluir] = useState<OcorrenciaExcluivel | null>(null)
 
     const listarMutation = useMutation({
         mutationFn: (cpf: string) => ocorrenciaService.listarExcluiveis(cpf),
-        onSuccess: setRegistros,
+        onSuccess: (data, cpf) => {
+            setRegistros(data)
+            setCpfConsultado(cpf)
+        },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível consultar o CPF. Tente novamente.'))
         }
@@ -40,15 +44,22 @@ export default function ExcluirPage() {
 
     const mostrarCarregandoExclusao = useDelayedLoading(excluirMutation.isPending)
 
+    function buscar(cpf: string) {
+        if (cpf === cpfConsultado && registros) return
+        listarMutation.mutate(cpf)
+    }
+
     return (
-        <div className="flex h-full min-h-0 flex-col gap-6">
-            <CpfSearchCard
-                icon={Trash2}
-                title="Excluir informações"
-                description="Consulte o CPF da sua imobiliária"
-                isPending={listarMutation.isPending}
-                onSubmit={(cpf) => listarMutation.mutate(cpf)}
-            />
+        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+            <div className="lg:self-start">
+                <CpfSearchCard
+                    icon={Trash2}
+                    title="Excluir informações"
+                    description="Informe o CPF do inquilino"
+                    isPending={listarMutation.isPending}
+                    onSubmit={buscar}
+                />
+            </div>
 
             {registros ? (
                 <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -74,8 +85,9 @@ export default function ExcluirPage() {
                     )}
 
                     {registros.length > 0 && (
-                        <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
-                            <ul className="flex flex-col gap-4">
+                        <div className="min-h-0 flex-1">
+                            <CardContent className="flex h-full min-h-0 flex-col overflow-y-auto">
+                                <ul className="flex flex-col gap-4 pb-6">
                                 {registros.map((registro) => {
                                     const Icon = TIPO_OCORRENCIA_ICON[registro.tipo]
                                     return (
@@ -83,26 +95,24 @@ export default function ExcluirPage() {
                                             key={registro.id}
                                             className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
                                         >
-                                            <div className="flex items-start gap-4">
-                                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                                                    <Icon className="h-5 w-5" />
-                                                </span>
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <div>
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                                            <Icon className="h-4 w-4" />
+                                                        </span>
                                                         <Badge variant="secondary">
                                                             {TIPO_OCORRENCIA_LABEL[registro.tipo]}
                                                         </Badge>
-                                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                            <Clock className="h-3 w-3" />
-                                                            {new Date(registro.createdAt).toLocaleDateString(
-                                                                'pt-BR'
-                                                            )}
-                                                        </span>
                                                     </div>
-                                                    <p className="mt-3 text-sm leading-relaxed text-foreground">
-                                                        {registro.descricao}
-                                                    </p>
+                                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                        <Clock className="h-3 w-3" />
+                                                        {new Date(registro.createdAt).toLocaleDateString('pt-BR')}
+                                                    </span>
                                                 </div>
+                                                <p className="mt-3 pl-11 text-sm leading-relaxed text-foreground">
+                                                    {registro.descricao}
+                                                </p>
                                             </div>
                                             <Button
                                                 variant="destructive"
@@ -115,8 +125,9 @@ export default function ExcluirPage() {
                                         </li>
                                     )
                                 })}
-                            </ul>
-                        </CardContent>
+                                </ul>
+                            </CardContent>
+                        </div>
                     )}
                 </Card>
             ) : (
@@ -125,7 +136,7 @@ export default function ExcluirPage() {
                         <FolderOpen className="h-7 w-7 text-muted-foreground" />
                     </span>
                     <p className="max-w-xs text-center text-sm text-muted-foreground">
-                        Informe um CPF ao lado para ver os registros administráveis pela sua imobiliária
+                        Informe um CPF para ver os registros administráveis pela sua imobiliária
                     </p>
                 </Card>
             )}

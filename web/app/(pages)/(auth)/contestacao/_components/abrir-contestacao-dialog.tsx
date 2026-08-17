@@ -91,28 +91,31 @@ export function AbrirContestacaoDialog({
                     {resultado && resultado.ocorrencias.length > 0 && (
                         <div className="flex flex-col gap-2">
                             <p className="text-sm font-medium">Selecione a ocorrência contestada</p>
-                            <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
-                                {resultado.ocorrencias.map((ocorrencia) => (
-                                    <button
-                                        key={ocorrencia.id}
-                                        type="button"
-                                        onClick={() => setOcorrenciaId(ocorrencia.id)}
-                                        className={cn(
-                                            'flex flex-col items-start rounded-md border p-3 text-left text-sm transition-colors',
-                                            ocorrenciaId === ocorrencia.id
-                                                ? 'border-primary bg-primary/5'
-                                                : 'border-border hover:bg-accent'
-                                        )}
-                                    >
-                                        <span className="font-medium">
-                                            {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]} ·{' '}
-                                            {formatCpf(ocorrencia.cpfInquilino)}
-                                        </span>
-                                        <span className="text-xs text-muted-foreground">
-                                            {ocorrencia.imobiliaria.nomeFantasia ?? ocorrencia.imobiliaria.razaoSocial}
-                                        </span>
-                                    </button>
-                                ))}
+                            <div className="max-h-48 overflow-y-auto">
+                                <div className="flex flex-col gap-2 pb-2">
+                                    {resultado.ocorrencias.map((ocorrencia) => (
+                                        <button
+                                            key={ocorrencia.id}
+                                            type="button"
+                                            onClick={() => setOcorrenciaId(ocorrencia.id)}
+                                            className={cn(
+                                                'flex flex-col items-start rounded-md border p-3 text-left text-sm transition-colors',
+                                                ocorrenciaId === ocorrencia.id
+                                                    ? 'border-primary bg-primary/5'
+                                                    : 'border-border hover:bg-accent'
+                                            )}
+                                        >
+                                            <span className="font-medium">
+                                                {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]} ·{' '}
+                                                {formatCpf(ocorrencia.cpfInquilino)}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground">
+                                                {ocorrencia.imobiliaria.nomeFantasia ??
+                                                    ocorrencia.imobiliaria.razaoSocial}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}

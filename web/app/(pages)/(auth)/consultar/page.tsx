@@ -43,15 +43,22 @@ export default function ConsultarPage() {
 
     const mostrarCarregandoDetalhes = useDelayedLoading(detalhesMutation.isPending)
 
+    function buscar(cpf: string) {
+        if (cpf === cpfConsultado && resultado) return
+        consultaMutation.mutate(cpf)
+    }
+
     return (
-        <div className="flex h-full min-h-0 flex-col gap-6">
-            <CpfSearchCard
-                icon={Search}
-                title="Consultar informações"
-                description="Informe o CPF do inquilino"
-                isPending={consultaMutation.isPending}
-                onSubmit={(cpf) => consultaMutation.mutate(cpf)}
-            />
+        <div className="grid h-full min-h-0 grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+            <div className="lg:self-start">
+                <CpfSearchCard
+                    icon={Search}
+                    title="Consultar informações"
+                    description="Informe o CPF do inquilino"
+                    isPending={consultaMutation.isPending}
+                    onSubmit={buscar}
+                />
+            </div>
 
             {resultado ? (
                 <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -79,48 +86,51 @@ export default function ConsultarPage() {
                                     {detalhes && ` · ${detalhes.length} ocorrência(s) registrada(s)`}
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="scroll-fade-y flex min-h-0 flex-1 flex-col overflow-y-auto">
-                                {!detalhes && (
-                                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
-                                        {mostrarCarregandoDetalhes && (
-                                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                        )}
-                                        <p className="text-sm text-muted-foreground">Carregando detalhes...</p>
-                                    </div>
-                                )}
+                            <div className="min-h-0 flex-1">
+                                <CardContent className="flex h-full min-h-0 flex-col overflow-y-auto">
+                                    {!detalhes && (
+                                        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3">
+                                            {mostrarCarregandoDetalhes && (
+                                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                            )}
+                                            <p className="text-sm text-muted-foreground">Carregando detalhes...</p>
+                                        </div>
+                                    )}
 
-                                {detalhes && (
-                                    <ul className="flex flex-col gap-4">
-                                        {detalhes.map((ocorrencia) => {
-                                            const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
-                                            return (
-                                                <li
-                                                    key={ocorrencia.id}
-                                                    className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
-                                                >
-                                                    <div className="flex items-start gap-4">
-                                                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                                                            <Icon className="h-5 w-5" />
-                                                        </span>
-                                                        <div className="min-w-0 flex-1">
-                                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                    {detalhes && (
+                                        <ul className="flex flex-col gap-4 pb-6">
+                                            {detalhes.map((ocorrencia) => {
+                                                const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
+                                                return (
+                                                    <li
+                                                        key={ocorrencia.id}
+                                                        className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+                                                    >
+                                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                                                    <Icon className="h-4 w-4" />
+                                                                </span>
                                                                 <Badge variant="secondary">
                                                                     {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
                                                                 </Badge>
-                                                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                                    <Clock className="h-3 w-3" />
-                                                                    {new Date(
-                                                                        ocorrencia.createdAt
-                                                                    ).toLocaleDateString('pt-BR')}{' '}
-                                                                    às{' '}
-                                                                    {new Date(
-                                                                        ocorrencia.createdAt
-                                                                    ).toLocaleTimeString('pt-BR', {
+                                                            </div>
+                                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                                <Clock className="h-3 w-3" />
+                                                                {new Date(ocorrencia.createdAt).toLocaleDateString(
+                                                                    'pt-BR'
+                                                                )}{' '}
+                                                                às{' '}
+                                                                {new Date(ocorrencia.createdAt).toLocaleTimeString(
+                                                                    'pt-BR',
+                                                                    {
                                                                         hour: '2-digit',
                                                                         minute: '2-digit'
-                                                                    })}
-                                                                </span>
-                                                            </div>
+                                                                    }
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                        <div className="pl-11">
                                                             <p className="mt-3 text-sm leading-relaxed text-foreground">
                                                                 {ocorrencia.descricao}
                                                             </p>
@@ -130,13 +140,13 @@ export default function ConsultarPage() {
                                                                     ocorrencia.imobiliaria.razaoSocial}
                                                             </p>
                                                         </div>
-                                                    </div>
-                                                </li>
-                                            )
-                                        })}
-                                    </ul>
-                                )}
-                            </CardContent>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    )}
+                                </CardContent>
+                            </div>
                             <p className="shrink-0 border-t border-border px-6 py-2 text-[11px] leading-relaxed text-muted-foreground">
                                 As ocorrências exibidas foram registradas por imobiliárias participantes da
                                 plataforma. A responsabilidade pela veracidade das informações é exclusivamente da
@@ -152,7 +162,7 @@ export default function ConsultarPage() {
                         <FileSearch className="h-7 w-7 text-muted-foreground" />
                     </span>
                     <p className="max-w-xs text-center text-sm text-muted-foreground">
-                        Informe um CPF ao lado para consultar as ocorrências registradas
+                        Informe um CPF para consultar as ocorrências registradas
                     </p>
                 </Card>
             )}

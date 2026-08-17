@@ -144,38 +144,42 @@ export function ContestacaoDetalheDialog({
                                         Nenhum documento enviado até o momento.
                                     </p>
                                 ) : (
-                                    <ul className="scroll-fade-y mt-2 flex max-h-48 flex-col gap-2 overflow-y-auto pr-1">
-                                        {contestacao.documentos.map((documento) => (
-                                            <li
-                                                key={documento.id}
-                                                className="flex items-center justify-between gap-2 rounded-md border border-border p-2 text-sm"
-                                            >
-                                                <span className="flex min-w-0 items-center gap-2">
-                                                    <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                                                    <span className="flex min-w-0 flex-col">
-                                                        <span className="truncate">{documento.nomeArquivo}</span>
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {formatarTamanho(documento.tamanhoBytes)} · enviado por{' '}
-                                                            {documento.enviadoPorUsuario.nomeCompleto}
+                                    <div className="mt-2 max-h-48 overflow-y-auto pr-1">
+                                        <ul className="flex flex-col gap-2 pb-2">
+                                            {contestacao.documentos.map((documento) => (
+                                                <li
+                                                    key={documento.id}
+                                                    className="flex items-center justify-between gap-2 rounded-md border border-border p-2 text-sm"
+                                                >
+                                                    <span className="flex min-w-0 items-center gap-2">
+                                                        <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                                        <span className="flex min-w-0 flex-col">
+                                                            <span className="truncate">{documento.nomeArquivo}</span>
+                                                            <span className="text-xs text-muted-foreground">
+                                                                {formatarTamanho(documento.tamanhoBytes)} · enviado
+                                                                por {documento.enviadoPorUsuario.nomeCompleto}
+                                                            </span>
                                                         </span>
                                                     </span>
-                                                </span>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    disabled={documentoBaixandoId === documento.id}
-                                                    onClick={() => baixarDocumento(documento.id, documento.nomeArquivo)}
-                                                >
-                                                    {documentoBaixandoId === documento.id ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                    ) : (
-                                                        <Download className="h-4 w-4" />
-                                                    )}
-                                                </Button>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        disabled={documentoBaixandoId === documento.id}
+                                                        onClick={() =>
+                                                            baixarDocumento(documento.id, documento.nomeArquivo)
+                                                        }
+                                                    >
+                                                        {documentoBaixandoId === documento.id ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : (
+                                                            <Download className="h-4 w-4" />
+                                                        )}
+                                                    </Button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 )}
 
                                 {podeEnviarDocumento && (

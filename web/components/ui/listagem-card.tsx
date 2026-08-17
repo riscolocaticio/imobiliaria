@@ -59,8 +59,8 @@ const ListagemCard = ({
                 )}
 
                 {!isLoading && !isEmpty && (
-                    <div className="scroll-fade-y flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-                        {children}
+                    <div className="min-h-0 flex-1 overflow-y-auto">
+                        <div className="flex flex-col gap-3 pb-4">{children}</div>
                     </div>
                 )}
 

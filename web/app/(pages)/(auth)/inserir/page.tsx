@@ -72,7 +72,7 @@ export default function InserirPage() {
         <Card className="flex h-full min-h-0 flex-col">
             <CardHeader className="shrink-0">
                 <CardTitle>Inserir informações</CardTitle>
-                <CardDescription>Registre uma ocorrência locatícia de forma simples e objetiva</CardDescription>
+                <CardDescription>Registre uma ocorrência locatícia de um inquilino</CardDescription>
             </CardHeader>
             <CardContent className="flex min-h-0 flex-1 flex-col">
                 <form

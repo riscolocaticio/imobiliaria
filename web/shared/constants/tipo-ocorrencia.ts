@@ -11,7 +11,7 @@ import {
 export const TIPO_OCORRENCIA_OPTIONS = [
     { value: 'ABANDONO_IMOVEL', label: 'Abandono do imóvel' },
     { value: 'INADIMPLENCIA_LOCATICIA', label: 'Inadimplência locatícia' },
-    { value: 'DEPREDACAO_DANOS_IMOVEL', label: 'Depredação / danos ao imóvel' },
+    { value: 'DEPREDACAO_DANOS_IMOVEL', label: 'Depredação / Danos ao imóvel' },
     { value: 'MULTA_CONTRATUAL', label: 'Multa contratual' },
     { value: 'DESCUMPRIMENTO_CONTRATUAL', label: 'Descumprimento contratual' },
     { value: 'OUTROS', label: 'Outros' }
