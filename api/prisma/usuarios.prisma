@@ -16,6 +16,9 @@ model Usuario {
     ocorrenciasRegistradas Ocorrencia[] @relation("OcorrenciaRegistradaPor")
     ocorrenciasExcluidas   Ocorrencia[] @relation("OcorrenciaExcluidaPor")
     auditLogs              AuditLog[]
+    contestacoesAbertas    Contestacao[] @relation("ContestacaoAbertaPor")
+    contestacoesDecididas  Contestacao[] @relation("ContestacaoDecididaPor")
+    documentosEnviados     ContestacaoDocumento[]
 
     @@index([imobiliariaId])
     @@map("usuarios")

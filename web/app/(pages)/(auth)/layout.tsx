@@ -4,18 +4,20 @@ import { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Search, PlusCircle, Trash2, Users, ShieldCheck, LogOut } from 'lucide-react'
+import { Search, PlusCircle, Trash2, Users, MessageSquareWarning, ShieldCheck, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { NotificacaoSino } from '@/components/notificacao-sino'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useUser } from '@/app/providers/user-provider'
 import { authService } from '@/app/services/auth.service'
 import { ROUTES } from '@/shared/enums/routes.enum'
 
 const NAV_ITEMS = [
-    { href: ROUTES.CONSULTAR, label: 'Consultar informações', shortLabel: 'Consultar', icon: Search },
-    { href: ROUTES.INSERIR, label: 'Inserir informações', shortLabel: 'Inserir', icon: PlusCircle },
-    { href: ROUTES.EXCLUIR, label: 'Excluir informações', shortLabel: 'Excluir', icon: Trash2 },
-    { href: ROUTES.USUARIOS, label: 'Usuários', shortLabel: 'Usuários', icon: Users }
+    { href: ROUTES.CONSULTAR, label: 'Consultar', shortLabel: 'Consultar', icon: Search },
+    { href: ROUTES.INSERIR, label: 'Inserir', shortLabel: 'Inserir', icon: PlusCircle },
+    { href: ROUTES.EXCLUIR, label: 'Excluir', shortLabel: 'Excluir', icon: Trash2 },
+    { href: ROUTES.USUARIOS, label: 'Usuários', shortLabel: 'Usuários', icon: Users },
+    { href: ROUTES.CONTESTACAO, label: 'Contestação', shortLabel: 'Contestação', icon: MessageSquareWarning }
 ]
 
 const ADMIN_NAV_ITEM = {
@@ -79,6 +81,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                                 </Link>
                             )
                         })}
+                        <NotificacaoSino />
                         <ThemeToggle compact />
                         <button
                             onClick={sair}
@@ -91,6 +94,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                     </nav>
 
                     <div className="flex items-center gap-1 md:hidden">
+                        <NotificacaoSino />
                         <ThemeToggle compact />
                         <button
                             onClick={sair}

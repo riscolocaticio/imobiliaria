@@ -10,7 +10,16 @@ export const ACAO_LOG_LABEL: Record<string, string> = {
     EXCLUSAO_IMOBILIARIA: 'Exclusão de imobiliária',
     CRIACAO_USUARIO: 'Criação de usuário',
     EDICAO_USUARIO: 'Edição de usuário',
-    EXCLUSAO_USUARIO: 'Exclusão de usuário'
+    EXCLUSAO_USUARIO: 'Exclusão de usuário',
+    ABERTURA_CONTESTACAO: 'Abertura de contestação',
+    ENVIO_DOCUMENTO_CONTESTACAO: 'Envio de documento',
+    DECISAO_CONTESTACAO: 'Decisão de contestação'
+}
+
+export function formatarAcaoLog(acao: string): string {
+    if (ACAO_LOG_LABEL[acao]) return ACAO_LOG_LABEL[acao]
+    const texto = acao.replace(/_/g, ' ').toLowerCase()
+    return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
 export interface LogEntry {

@@ -8,7 +8,7 @@ import { ListagemCard } from '@/components/ui/listagem-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
-import { ACAO_LOG_LABEL, logService } from '@/app/services/log.service'
+import { ACAO_LOG_LABEL, formatarAcaoLog, logService } from '@/app/services/log.service'
 
 const TODAS_IMOBILIARIAS = 'todas'
 const TODAS_ACOES = 'todas'
@@ -118,17 +118,17 @@ export function LogsTab() {
             {resultado?.logs.map((log) => (
                 <div
                     key={log.id}
-                    className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[160px_1fr_auto] md:items-center md:gap-4"
+                    className="grid grid-cols-1 gap-2 rounded-md border border-border p-3 text-sm md:grid-cols-[minmax(0,160px)_minmax(0,1fr)_auto] md:items-center md:gap-4"
                 >
-                    <Badge variant="secondary" className="w-fit">
-                        {ACAO_LOG_LABEL[log.acao] ?? log.acao}
+                    <Badge variant="secondary" className="max-w-full truncate" title={formatarAcaoLog(log.acao)}>
+                        {formatarAcaoLog(log.acao)}
                     </Badge>
-                    <div>
-                        <p className="font-medium">
+                    <div className="min-w-0">
+                        <p className="truncate font-medium">
                             {log.usuario.nomeCompleto}{' '}
                             <span className="font-normal text-muted-foreground">({log.usuario.login})</span>
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="truncate text-xs text-muted-foreground">
                             {log.imobiliaria.nomeFantasia ?? log.imobiliaria.razaoSocial}
                             {log.cpfConsultado && ` · CPF consultado: ${log.cpfConsultado}`}
                         </p>

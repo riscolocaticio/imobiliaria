@@ -1,0 +1,16 @@
+model Notificacao {
+    id            Int                      @id @default(autoincrement())
+    destinatario  DestinatarioNotificacao
+    imobiliariaId Int?
+    contestacaoId Int
+    tipo          TipoNotificacao
+    lida          Boolean                  @default(false)
+    createdAt     DateTime                 @default(now())
+
+    imobiliaria Imobiliaria? @relation(fields: [imobiliariaId], references: [id])
+    contestacao Contestacao  @relation(fields: [contestacaoId], references: [id])
+
+    @@index([destinatario, imobiliariaId])
+    @@index([contestacaoId])
+    @@map("notificacoes")
+}

@@ -8,9 +8,11 @@ model Imobiliaria {
     createdAt    DateTime        @default(now())
     updatedAt    DateTime        @updatedAt
 
-    usuarios     Usuario[]
-    ocorrencias  Ocorrencia[]
-    auditLogs    AuditLog[]
+    usuarios      Usuario[]
+    ocorrencias   Ocorrencia[]
+    auditLogs     AuditLog[]
+    contestacoes  Contestacao[]
+    notificacoes  Notificacao[]
 
     @@map("imobiliarias")
 }

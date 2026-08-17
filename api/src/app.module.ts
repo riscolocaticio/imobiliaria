@@ -10,6 +10,8 @@ import AuthModule from './modules/core/auth/auth.module'
 import ImobiliariaModule from './modules/core/imobiliaria/imobiliaria.module'
 import UsuarioModule from './modules/core/usuario/usuario.module'
 import OcorrenciaModule from './modules/core/ocorrencia/ocorrencia.module'
+import ContestacaoModule from './modules/core/contestacao/contestacao.module'
+import NotificacaoModule from './modules/core/notificacao/notificacao.module'
 import LogModule from './modules/core/log/log.module'
 
 @Module({
@@ -22,7 +24,8 @@ import LogModule from './modules/core/log/log.module'
                 PORT: Joi.number().required(),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRES_IN: Joi.string().required(),
-                URL_FRONT_END: Joi.string().required()
+                URL_FRONT_END: Joi.string().required(),
+                UPLOADS_DIR: Joi.string().default('./uploads')
             })
         }),
         ThrottlerModule.forRoot([
@@ -37,6 +40,8 @@ import LogModule from './modules/core/log/log.module'
         ImobiliariaModule,
         UsuarioModule,
         OcorrenciaModule,
+        ContestacaoModule,
+        NotificacaoModule,
         LogModule
     ],
     controllers: [],

@@ -15,6 +15,7 @@ model Ocorrencia {
     usuario           Usuario     @relation("OcorrenciaRegistradaPor", fields: [usuarioId], references: [id])
     excluidoPorUsuario Usuario?   @relation("OcorrenciaExcluidaPor", fields: [excluidoPorUsuarioId], references: [id])
     auditLogs         AuditLog[]
+    contestacoes      Contestacao[]
 
     @@index([cpfInquilino])
     @@index([imobiliariaId])

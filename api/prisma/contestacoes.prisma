@@ -1,0 +1,42 @@
+model Contestacao {
+    id                   Int               @id @default(autoincrement())
+    ocorrenciaId         Int
+    imobiliariaId        Int
+    motivoConsumidor     String
+    status               StatusContestacao @default(ABERTA)
+    prazoLimite          DateTime
+    abertaPorUsuarioId   Int
+    respondidaEm         DateTime?
+    decisaoEm            DateTime?
+    decisaoObservacao    String?
+    decididaPorUsuarioId Int?
+    createdAt            DateTime          @default(now())
+
+    ocorrencia         Ocorrencia             @relation(fields: [ocorrenciaId], references: [id])
+    imobiliaria        Imobiliaria            @relation(fields: [imobiliariaId], references: [id])
+    abertaPorUsuario   Usuario                @relation("ContestacaoAbertaPor", fields: [abertaPorUsuarioId], references: [id])
+    decididaPorUsuario Usuario?               @relation("ContestacaoDecididaPor", fields: [decididaPorUsuarioId], references: [id])
+    documentos         ContestacaoDocumento[]
+    notificacoes       Notificacao[]
+
+    @@index([ocorrenciaId])
+    @@index([imobiliariaId])
+    @@map("contestacoes")
+}
+
+model ContestacaoDocumento {
+    id                  Int      @id @default(autoincrement())
+    contestacaoId       Int
+    nomeArquivo         String
+    caminhoArquivo      String
+    tamanhoBytes        Int
+    mimeType            String
+    enviadoPorUsuarioId Int
+    createdAt           DateTime @default(now())
+
+    contestacao       Contestacao @relation(fields: [contestacaoId], references: [id])
+    enviadoPorUsuario Usuario     @relation(fields: [enviadoPorUsuarioId], references: [id])
+
+    @@index([contestacaoId])
+    @@map("contestacao_documentos")
+}

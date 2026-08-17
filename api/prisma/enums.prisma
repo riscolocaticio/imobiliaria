@@ -33,4 +33,24 @@ enum AcaoAuditoria {
     CRIACAO_USUARIO
     EDICAO_USUARIO
     EXCLUSAO_USUARIO
+    ABERTURA_CONTESTACAO
+    ENVIO_DOCUMENTO_CONTESTACAO
+    DECISAO_CONTESTACAO
+}
+
+enum StatusContestacao {
+    ABERTA
+    RESPONDIDA
+    PROCEDENTE
+    IMPROCEDENTE
+}
+
+enum DestinatarioNotificacao {
+    MASTER
+    IMOBILIARIA
+}
+
+enum TipoNotificacao {
+    CONTESTACAO_ABERTA
+    DOCUMENTO_ENVIADO
 }
