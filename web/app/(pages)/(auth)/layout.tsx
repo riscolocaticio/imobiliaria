@@ -62,7 +62,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     const navItems = usuario.role === 'MASTER' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
 
     return (
-        <div className="flex md:h-dvh md:overflow-hidden">
+        <div className="flex min-h-dvh md:h-dvh md:overflow-hidden">
             <aside className="hidden shrink-0 flex-col border-r border-border bg-card md:flex md:w-64">
                 <div className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
                     <Image src="/logo.png" alt="Safeloc" width={36} height={36} className="h-9 w-9 rounded-lg" />
@@ -133,7 +133,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </header>
 
                 <main className="flex w-full flex-1 flex-col px-4 pt-6 sm:px-6 sm:pt-8 md:min-h-0 md:overflow-hidden lg:px-8">
-                    <div className="pb-6 md:min-h-0 md:flex-1 md:overflow-y-auto">{children}</div>
+                    <div className="flex-1 pb-6 md:min-h-0 md:overflow-y-auto">{children}</div>
                     <AppFooter />
                 </main>
             </div>
