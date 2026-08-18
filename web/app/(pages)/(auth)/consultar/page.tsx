@@ -134,9 +134,6 @@ export default function ConsultarPage() {
                                                                     {FAIXA_VALOR_OCORRENCIA_LABEL[ocorrencia.faixaValor]}
                                                                 </Badge>
                                                             </div>
-                                                            <p className="mt-3 text-sm leading-relaxed text-foreground">
-                                                                {ocorrencia.observacoes}
-                                                            </p>
                                                             <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
                                                                 <Building2 className="h-3.5 w-3.5" />
                                                                 {ocorrencia.imobiliaria.nomeFantasia ??

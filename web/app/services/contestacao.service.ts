@@ -39,7 +39,7 @@ export interface ContestacaoDocumento {
 }
 
 export interface ContestacaoDetalhe extends Omit<Contestacao, '_count'> {
-    ocorrencia: ContestacaoOcorrenciaResumo & { observacoes: string }
+    ocorrencia: ContestacaoOcorrenciaResumo
     documentos: ContestacaoDocumento[]
 }
 

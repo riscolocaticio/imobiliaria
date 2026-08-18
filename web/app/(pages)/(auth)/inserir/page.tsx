@@ -15,7 +15,6 @@ import { DateInput } from '@/components/ui/date-input'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { isCpfComplete } from '@/lib/format-cpf'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -40,10 +39,6 @@ const inserirSchema = z.object({
         .refine(dataNaoFutura, 'Data da ocorrência não pode ser no futuro'),
     situacaoAtual: z.string().min(1, 'Selecione a situação atual'),
     faixaValor: z.string().min(1, 'Selecione a faixa de valor'),
-    observacoes: z
-        .string()
-        .min(1, 'Descreva a ocorrência')
-        .max(300, 'As observações devem ter no máximo 300 caracteres'),
     declaracaoFundamento: z.boolean().refine((valor) => valor, 'Confirme esta declaração'),
     declaracaoVeracidade: z.boolean().refine((valor) => valor, 'Confirme esta declaração'),
     declaracaoCiencia: z.boolean().refine((valor) => valor, 'Confirme esta declaração')
@@ -87,7 +82,6 @@ export default function InserirPage() {
             dataOcorrencia: '',
             situacaoAtual: '',
             faixaValor: '',
-            observacoes: '',
             declaracaoFundamento: false,
             declaracaoVeracidade: false,
             declaracaoCiencia: false
@@ -279,30 +273,8 @@ export default function InserirPage() {
                         </div>
                     </div>
 
-                    <div className="md:min-h-0 md:flex-1">
-                        <FloatingField
-                            label="Observações"
-                            htmlFor="observacoes"
-                            required
-                            error={errors.observacoes?.message}
-                            multiline
-                            className="mt-0 md:h-full"
-                        >
-                            <Textarea
-                                placeholder="Preencher com os detalhes relevantes da ocorrência..."
-                                className="min-h-32 resize-none md:h-full md:min-h-0"
-                                maxLength={300}
-                                {...register('observacoes')}
-                            />
-                        </FloatingField>
-                    </div>
-
                     <div className="flex shrink-0 flex-col gap-3 rounded-lg border border-border bg-muted/30 p-4">
-                        <p className="text-xs leading-relaxed text-muted-foreground">
-                            Descreva apenas fatos objetivos relacionados à ocorrência. É proibida a inclusão de
-                            opiniões, julgamentos pessoais ou informações não relacionadas à locação.
-                        </p>
-                        <div className="flex flex-col gap-3 border-t border-border pt-3">
+                        <div className="flex flex-col gap-3">
                             <p className="text-sm font-medium text-foreground">Declaração obrigatória</p>
                             {DECLARACOES.map((declaracao) => (
                                 <label

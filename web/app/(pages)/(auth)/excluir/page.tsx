@@ -132,9 +132,6 @@ export default function ExcluirPage() {
                                                         {FAIXA_VALOR_OCORRENCIA_LABEL[registro.faixaValor]}
                                                     </Badge>
                                                 </div>
-                                                <p className="mt-3 text-sm leading-relaxed text-foreground">
-                                                    {registro.observacoes}
-                                                </p>
                                             </div>
                                         </li>
                                     )

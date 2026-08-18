@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator'
+import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator'
 import { FaixaValorOcorrencia, SituacaoOcorrencia, TipoOcorrencia } from '@prisma/client'
 
 export class OcorrenciaCreateInput {
@@ -24,9 +24,4 @@ export class OcorrenciaCreateInput {
 
     @IsEnum(FaixaValorOcorrencia, { message: 'Faixa de valor inválida' })
     faixaValor: FaixaValorOcorrencia
-
-    @IsString()
-    @IsNotEmpty({ message: 'As observações são obrigatórias' })
-    @MaxLength(300, { message: 'As observações devem ter no máximo 300 caracteres' })
-    observacoes: string
 }

@@ -7,7 +7,6 @@ model Ocorrencia {
     dataOcorrencia          DateTime
     situacaoAtual           SituacaoOcorrencia
     faixaValor              FaixaValorOcorrencia
-    observacoes             String
     imobiliariaId           Int
     usuarioId               Int
     status                  StatusOcorrencia     @default(ATIVA)

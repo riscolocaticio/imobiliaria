@@ -120,7 +120,6 @@ export function ContestacaoDetalheDialog({
                                     {TIPO_OCORRENCIA_LABEL[contestacao.ocorrencia.tipo]} ·{' '}
                                     {contestacao.imobiliaria.nomeFantasia ?? contestacao.imobiliaria.razaoSocial}
                                 </p>
-                                <p className="mt-2 text-muted-foreground">{contestacao.ocorrencia.observacoes}</p>
                             </div>
 
                             <div>

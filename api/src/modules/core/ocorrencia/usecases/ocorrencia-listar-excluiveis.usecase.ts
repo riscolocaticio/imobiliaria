@@ -16,7 +16,6 @@ export class OcorrenciaListarExcluiveisUsecase {
                 dataOcorrencia: true,
                 situacaoAtual: true,
                 faixaValor: true,
-                observacoes: true,
                 createdAt: true
             },
             orderBy: { createdAt: 'desc' }
