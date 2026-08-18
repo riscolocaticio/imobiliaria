@@ -39,5 +39,9 @@ export const authService = {
         } finally {
             destroyCookie(null, COOKIE_TOKEN.TOKEN, { path: '/' })
         }
+    },
+
+    limparSessaoLocal(): void {
+        destroyCookie(null, COOKIE_TOKEN.TOKEN, { path: '/' })
     }
 }

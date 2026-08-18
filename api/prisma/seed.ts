@@ -63,8 +63,26 @@ async function main() {
         }
     })
 
+    const master2PasswordHash = await bcrypt.hash('Master2@#Risco2026', 10)
+
+    await prisma.usuario.upsert({
+        where: { login: 'master2' },
+        update: {},
+        create: {
+            imobiliariaId: plataforma.id,
+            nomeCompleto: 'Administrador da Plataforma 2',
+            cpf: '00000000098',
+            dataNascimento: new Date('1990-01-01'),
+            email: 'master2@safeloc.com.br',
+            login: 'master2',
+            passwordHash: master2PasswordHash,
+            role: 'MASTER'
+        }
+    })
+
     console.log('Seed concluído: imobiliária "Imobiliária Exemplo" e usuário "admin" / "senha123"')
     console.log('Seed concluído: usuário master "master" / "Master@#Risco2026"')
+    console.log('Seed concluído: usuário master "master2" / "Master2@#Risco2026"')
 }
 
 main()

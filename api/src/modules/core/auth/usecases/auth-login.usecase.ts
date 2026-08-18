@@ -28,7 +28,11 @@ export class AuthLoginUsecase {
             throw new UnauthorizedException('Usuário inativo. Não é possível acessar o sistema.')
         }
 
-        if (usuario.sessaoExpiraEm && usuario.sessaoExpiraEm > new Date()) {
+        if (
+            process.env.NODE_ENV === 'production' &&
+            usuario.sessaoExpiraEm &&
+            usuario.sessaoExpiraEm > new Date()
+        ) {
             throw new ConflictException(
                 'Já existe um login ativo com este usuário. Encerre a sessão atual antes de continuar.'
             )

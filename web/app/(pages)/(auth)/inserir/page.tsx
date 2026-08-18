@@ -109,14 +109,14 @@ export default function InserirPage() {
         errors.declaracaoFundamento || errors.declaracaoVeracidade || errors.declaracaoCiencia
 
     return (
-        <Card className="flex min-h-full flex-col md:h-full">
+        <Card className="flex flex-col">
             <CardHeader className="shrink-0">
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de um inquilino</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col md:min-h-0 md:flex-1">
+            <CardContent className="flex flex-col">
                 <form
-                    className="flex w-full flex-col gap-6 md:min-h-0 md:flex-1"
+                    className="flex w-full flex-col gap-7 sm:gap-8"
                     noValidate
                     onSubmit={handleSubmit((values) => inserirMutation.mutate(values))}
                 >
@@ -172,7 +172,7 @@ export default function InserirPage() {
                         </div>
                     </div>
 
-                    <div className="flex shrink-0 flex-col gap-4">
+                    <div className="flex shrink-0 flex-col gap-4 border-t border-border pt-7 sm:pt-8">
                         <p className="text-sm font-semibold text-foreground">Dados da ocorrência</p>
                         <div className="grid grid-cols-12 gap-4">
                             <div className="col-span-12 flex flex-col gap-1.5 sm:col-span-6 lg:col-span-3">
@@ -273,7 +273,7 @@ export default function InserirPage() {
                         </div>
                     </div>
 
-                    <div className="flex shrink-0 flex-col gap-3 rounded-lg border border-border bg-muted/30 p-4">
+                    <div className="flex shrink-0 flex-col gap-3 rounded-lg border border-border bg-muted/30 p-4 sm:p-5">
                         <div className="flex flex-col gap-3">
                             <p className="text-sm font-medium text-foreground">Declaração obrigatória</p>
                             {DECLARACOES.map((declaracao) => (
