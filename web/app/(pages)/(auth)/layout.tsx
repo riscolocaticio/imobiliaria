@@ -25,6 +25,14 @@ const NAV_ITEMS = [
     { href: ROUTES.CONTESTACAO, label: 'Contestação', icon: MessageSquareWarning }
 ]
 
+function getSaudacao() {
+    const minutosDoDia = new Date().getHours() * 60 + new Date().getMinutes()
+
+    if (minutosDoDia < 4 * 60 + 30 || minutosDoDia >= 18 * 60) return 'Boa noite'
+    if (minutosDoDia < 12 * 60) return 'Bom dia'
+    return 'Boa tarde'
+}
+
 const ADMIN_NAV_ITEM = {
     href: ROUTES.ADMINISTRADOR,
     label: 'Administrador',
@@ -95,8 +103,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </nav>
 
                 <div className="shrink-0 border-t border-border px-4 py-3 text-center">
-                    <p className="truncate text-sm font-medium leading-5 text-foreground">{usuario.nomeCompleto}</p>
-                    <p className="mt-1 text-xs leading-4 text-muted-foreground">v{APP_VERSION}</p>
+                    <p className="text-xs leading-4 text-muted-foreground">v{APP_VERSION}</p>
                 </div>
             </aside>
 
@@ -117,7 +124,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                         </p>
                     </div>
 
-                    <div className="hidden flex-1 md:block" />
+                    <div className="hidden flex-1 md:block">
+                        <p className="truncate text-base text-muted-foreground">
+                            {getSaudacao()}, <span className="font-medium text-foreground">{usuario.nomeCompleto}</span>
+                        </p>
+                    </div>
 
                     <div className="flex shrink-0 items-center gap-1">
                         <NotificacaoSino />

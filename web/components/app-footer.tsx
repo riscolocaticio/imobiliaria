@@ -3,8 +3,8 @@ import { ROUTES } from '@/shared/enums/routes.enum'
 
 export function AppFooter() {
     return (
-        <footer className="shrink-0 border-t border-border py-3 text-center text-[11px] text-muted-foreground">
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 leading-5">
+        <footer className="shrink-0 border-t border-border py-3 text-center text-[11px] leading-4 text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
                 <Link
                     href={ROUTES.TERMOS_USO}
                     target="_blank"
@@ -25,8 +25,8 @@ export function AppFooter() {
                 >
                     Contato
                 </a>
+                <span>© {new Date().getFullYear()} Safeloc</span>
             </div>
-            <p className="mt-1 leading-4">© {new Date().getFullYear()} Safeloc</p>
         </footer>
     )
 }
