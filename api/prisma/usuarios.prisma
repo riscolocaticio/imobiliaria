@@ -4,7 +4,7 @@ model Usuario {
     nomeCompleto   String
     cpf            String          @unique
     dataNascimento DateTime
-    email          String
+    email          String          @unique
     login          String          @unique
     passwordHash   String
     role           UsuarioRole     @default(IMOBILIARIA)

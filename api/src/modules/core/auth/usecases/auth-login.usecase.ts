@@ -13,7 +13,7 @@ export class AuthLoginUsecase {
     ) {}
 
     async execute(login: string, password: string): Promise<{ accessToken: string }> {
-        const usuario = await prisma.usuario.findUnique({ where: { login } })
+        const usuario = await prisma.usuario.findFirst({ where: { OR: [{ login }, { email: login }] } })
 
         if (!usuario) {
             throw new UnauthorizedException('Login ou senha incorretos')

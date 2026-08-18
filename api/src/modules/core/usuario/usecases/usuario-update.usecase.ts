@@ -22,6 +22,11 @@ export class UsuarioUpdateUsecase {
             throw new ForbiddenException('Usuário não pertence à sua imobiliária')
         }
 
+        if (input.email && input.email !== usuario.email) {
+            const emailEmUso = await prisma.usuario.findUnique({ where: { email: input.email } })
+            if (emailEmUso) throw new ConflictException('E-mail já está em uso')
+        }
+
         const novaImobiliariaId =
             usuarioAtual.role === 'MASTER' && input.imobiliariaId
                 ? input.imobiliariaId

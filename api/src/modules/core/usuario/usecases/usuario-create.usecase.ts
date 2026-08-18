@@ -38,13 +38,15 @@ export class UsuarioCreateUsecase {
 
         const cpf = sanitizeCpf(input.cpf)
 
-        const [cpfEmUso, loginEmUso] = await Promise.all([
+        const [cpfEmUso, loginEmUso, emailEmUso] = await Promise.all([
             prisma.usuario.findUnique({ where: { cpf } }),
-            prisma.usuario.findUnique({ where: { login: input.login } })
+            prisma.usuario.findUnique({ where: { login: input.login } }),
+            prisma.usuario.findUnique({ where: { email: input.email } })
         ])
 
         if (cpfEmUso) throw new ConflictException('CPF já cadastrado')
         if (loginEmUso) throw new ConflictException('Login já está em uso')
+        if (emailEmUso) throw new ConflictException('E-mail já está em uso')
 
         const passwordHash = await this.cryptoService.hash(input.password)
 

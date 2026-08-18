@@ -18,7 +18,7 @@ import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ROUTES } from '@/shared/enums/routes.enum'
 
 const loginSchema = z.object({
-    login: z.string().min(1, 'Informe o login'),
+    login: z.string().min(1, 'Informe o usuário ou e-mail'),
     password: z.string().min(1, 'Informe a senha')
 })
 
@@ -88,7 +88,12 @@ function LoginForm() {
                 </CardHeader>
                 <CardContent>
                     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-                        <FloatingField label="Login" htmlFor="login" required error={errors.login?.message}>
+                        <FloatingField
+                            label="Usuário ou e-mail"
+                            htmlFor="login"
+                            required
+                            error={errors.login?.message}
+                        >
                             <Input autoComplete="username" {...register('login')} />
                         </FloatingField>
 
