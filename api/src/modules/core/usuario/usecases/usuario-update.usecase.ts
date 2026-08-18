@@ -68,6 +68,7 @@ export class UsuarioUpdateUsecase {
                 nomeCompleto: input.nomeCompleto,
                 email: input.email,
                 status: input.status,
+                sessaoExpiraEm: input.status === 'INATIVO' ? null : undefined,
                 passwordHash: input.password
                     ? await this.cryptoService.hash(input.password)
                     : undefined

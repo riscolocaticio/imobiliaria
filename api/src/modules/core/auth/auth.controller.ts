@@ -6,11 +6,15 @@ import { JwtAuthGuard } from '../../../infra/system/security/guards/jwt-auth.gua
 import { UsuarioFromJwtDto } from '../usuario/types/usuario-from-jwt.input'
 import { AuthLoginInput } from './types/auth-login.input'
 import { AuthLoginUsecase } from './usecases/auth-login.usecase'
+import { AuthLogoutUsecase } from './usecases/auth-logout.usecase'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authLoginUsecase: AuthLoginUsecase) {}
+    constructor(
+        private readonly authLoginUsecase: AuthLoginUsecase,
+        private readonly authLogoutUsecase: AuthLogoutUsecase
+    ) {}
 
     @Throttle({ default: { limit: 5, ttl: 60_000 } })
     @Post('login')
@@ -22,5 +26,11 @@ export class AuthController {
     @Get('me')
     async me(@CurrentUser() usuario: UsuarioFromJwtDto) {
         return usuario
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('logout')
+    async logout(@CurrentUser() usuario: UsuarioFromJwtDto) {
+        await this.authLogoutUsecase.execute(usuario.id)
     }
 }

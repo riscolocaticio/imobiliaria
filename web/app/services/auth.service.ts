@@ -33,7 +33,11 @@ export const authService = {
         await apiClient.post('/termo-aceite')
     },
 
-    logout(): void {
-        destroyCookie(null, COOKIE_TOKEN.TOKEN, { path: '/' })
+    async logout(): Promise<void> {
+        try {
+            await apiClient.post('/auth/logout')
+        } finally {
+            destroyCookie(null, COOKIE_TOKEN.TOKEN, { path: '/' })
+        }
     }
 }

@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Menu, Search, PlusCircle, Trash2, Users, MessageSquareWarning, ShieldCheck, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AppFooter } from '@/components/app-footer'
+import { AppLoading } from '@/components/app-loading'
 import { MobileNavDrawer } from '@/components/mobile-nav-drawer'
 import { NotificacaoSino } from '@/components/notificacao-sino'
 import { TermoAceiteGate } from '@/components/termo-aceite-gate'
@@ -47,15 +48,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     }, [pathname])
 
     if (carregando || !usuario) {
-        return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando...</div>
+        return <AppLoading />
     }
 
     if (!usuario.termoAceito) {
         return <TermoAceiteGate />
     }
 
-    function sair() {
-        authService.logout()
+    async function sair() {
+        await authService.logout()
         window.location.href = ROUTES.LOGIN
     }
 
@@ -132,8 +133,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                     </div>
                 </header>
 
-                <main className="flex w-full flex-1 flex-col px-4 pt-6 sm:px-6 sm:pt-8 md:min-h-0 md:overflow-hidden lg:px-8">
-                    <div className="flex-1 pb-6 md:min-h-0 md:overflow-y-auto">{children}</div>
+                <main className="flex w-full flex-1 flex-col px-4 pt-6 sm:px-6 sm:pt-8 md:min-h-0 md:overflow-y-auto lg:px-8">
+                    <div className="flex-1 pb-6">{children}</div>
                     <AppFooter />
                 </main>
             </div>

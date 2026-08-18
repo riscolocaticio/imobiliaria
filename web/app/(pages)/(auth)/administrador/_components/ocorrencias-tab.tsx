@@ -89,7 +89,7 @@ export function OcorrenciasTab() {
             }}
             headerActions={
                 <>
-                    <div className="w-44">
+                    <div className="w-full md:w-44">
                         <CpfInput
                             value={filtroCpf}
                             onChange={(event) => {
@@ -105,7 +105,7 @@ export function OcorrenciasTab() {
                         onValueChange={aplicarFiltro(setFiltroImobiliaria)}
                         disabled={mostrarCarregando}
                     >
-                        <SelectTrigger className="w-48">
+                        <SelectTrigger className="w-full md:w-48">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -122,7 +122,7 @@ export function OcorrenciasTab() {
                         onValueChange={aplicarFiltro(setFiltroTipo)}
                         disabled={mostrarCarregando}
                     >
-                        <SelectTrigger className="w-44">
+                        <SelectTrigger className="w-full md:w-44">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -139,7 +139,7 @@ export function OcorrenciasTab() {
                         onValueChange={aplicarFiltro(setFiltroStatus)}
                         disabled={mostrarCarregando}
                     >
-                        <SelectTrigger className="w-36">
+                        <SelectTrigger className="w-full md:w-36">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

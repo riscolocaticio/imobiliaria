@@ -73,13 +73,13 @@ export function LogsTab() {
             }}
             headerActions={
                 <>
-                    <div className="relative">
+                    <div className="relative w-full md:w-auto">
                         <Select
                             value={filtroImobiliaria}
                             onValueChange={aplicarFiltro(setFiltroImobiliaria)}
                             disabled={mostrarCarregando}
                         >
-                            <SelectTrigger className="w-52">
+                            <SelectTrigger className="w-full md:w-52">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -100,7 +100,7 @@ export function LogsTab() {
                         onValueChange={aplicarFiltro(setFiltroAcao)}
                         disabled={mostrarCarregando}
                     >
-                        <SelectTrigger className="w-52">
+                        <SelectTrigger className="w-full md:w-52">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

@@ -4,7 +4,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { X, type LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { APP_VERSION } from '@/shared/constants/versao'
 
@@ -40,25 +40,17 @@ export function MobileNavDrawer({ open, onOpenChange, navItems, nomeUsuario }: M
                     )}
                 >
                     <DialogPrimitive.Title className="sr-only">Menu de navegação</DialogPrimitive.Title>
-                    <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
-                        <div className="flex items-center gap-2">
-                            <Image
-                                src="/logo.png"
-                                alt="Safeloc"
-                                width={36}
-                                height={36}
-                                className="h-9 w-9 rounded-lg"
-                            />
-                            <p className="text-sm font-bold tracking-tight">
-                                Safe<span className="text-primary">loc</span>
-                            </p>
-                        </div>
-                        <DialogPrimitive.Close
-                            aria-label="Fechar menu"
-                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                            <X className="h-4 w-4" />
-                        </DialogPrimitive.Close>
+                    <div className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
+                        <Image
+                            src="/logo.png"
+                            alt="Safeloc"
+                            width={36}
+                            height={36}
+                            className="h-9 w-9 rounded-lg"
+                        />
+                        <p className="text-sm font-bold tracking-tight">
+                            Safe<span className="text-primary">loc</span>
+                        </p>
                     </div>
 
                     <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">

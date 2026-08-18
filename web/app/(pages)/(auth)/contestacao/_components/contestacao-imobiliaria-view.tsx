@@ -80,7 +80,7 @@ export function ContestacaoImobiliariaView({ contestacaoIdParaAbrir }: { contest
                 }}
                 headerActions={
                     <>
-                        <div className="w-44">
+                        <div className="w-full md:w-44">
                             <CpfInput
                                 value={filtroCpf}
                                 onChange={(event) => {
@@ -100,7 +100,7 @@ export function ContestacaoImobiliariaView({ contestacaoIdParaAbrir }: { contest
                             }}
                             disabled={mostrarCarregando}
                         >
-                            <SelectTrigger className="w-40">
+                            <SelectTrigger className="w-full md:w-40">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

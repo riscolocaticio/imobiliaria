@@ -47,7 +47,7 @@ export function ImobiliariasTab() {
     )
     const queryClient = useQueryClient()
 
-    const { data: imobiliarias } = useQuery({
+    const { data: imobiliarias, isLoading } = useQuery({
         queryKey: ['admin-imobiliarias'],
         queryFn: () => imobiliariaService.listar()
     })
@@ -117,6 +117,7 @@ export function ImobiliariasTab() {
             <ListagemCard
                 title="Imobiliárias cadastradas"
                 description={`${imobiliarias?.length ?? 0} imobiliária(s)`}
+                isLoading={isLoading}
                 isEmpty={imobiliarias?.length === 0}
                 emptyIcon={Building2}
                 emptyMessage="Nenhuma imobiliária cadastrada."

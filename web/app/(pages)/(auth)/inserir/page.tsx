@@ -115,14 +115,14 @@ export default function InserirPage() {
         errors.declaracaoFundamento || errors.declaracaoVeracidade || errors.declaracaoCiencia
 
     return (
-        <Card className="flex flex-col lg:h-full">
+        <Card className="flex min-h-full flex-col md:h-full">
             <CardHeader className="shrink-0">
                 <CardTitle>Inserir informações</CardTitle>
                 <CardDescription>Registre uma ocorrência locatícia de um inquilino</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col lg:min-h-0 lg:flex-1">
+            <CardContent className="flex flex-col md:min-h-0 md:flex-1">
                 <form
-                    className="flex w-full flex-col gap-6 lg:min-h-0 lg:flex-1"
+                    className="flex w-full flex-col gap-6 md:min-h-0 md:flex-1"
                     noValidate
                     onSubmit={handleSubmit((values) => inserirMutation.mutate(values))}
                 >
@@ -279,18 +279,18 @@ export default function InserirPage() {
                         </div>
                     </div>
 
-                    <div className="lg:min-h-0 lg:flex-1">
+                    <div className="md:min-h-0 md:flex-1">
                         <FloatingField
                             label="Observações"
                             htmlFor="observacoes"
                             required
                             error={errors.observacoes?.message}
                             multiline
-                            className="mt-0 lg:h-full"
+                            className="mt-0 md:h-full"
                         >
                             <Textarea
                                 placeholder="Preencher com os detalhes relevantes da ocorrência..."
-                                className="min-h-32 resize-none lg:h-full lg:min-h-0"
+                                className="min-h-32 resize-none md:h-full md:min-h-0"
                                 maxLength={300}
                                 {...register('observacoes')}
                             />

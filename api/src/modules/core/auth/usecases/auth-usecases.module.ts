@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AuditLogModule } from '../../../../infra/audit/audit-log.module'
 import { CryptoService } from '../../../../infra/system/helpers/crypto/crypto.service'
 import { AuthLoginUsecase } from './auth-login.usecase'
+import { AuthLogoutUsecase } from './auth-logout.usecase'
 
 @Module({
     imports: [
@@ -19,7 +20,7 @@ import { AuthLoginUsecase } from './auth-login.usecase'
             })
         })
     ],
-    providers: [AuthLoginUsecase, CryptoService],
-    exports: [AuthLoginUsecase]
+    providers: [AuthLoginUsecase, AuthLogoutUsecase, CryptoService],
+    exports: [AuthLoginUsecase, AuthLogoutUsecase]
 })
 export default class AuthUsecasesModule {}

@@ -1,3 +1,12 @@
+function calcularDigitoVerificadorCpf(digitos: string, pesoInicial: number): number {
+    let soma = 0
+    for (let i = 0; i < digitos.length; i++) {
+        soma += Number(digitos[i]) * (pesoInicial - i)
+    }
+    const resto = soma % 11
+    return resto < 2 ? 0 : 11 - resto
+}
+
 export function formatCpf(cpf: string): string {
     const digits = cpf.replace(/\D/g, '').padEnd(11, ' ').slice(0, 11)
     if (digits.trim().length < 11) return cpf
@@ -14,5 +23,12 @@ export function maskCpfInput(value: string): string {
 }
 
 export function isCpfComplete(value: string): boolean {
-    return value.replace(/\D/g, '').length === 11
+    const digits = value.replace(/\D/g, '')
+    if (digits.length !== 11) return false
+    if (/^(\d)\1{10}$/.test(digits)) return false
+
+    const digitoVerificador1 = calcularDigitoVerificadorCpf(digits.slice(0, 9), 10)
+    const digitoVerificador2 = calcularDigitoVerificadorCpf(digits.slice(0, 10), 11)
+
+    return digitoVerificador1 === Number(digits[9]) && digitoVerificador2 === Number(digits[10])
 }

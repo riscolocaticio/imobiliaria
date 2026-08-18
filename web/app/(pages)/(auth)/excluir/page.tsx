@@ -52,7 +52,7 @@ export default function ExcluirPage() {
     }
 
     return (
-        <div className="grid grid-cols-1 gap-6 lg:h-full lg:min-h-0 lg:grid-cols-[360px_1fr]">
+        <div className="flex min-h-full flex-col gap-6 md:h-full md:min-h-0 lg:grid lg:grid-cols-[360px_1fr]">
             <div className="lg:self-start">
                 <CpfSearchCard
                     icon={Trash2}
@@ -64,7 +64,7 @@ export default function ExcluirPage() {
             </div>
 
             {registros ? (
-                <Card className="flex flex-col lg:min-h-0 lg:flex-1 lg:overflow-hidden">
+                <Card className="flex flex-1 flex-col md:min-h-0 lg:overflow-hidden">
                     <CardHeader className="shrink-0">
                         <CardTitle>
                             {registros.length === 0
@@ -76,7 +76,7 @@ export default function ExcluirPage() {
                         )}
                     </CardHeader>
                     {registros.length === 0 && (
-                        <CardContent className="flex flex-col items-center justify-center gap-3 lg:min-h-0 lg:flex-1">
+                        <CardContent className="flex flex-1 flex-col items-center justify-center gap-3 md:min-h-0">
                             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                                 <Inbox className="h-7 w-7 text-muted-foreground" />
                             </span>
@@ -87,8 +87,8 @@ export default function ExcluirPage() {
                     )}
 
                     {registros.length > 0 && (
-                        <div className="lg:min-h-0 lg:flex-1">
-                            <CardContent className="flex flex-col lg:h-full lg:min-h-0 lg:overflow-y-auto">
+                        <div className="flex-1 md:min-h-0">
+                            <CardContent className="flex flex-col md:h-full md:min-h-0 md:overflow-y-auto">
                                 <ul className="flex flex-col gap-4 pb-6">
                                 {registros.map((registro) => {
                                     const Icon = TIPO_OCORRENCIA_ICON[registro.tipo]

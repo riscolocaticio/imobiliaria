@@ -75,7 +75,7 @@ export function CpfSearchCard({
                         icon={Search}
                     >
                         <CpfInput
-                            className={cn('h-11', errors.cpf && 'border-destructive')}
+                            className={cn('h-11 sm:h-11', errors.cpf && 'border-destructive')}
                             {...register('cpf')}
                         />
                     </FloatingField>

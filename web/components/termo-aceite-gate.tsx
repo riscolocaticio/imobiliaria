@@ -37,9 +37,9 @@ export function TermoAceiteGate() {
         }
     }
 
-    function recusar() {
+    async function recusar() {
         setProcessando('recusar')
-        authService.logout()
+        await authService.logout()
         window.location.href = ROUTES.LOGIN
     }
 

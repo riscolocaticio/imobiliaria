@@ -65,7 +65,7 @@ export function UsuariosTab() {
     const imobiliariaIdFiltro =
         filtroImobiliaria === TODAS_IMOBILIARIAS ? undefined : Number(filtroImobiliaria)
 
-    const { data: usuarios, isFetching: isFetchingUsuarios } = useQuery({
+    const { data: usuarios, isLoading, isFetching: isFetchingUsuarios } = useQuery({
         queryKey: ['admin-usuarios', imobiliariaIdFiltro],
         queryFn: () => usuarioService.listar(imobiliariaIdFiltro),
         placeholderData: keepPreviousData
@@ -161,18 +161,19 @@ export function UsuariosTab() {
             <ListagemCard
                 title="Usuários"
                 description={`${usuarios?.length ?? 0} usuário(s)`}
+                isLoading={isLoading}
                 isEmpty={usuarios?.length === 0}
                 emptyIcon={Users}
                 emptyMessage="Nenhum usuário encontrado com esse filtro."
                 headerActions={
                     <>
-                        <div className="relative">
+                        <div className="relative w-full md:w-auto">
                             <Select
                                 value={filtroImobiliaria}
                                 onValueChange={setFiltroImobiliaria}
                                 disabled={mostrarCarregandoFiltro}
                             >
-                                <SelectTrigger className="w-56">
+                                <SelectTrigger className="w-full md:w-56">
                                     <SelectValue placeholder="Filtrar por imobiliária" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -238,7 +239,7 @@ export function UsuariosTab() {
                                 {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
                                     <Loader2 className="h-4 w-4 animate-spin" />
                                 )}
-                                {usuario.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                                {usuario.status === 'ATIVO' ? 'Desativar' : 'Reativar'}
                             </Button>
                         </div>
                     </div>

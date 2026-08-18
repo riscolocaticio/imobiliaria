@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
 import { authService } from '@/app/services/auth.service'
+import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ROUTES } from '@/shared/enums/routes.enum'
 
@@ -53,8 +54,8 @@ function LoginForm() {
             await authService.login(values.login, values.password)
             const returnTo = searchParams.get('returnTo')
             window.location.href = returnTo || ROUTES.CONSULTAR
-        } catch {
-            toast.error('Login ou senha incorretos')
+        } catch (error) {
+            toast.error(getErrorMessage(error, 'Login ou senha incorretos'))
             setEnviando(false)
         }
     }

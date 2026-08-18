@@ -44,7 +44,7 @@ export default function UsuariosPage() {
     const [usuarioParaDesativar, setUsuarioParaDesativar] = useState<Usuario | null>(null)
     const queryClient = useQueryClient()
 
-    const { data: usuarios } = useQuery({
+    const { data: usuarios, isLoading } = useQuery({
         queryKey: ['usuarios'],
         queryFn: () => usuarioService.listar()
     })
@@ -107,9 +107,10 @@ export default function UsuariosPage() {
     const mostrarCarregandoStatus = useDelayedLoading(statusMutation.isPending)
 
     return (
-        <div className="flex flex-col lg:h-full lg:min-h-0">
+        <div className="flex min-h-full flex-col md:h-full md:min-h-0">
             <ListagemCard
                 title="Usuários da imobiliária"
+                isLoading={isLoading}
                 isEmpty={usuarios?.length === 0}
                 emptyIcon={Users}
                 emptyMessage="Nenhum usuário cadastrado."
@@ -125,41 +126,41 @@ export default function UsuariosPage() {
                 {usuarios?.map((usuario) => (
                     <div
                         key={usuario.id}
-                        className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                        className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm"
                     >
-                        <div className="flex items-start gap-3">
-                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <Users className="h-4 w-4" />
-                            </span>
-                            <div>
-                                <div className="flex items-center gap-2 font-medium">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                    <Users className="h-4 w-4" />
+                                </span>
+                                <div className="flex min-w-0 flex-wrap items-center gap-2 font-medium">
                                     {usuario.nomeCompleto}
                                     <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
                                         {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
                                     </Badge>
                                 </div>
-                                <p className="text-muted-foreground">
-                                    {usuario.login} · {usuario.email}
-                                </p>
+                            </div>
+                            <div className="flex shrink-0 items-center gap-2">
+                                {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
+                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                )}
+                                <Switch
+                                    checked={usuario.status === 'ATIVO'}
+                                    disabled={statusMutation.isPending}
+                                    onCheckedChange={(checked) => {
+                                        if (checked) {
+                                            statusMutation.mutate({ id: usuario.id, status: 'ATIVO' })
+                                        } else {
+                                            setUsuarioParaDesativar(usuario)
+                                        }
+                                    }}
+                                    aria-label={usuario.status === 'ATIVO' ? 'Desativar usuário' : 'Reativar usuário'}
+                                />
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
-                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                            )}
-                            <Switch
-                                checked={usuario.status === 'ATIVO'}
-                                disabled={statusMutation.isPending}
-                                onCheckedChange={(checked) => {
-                                    if (checked) {
-                                        statusMutation.mutate({ id: usuario.id, status: 'ATIVO' })
-                                    } else {
-                                        setUsuarioParaDesativar(usuario)
-                                    }
-                                }}
-                                aria-label={usuario.status === 'ATIVO' ? 'Desativar usuário' : 'Reativar usuário'}
-                            />
-                        </div>
+                        <p className="pl-11 text-muted-foreground">
+                            {usuario.login} · {usuario.email}
+                        </p>
                     </div>
                 ))}
             </ListagemCard>

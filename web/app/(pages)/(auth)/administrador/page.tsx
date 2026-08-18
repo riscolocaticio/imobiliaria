@@ -36,7 +36,7 @@ export default function AdministradorPage() {
     }
 
     return (
-        <div className="flex flex-col gap-6 lg:h-full lg:min-h-0">
+        <div className="flex min-h-full flex-col gap-6 md:h-full md:min-h-0">
             <div className="shrink-0">
                 <h1 className="text-2xl font-bold tracking-tight">Administrador</h1>
                 <p className="text-sm text-muted-foreground">
@@ -45,7 +45,7 @@ export default function AdministradorPage() {
                 </p>
             </div>
 
-            <div className="flex w-fit max-w-full shrink-0 flex-wrap gap-1 rounded-lg border border-border bg-card p-1">
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-card p-1 md:flex md:w-fit md:max-w-full md:flex-wrap md:shrink-0">
                 {ABAS.map((item) => {
                     const Icon = item.icon
                     const ativa = aba === item.id
@@ -54,7 +54,7 @@ export default function AdministradorPage() {
                             key={item.id}
                             onClick={() => setAba(item.id)}
                             className={cn(
-                                'inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                'inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                                 ativa
                                     ? 'bg-primary text-primary-foreground'
                                     : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
@@ -67,7 +67,7 @@ export default function AdministradorPage() {
                 })}
             </div>
 
-            <div className="lg:min-h-0 lg:flex-1">
+            <div className="flex-1 md:min-h-0">
                 {aba === 'imobiliarias' && <ImobiliariasTab />}
                 {aba === 'usuarios' && <UsuariosTab />}
                 {aba === 'ocorrencias' && <OcorrenciasTab />}

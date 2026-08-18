@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import prisma from '../../../../infra/persistence/prisma'
 import { CryptoService } from '../../../../infra/system/helpers/crypto/crypto.service'
@@ -15,7 +15,7 @@ export class AuthLoginUsecase {
     async execute(login: string, password: string): Promise<{ accessToken: string }> {
         const usuario = await prisma.usuario.findUnique({ where: { login } })
 
-        if (!usuario || usuario.status !== 'ATIVO') {
+        if (!usuario) {
             throw new UnauthorizedException('Login ou senha incorretos')
         }
 
@@ -24,12 +24,29 @@ export class AuthLoginUsecase {
             throw new UnauthorizedException('Login ou senha incorretos')
         }
 
+        if (usuario.status !== 'ATIVO') {
+            throw new UnauthorizedException('Usuário inativo. Não é possível acessar o sistema.')
+        }
+
+        if (usuario.sessaoExpiraEm && usuario.sessaoExpiraEm > new Date()) {
+            throw new ConflictException(
+                'Já existe um login ativo com este usuário. Encerre a sessão atual antes de continuar.'
+            )
+        }
+
         const accessToken = this.jwtService.sign({
             id: usuario.id,
             imobiliariaId: usuario.imobiliariaId,
             nomeCompleto: usuario.nomeCompleto,
             email: usuario.email,
             role: usuario.role
+        })
+
+        const { exp } = this.jwtService.decode<{ exp: number }>(accessToken)
+
+        await prisma.usuario.update({
+            where: { id: usuario.id },
+            data: { sessaoExpiraEm: new Date(exp * 1000) }
         })
 
         await this.auditLogService.record({
