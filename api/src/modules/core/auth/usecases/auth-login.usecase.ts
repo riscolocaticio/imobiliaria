@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import prisma from '../../../../infra/persistence/prisma'
 import { CryptoService } from '../../../../infra/system/helpers/crypto/crypto.service'
@@ -26,16 +26,6 @@ export class AuthLoginUsecase {
 
         if (usuario.status !== 'ATIVO') {
             throw new UnauthorizedException('Usuário inativo. Não é possível acessar o sistema.')
-        }
-
-        if (
-            process.env.NODE_ENV === 'production' &&
-            usuario.sessaoExpiraEm &&
-            usuario.sessaoExpiraEm > new Date()
-        ) {
-            throw new ConflictException(
-                'Já existe um login ativo com este usuário. Encerre a sessão atual antes de continuar.'
-            )
         }
 
         const accessToken = this.jwtService.sign({
