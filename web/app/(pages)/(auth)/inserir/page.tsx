@@ -117,9 +117,6 @@ function InserirPage() {
         })
     }
 
-    const errosDeclaracao =
-        errors.declaracaoFundamento || errors.declaracaoVeracidade || errors.declaracaoCiencia
-
     return (
         <Card className="flex flex-col">
             <CardHeader className="shrink-0">
@@ -324,12 +321,6 @@ function InserirPage() {
                             />
                             <span>Aceito todos os termos acima</span>
                         </label>
-
-                        {errosDeclaracao && (
-                            <p className="text-xs text-destructive">
-                                Confirme todas as declarações para registrar a ocorrência.
-                            </p>
-                        )}
                     </div>
 
                     <Button
