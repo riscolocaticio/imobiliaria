@@ -8,6 +8,7 @@ model Usuario {
     login          String          @unique
     passwordHash   String
     role           UsuarioRole     @default(IMOBILIARIA)
+    papel          PapelUsuario    @default(ADMIN)
     status         StatusRegistro  @default(ATIVO)
     sessaoExpiraEm DateTime?
     createdAt      DateTime        @default(now())

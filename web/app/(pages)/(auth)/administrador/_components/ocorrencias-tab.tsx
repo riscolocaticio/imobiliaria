@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { CpfInput } from '@/components/ui/cpf-input'
 import { ListagemCard } from '@/components/ui/listagem-card'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatCpf, isCpfComplete } from '@/lib/format-cpf'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -101,23 +102,21 @@ export function OcorrenciasTab() {
                             placeholder="Buscar por CPF"
                         />
                     </div>
-                    <Select
-                        value={filtroImobiliaria}
-                        onValueChange={aplicarFiltro(setFiltroImobiliaria)}
-                        disabled={mostrarCarregando}
-                    >
-                        <SelectTrigger className="w-full md:w-48">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
-                            {imobiliarias?.map((imobiliaria) => (
-                                <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
-                                    {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div className="w-full md:w-48">
+                        <SearchableSelect
+                            value={filtroImobiliaria}
+                            onValueChange={aplicarFiltro(setFiltroImobiliaria)}
+                            disabled={mostrarCarregando}
+                            searchPlaceholder="Buscar imobiliária..."
+                            options={[
+                                { value: TODAS_IMOBILIARIAS, label: 'Todas as imobiliárias' },
+                                ...(imobiliarias?.map((imobiliaria) => ({
+                                    value: String(imobiliaria.id),
+                                    label: imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial
+                                })) ?? [])
+                            ]}
+                        />
+                    </div>
                     <Select
                         value={filtroTipo}
                         onValueChange={aplicarFiltro(setFiltroTipo)}

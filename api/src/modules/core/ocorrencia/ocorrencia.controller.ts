@@ -14,6 +14,7 @@ import { StatusOcorrencia, TipoOcorrencia } from '@prisma/client'
 import { CurrentUser } from '../../../infra/system/security/decorators/current-user.decorator'
 import { JwtAuthGuard } from '../../../infra/system/security/guards/jwt-auth.guard'
 import { MasterGuard } from '../../../infra/system/security/guards/master.guard'
+import { PapelAdminGuard } from '../../../infra/system/security/guards/papel-admin.guard'
 import { UsuarioFromJwtDto } from '../usuario/types/usuario-from-jwt.input'
 import { OcorrenciaCreateInput } from './types/ocorrencia-create.input'
 import { OcorrenciaConsultarPorCpfUsecase } from './usecases/ocorrencia-consultar-por-cpf.usecase'
@@ -73,16 +74,19 @@ export class OcorrenciaController {
         return this.ocorrenciaDetalharPorCpfUsecase.execute(cpf)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Post()
     async inserir(@CurrentUser() usuario: UsuarioFromJwtDto, @Body() input: OcorrenciaCreateInput) {
         return this.ocorrenciaInserirUsecase.execute(usuario.imobiliariaId, usuario.id, input)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Get('excluiveis/:cpf')
     async listarExcluiveis(@CurrentUser() usuario: UsuarioFromJwtDto, @Param('cpf') cpf: string) {
         return this.ocorrenciaListarExcluiveisUsecase.execute(usuario.imobiliariaId, cpf)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Delete(':id')
     async excluir(@CurrentUser() usuario: UsuarioFromJwtDto, @Param('id', ParseIntPipe) id: number) {
         await this.ocorrenciaExcluirUsecase.execute(usuario.imobiliariaId, usuario.id, id)

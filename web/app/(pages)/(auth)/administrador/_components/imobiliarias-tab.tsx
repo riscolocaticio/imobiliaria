@@ -2,19 +2,19 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Building2, Loader2, Plus } from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Building2, Loader2, Plus, Search, Users } from 'lucide-react'
+import { Controller, useForm } from 'react-hook-form'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CnpjInput } from '@/components/ui/cnpj-input'
-import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FloatingField } from '@/components/ui/floating-field'
 import { Input } from '@/components/ui/input'
 import { ListagemCard } from '@/components/ui/listagem-card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatCnpj, isCnpjComplete } from '@/lib/format-cnpj'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
@@ -22,6 +22,12 @@ import {
     imobiliariaService,
     ImobiliariaComContagem
 } from '@/app/services/imobiliaria.service'
+import { usuarioService } from '@/app/services/usuario.service'
+
+const PAPEL_LABEL: Record<'ADMIN' | 'PADRAO', string> = {
+    ADMIN: 'Administrador',
+    PADRAO: 'Padrão'
+}
 
 const criarSchema = z.object({
     razaoSocial: z.string().min(1, 'Informe a razão social'),
@@ -33,7 +39,8 @@ const criarSchema = z.object({
 const editarSchema = z.object({
     razaoSocial: z.string().min(1, 'Informe a razão social'),
     nomeFantasia: z.string().optional(),
-    email: z.string().email('E-mail inválido')
+    email: z.string().email('E-mail inválido'),
+    status: z.enum(['ATIVO', 'INATIVO'])
 })
 
 type CriarFormValues = z.infer<typeof criarSchema>
@@ -42,14 +49,33 @@ type EditarFormValues = z.infer<typeof editarSchema>
 export function ImobiliariasTab() {
     const [dialogCriarAberto, setDialogCriarAberto] = useState(false)
     const [imobiliariaEditando, setImobiliariaEditando] = useState<ImobiliariaComContagem | null>(null)
-    const [imobiliariaParaDesativar, setImobiliariaParaDesativar] = useState<ImobiliariaComContagem | null>(
-        null
-    )
+    const [busca, setBusca] = useState('')
     const queryClient = useQueryClient()
 
     const { data: imobiliarias, isLoading } = useQuery({
         queryKey: ['admin-imobiliarias'],
         queryFn: () => imobiliariaService.listar()
+    })
+
+    const imobiliariasFiltradas = useMemo(() => {
+        const termo = busca.trim().toLowerCase()
+        if (!termo) return imobiliarias
+        return imobiliarias?.filter((imobiliaria) => {
+            const nome = (imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial).toLowerCase()
+            const razaoSocial = imobiliaria.razaoSocial.toLowerCase()
+            const cnpj = imobiliaria.cnpj.replace(/\D/g, '')
+            return (
+                nome.includes(termo) ||
+                razaoSocial.includes(termo) ||
+                cnpj.includes(termo.replace(/\D/g, ''))
+            )
+        })
+    }, [imobiliarias, busca])
+
+    const { data: usuariosVinculados, isLoading: carregandoUsuariosVinculados } = useQuery({
+        queryKey: ['admin-usuarios', imobiliariaEditando?.id],
+        queryFn: () => usuarioService.listar(imobiliariaEditando!.id),
+        enabled: imobiliariaEditando !== null
     })
 
     const formCriar = useForm<CriarFormValues>({
@@ -87,13 +113,10 @@ export function ImobiliariasTab() {
             id: number
             input: { razaoSocial?: string; nomeFantasia?: string; email?: string; status?: 'ATIVO' | 'INATIVO' }
         }) => imobiliariaService.atualizar(id, input),
-        onSuccess: (_data, variables) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-imobiliarias'] })
-            toast.success(
-                variables.input.status ? 'Status atualizado com sucesso.' : 'Imobiliária atualizada com sucesso.'
-            )
+            toast.success('Imobiliária atualizada com sucesso.')
             setImobiliariaEditando(null)
-            setImobiliariaParaDesativar(null)
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível atualizar a imobiliária.'))
@@ -107,7 +130,8 @@ export function ImobiliariasTab() {
         formEditar.reset({
             razaoSocial: imobiliaria.razaoSocial,
             nomeFantasia: imobiliaria.nomeFantasia ?? '',
-            email: imobiliaria.email
+            email: imobiliaria.email,
+            status: imobiliaria.status
         })
         setImobiliariaEditando(imobiliaria)
     }
@@ -116,19 +140,30 @@ export function ImobiliariasTab() {
         <>
             <ListagemCard
                 title="Imobiliárias cadastradas"
-                description={`${imobiliarias?.length ?? 0} imobiliária(s)`}
+                description={`${imobiliariasFiltradas?.length ?? 0} imobiliária(s)`}
                 isLoading={isLoading}
-                isEmpty={imobiliarias?.length === 0}
+                isEmpty={imobiliariasFiltradas?.length === 0}
                 emptyIcon={Building2}
-                emptyMessage="Nenhuma imobiliária cadastrada."
+                emptyMessage="Nenhuma imobiliária encontrada com essa busca."
                 headerActions={
-                    <Button onClick={() => setDialogCriarAberto(true)}>
-                        <Plus className="h-4 w-4" />
-                        Nova imobiliária
-                    </Button>
+                    <>
+                        <div className="relative w-full md:w-64">
+                            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                value={busca}
+                                onChange={(event) => setBusca(event.target.value)}
+                                placeholder="Buscar por nome ou CNPJ"
+                                className="pl-9"
+                            />
+                        </div>
+                        <Button onClick={() => setDialogCriarAberto(true)}>
+                            <Plus className="h-4 w-4" />
+                            Nova imobiliária
+                        </Button>
+                    </>
                 }
             >
-                {imobiliarias?.map((imobiliaria) => (
+                {imobiliariasFiltradas?.map((imobiliaria) => (
                     <div
                         key={imobiliaria.id}
                         className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
@@ -152,30 +187,14 @@ export function ImobiliariasTab() {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => iniciarEdicao(imobiliaria)}>
-                                Editar
-                            </Button>
+                        <div className="shrink-0">
                             <Button
-                                variant={imobiliaria.status === 'ATIVO' ? 'destructive' : 'outline'}
+                                variant="outline"
                                 size="sm"
-                                disabled={atualizarMutation.isPending}
-                                onClick={() => {
-                                    if (imobiliaria.status === 'ATIVO') {
-                                        setImobiliariaParaDesativar(imobiliaria)
-                                    } else {
-                                        atualizarMutation.mutate({
-                                            id: imobiliaria.id,
-                                            input: { status: 'ATIVO' }
-                                        })
-                                    }
-                                }}
+                                className="w-full sm:w-24"
+                                onClick={() => iniciarEdicao(imobiliaria)}
                             >
-                                {mostrarCarregandoAtualizar &&
-                                    atualizarMutation.variables?.id === imobiliaria.id && (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    )}
-                                {imobiliaria.status === 'ATIVO' ? 'Excluir' : 'Reativar'}
+                                Editar
                             </Button>
                         </div>
                     </div>
@@ -260,14 +279,65 @@ export function ImobiliariasTab() {
                         <FloatingField label="Nome fantasia" htmlFor="nomeFantasia-editar">
                             <Input {...formEditar.register('nomeFantasia')} />
                         </FloatingField>
-                        <FloatingField
-                            label="E-mail"
-                            htmlFor="email-editar"
-                            required
-                            error={formEditar.formState.errors.email?.message}
-                        >
-                            <Input type="email" autoComplete="off" {...formEditar.register('email')} />
-                        </FloatingField>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <FloatingField
+                                label="E-mail"
+                                htmlFor="email-editar"
+                                required
+                                error={formEditar.formState.errors.email?.message}
+                            >
+                                <Input type="email" autoComplete="off" {...formEditar.register('email')} />
+                            </FloatingField>
+                            <Controller
+                                name="status"
+                                control={formEditar.control}
+                                render={({ field }) => (
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger id="status-editar" className="mt-3 sm:h-10">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ATIVO">Ativa</SelectItem>
+                                            <SelectItem value="INATIVO">Inativa</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                Usuários vinculados
+                            </p>
+                            {carregandoUsuariosVinculados && (
+                                <p className="text-sm text-muted-foreground">Carregando...</p>
+                            )}
+                            {!carregandoUsuariosVinculados && usuariosVinculados?.length === 0 && (
+                                <p className="text-sm text-muted-foreground">Nenhum usuário vinculado.</p>
+                            )}
+                            {usuariosVinculados && usuariosVinculados.length > 0 && (
+                                <div className="flex max-h-20 flex-col gap-2 overflow-y-auto rounded-md border border-border p-2">
+                                    {usuariosVinculados.map((usuario) => (
+                                        <div
+                                            key={usuario.id}
+                                            className="flex h-9 shrink-0 items-center gap-2 rounded-sm px-1.5 text-sm"
+                                        >
+                                            <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                                            <span className="min-w-0 flex-1 truncate">{usuario.nomeCompleto}</span>
+                                            <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
+                                                {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
+                                            </Badge>
+                                            {usuario.role === 'MASTER' ? (
+                                                <Badge variant="secondary">Master</Badge>
+                                            ) : (
+                                                <Badge variant="outline">{PAPEL_LABEL[usuario.papel]}</Badge>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="flex gap-2">
                             <Button type="submit" disabled={atualizarMutation.isPending}>
                                 {mostrarCarregandoAtualizar && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -280,28 +350,6 @@ export function ImobiliariasTab() {
                     </form>
                 </DialogContent>
             </Dialog>
-
-            <ConfirmDialog
-                open={imobiliariaParaDesativar !== null}
-                onOpenChange={(open) => !open && setImobiliariaParaDesativar(null)}
-                title="Excluir esta imobiliária?"
-                description={
-                    imobiliariaParaDesativar
-                        ? `${imobiliariaParaDesativar.nomeFantasia ?? imobiliariaParaDesativar.razaoSocial} e seus usuários vão perder o acesso ao sistema até ser reativada.`
-                        : undefined
-                }
-                confirmLabel="Sim, excluir"
-                cancelLabel="Não"
-                loading={mostrarCarregandoAtualizar}
-                onConfirm={() => {
-                    if (imobiliariaParaDesativar) {
-                        atualizarMutation.mutate({
-                            id: imobiliariaParaDesativar.id,
-                            input: { status: 'INATIVO' }
-                        })
-                    }
-                }}
-            />
         </>
     )
 }

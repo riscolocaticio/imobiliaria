@@ -59,7 +59,8 @@ export class UsuarioCreateUsecase {
                 email: input.email,
                 login: input.login,
                 passwordHash,
-                role: 'IMOBILIARIA'
+                role: 'IMOBILIARIA',
+                papel: input.papel ?? 'ADMIN'
             },
             select: {
                 id: true,
@@ -69,6 +70,7 @@ export class UsuarioCreateUsecase {
                 email: true,
                 login: true,
                 role: true,
+                papel: true,
                 status: true,
                 createdAt: true
             }

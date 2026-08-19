@@ -33,7 +33,8 @@ export class AuthLoginUsecase {
             imobiliariaId: usuario.imobiliariaId,
             nomeCompleto: usuario.nomeCompleto,
             email: usuario.email,
-            role: usuario.role
+            role: usuario.role,
+            papel: usuario.papel
         })
 
         const { exp } = this.jwtService.decode<{ exp: number }>(accessToken)

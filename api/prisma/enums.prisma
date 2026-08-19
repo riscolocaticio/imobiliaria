@@ -8,6 +8,11 @@ enum UsuarioRole {
     MASTER
 }
 
+enum PapelUsuario {
+    ADMIN
+    PADRAO
+}
+
 enum TipoOcorrencia {
     ABANDONO_IMOVEL
     ACAO_JUDICIAL

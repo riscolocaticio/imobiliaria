@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { RequirePapelAdmin } from '@/components/require-papel-admin'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -33,12 +34,18 @@ const usuarioSchema = z.object({
         .refine((valor) => new Date(valor) <= new Date(), 'Data de nascimento não pode ser no futuro'),
     email: z.string().email('E-mail inválido'),
     login: z.string().min(1, 'Informe o login'),
-    password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres')
+    password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres'),
+    papel: z.enum(['ADMIN', 'PADRAO'], { required_error: 'Selecione o papel' })
 })
+
+const PAPEL_LABEL: Record<'ADMIN' | 'PADRAO', string> = {
+    ADMIN: 'Administrador',
+    PADRAO: 'Padrão'
+}
 
 type UsuarioFormValues = z.infer<typeof usuarioSchema>
 
-export default function UsuariosPage() {
+function UsuariosPage() {
     const [dialogAberto, setDialogAberto] = useState(false)
     const [formKey, setFormKey] = useState(0)
     const [usuarioParaDesativar, setUsuarioParaDesativar] = useState<Usuario | null>(null)
@@ -71,7 +78,8 @@ export default function UsuariosPage() {
             dataNascimento: '',
             email: '',
             login: '',
-            password: ''
+            password: '',
+            papel: 'ADMIN'
         }
     })
 
@@ -99,6 +107,18 @@ export default function UsuariosPage() {
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Não foi possível atualizar o usuário.'))
+        }
+    })
+
+    const papelMutation = useMutation({
+        mutationFn: ({ id, papel }: { id: number; papel: 'ADMIN' | 'PADRAO' }) =>
+            usuarioService.atualizar(id, { papel }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['usuarios'] })
+            toast.success('Papel do usuário atualizado.')
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error, 'Não foi possível atualizar o papel do usuário.'))
         }
     })
 
@@ -138,9 +158,28 @@ export default function UsuariosPage() {
                                     <Badge variant={usuario.status === 'ATIVO' ? 'default' : 'outline'}>
                                         {usuario.status === 'ATIVO' ? 'Ativo' : 'Inativo'}
                                     </Badge>
+                                    <Badge variant="outline">{PAPEL_LABEL[usuario.papel]}</Badge>
                                 </div>
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
+                                {papelMutation.isPending && papelMutation.variables?.id === usuario.id && (
+                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                )}
+                                <Select
+                                    value={usuario.papel}
+                                    disabled={papelMutation.isPending}
+                                    onValueChange={(valor) =>
+                                        papelMutation.mutate({ id: usuario.id, papel: valor as 'ADMIN' | 'PADRAO' })
+                                    }
+                                >
+                                    <SelectTrigger className="h-8 w-36" aria-label="Papel do usuário">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ADMIN">Administrador</SelectItem>
+                                        <SelectItem value="PADRAO">Padrão</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 {mostrarCarregandoStatus && statusMutation.variables?.id === usuario.id && (
                                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                                 )}
@@ -242,15 +281,27 @@ export default function UsuariosPage() {
                                 <Input {...register('login')} />
                             </FloatingField>
 
-                            <FloatingField
-                                label="Senha"
-                                htmlFor="password"
-                                required
-                                error={errors.password?.message}
-                            >
-                                <Input type="password" autoComplete="new-password" {...register('password')} />
-                            </FloatingField>
+                            <Controller
+                                name="papel"
+                                control={control}
+                                render={({ field }) => (
+                                    <div className="mt-3 flex h-11 items-center justify-between gap-3 rounded-md border border-input px-3 sm:h-10">
+                                        <span className="text-sm">
+                                            {field.value === 'ADMIN' ? 'Administrador' : 'Padrão'}
+                                        </span>
+                                        <Switch
+                                            checked={field.value === 'ADMIN'}
+                                            onCheckedChange={(checked) => field.onChange(checked ? 'ADMIN' : 'PADRAO')}
+                                            aria-label="Usuário é administrador"
+                                        />
+                                    </div>
+                                )}
+                            />
                         </div>
+
+                        <FloatingField label="Senha" htmlFor="password" required error={errors.password?.message}>
+                            <Input type="password" autoComplete="new-password" {...register('password')} />
+                        </FloatingField>
 
                         <div className="flex gap-2">
                             <Button type="submit" disabled={criarMutation.isPending}>
@@ -284,5 +335,13 @@ export default function UsuariosPage() {
                 }}
             />
         </div>
+    )
+}
+
+export default function UsuariosPageGuard() {
+    return (
+        <RequirePapelAdmin>
+            <UsuariosPage />
+        </RequirePapelAdmin>
     )
 }

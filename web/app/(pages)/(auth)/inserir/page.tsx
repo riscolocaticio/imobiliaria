@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { RequirePapelAdmin } from '@/components/require-papel-admin'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -61,7 +62,7 @@ const DECLARACOES: { name: 'declaracaoFundamento' | 'declaracaoVeracidade' | 'de
     }
 ]
 
-export default function InserirPage() {
+function InserirPage() {
     const [formKey, setFormKey] = useState(0)
 
     const {
@@ -69,6 +70,8 @@ export default function InserirPage() {
         control,
         handleSubmit,
         reset,
+        setValue,
+        watch,
         formState: { errors }
     } = useForm<InserirFormValues>({
         resolver: zodResolver(inserirSchema),
@@ -104,6 +107,15 @@ export default function InserirPage() {
     })
 
     const mostrarCarregando = useDelayedLoading(inserirMutation.isPending)
+
+    const declaracoesMarcadas = DECLARACOES.map((declaracao) => watch(declaracao.name))
+    const todasDeclaracoesMarcadas = declaracoesMarcadas.every(Boolean)
+
+    function alternarTodasDeclaracoes(marcar: boolean) {
+        DECLARACOES.forEach((declaracao) => {
+            setValue(declaracao.name, marcar, { shouldValidate: true })
+        })
+    }
 
     const errosDeclaracao =
         errors.declaracaoFundamento || errors.declaracaoVeracidade || errors.declaracaoCiencia
@@ -299,6 +311,20 @@ export default function InserirPage() {
                                 </label>
                             ))}
                         </div>
+
+                        <label
+                            htmlFor="aceitarTodasDeclaracoes"
+                            className="mt-3 flex cursor-pointer items-start gap-2.5 border-t border-border pt-4 text-sm font-medium text-foreground"
+                        >
+                            <Checkbox
+                                id="aceitarTodasDeclaracoes"
+                                className="mt-0.5"
+                                checked={todasDeclaracoesMarcadas}
+                                onCheckedChange={(checked) => alternarTodasDeclaracoes(checked === true)}
+                            />
+                            <span>Aceito todos os termos acima</span>
+                        </label>
+
                         {errosDeclaracao && (
                             <p className="text-xs text-destructive">
                                 Confirme todas as declarações para registrar a ocorrência.
@@ -317,5 +343,13 @@ export default function InserirPage() {
                 </form>
             </CardContent>
         </Card>
+    )
+}
+
+export default function InserirPageGuard() {
+    return (
+        <RequirePapelAdmin>
+            <InserirPage />
+        </RequirePapelAdmin>
     )
 }

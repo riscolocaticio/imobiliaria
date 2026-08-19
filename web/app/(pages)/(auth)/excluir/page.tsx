@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Clock, FolderOpen, Inbox, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { RequirePapelAdmin } from '@/components/require-papel-admin'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -20,7 +21,7 @@ import {
 import { SITUACAO_OCORRENCIA_LABEL } from '@/shared/constants/situacao-ocorrencia'
 import { FAIXA_VALOR_OCORRENCIA_LABEL } from '@/shared/constants/faixa-valor-ocorrencia'
 
-export default function ExcluirPage() {
+function ExcluirPage() {
     const [registros, setRegistros] = useState<OcorrenciaExcluivel[] | null>(null)
     const [cpfConsultado, setCpfConsultado] = useState('')
     const [registroParaExcluir, setRegistroParaExcluir] = useState<OcorrenciaExcluivel | null>(null)
@@ -175,5 +176,13 @@ export default function ExcluirPage() {
                 }}
             />
         </div>
+    )
+}
+
+export default function ExcluirPageGuard() {
+    return (
+        <RequirePapelAdmin>
+            <ExcluirPage />
+        </RequirePapelAdmin>
     )
 }

@@ -15,6 +15,7 @@ export class UsuarioListByImobiliariaUsecase {
                 email: true,
                 login: true,
                 role: true,
+                papel: true,
                 status: true,
                 createdAt: true,
                 imobiliaria: imobiliariaId

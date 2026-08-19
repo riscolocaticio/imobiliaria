@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuar
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CurrentUser } from '../../../infra/system/security/decorators/current-user.decorator'
 import { JwtAuthGuard } from '../../../infra/system/security/guards/jwt-auth.guard'
+import { PapelAdminGuard } from '../../../infra/system/security/guards/papel-admin.guard'
 import { UsuarioFromJwtDto } from './types/usuario-from-jwt.input'
 import { UsuarioCreateInput } from './types/usuario-create.input'
 import { UsuarioUpdateInput } from './types/usuario-update.input'
@@ -35,11 +36,13 @@ export class UsuarioController {
         return this.usuarioListByImobiliariaUsecase.execute(imobiliariaId)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Post()
     async create(@CurrentUser() usuario: UsuarioFromJwtDto, @Body() input: UsuarioCreateInput) {
         return this.usuarioCreateUsecase.execute(usuario, input)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Patch(':id')
     async update(
         @CurrentUser() usuario: UsuarioFromJwtDto,

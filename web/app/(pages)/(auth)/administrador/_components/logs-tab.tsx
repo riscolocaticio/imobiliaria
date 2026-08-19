@@ -5,6 +5,7 @@ import { Building2, Clock, FileClock, IdCard, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { ListagemCard } from '@/components/ui/listagem-card'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { imobiliariaService } from '@/app/services/imobiliaria.service'
@@ -73,24 +74,20 @@ export function LogsTab() {
             }}
             headerActions={
                 <>
-                    <div className="relative w-full md:w-auto">
-                        <Select
+                    <div className="relative w-full md:w-52">
+                        <SearchableSelect
                             value={filtroImobiliaria}
                             onValueChange={aplicarFiltro(setFiltroImobiliaria)}
                             disabled={mostrarCarregando}
-                        >
-                            <SelectTrigger className="w-full md:w-52">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value={TODAS_IMOBILIARIAS}>Todas as imobiliárias</SelectItem>
-                                {imobiliarias?.map((imobiliaria) => (
-                                    <SelectItem key={imobiliaria.id} value={String(imobiliaria.id)}>
-                                        {imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                            searchPlaceholder="Buscar imobiliária..."
+                            options={[
+                                { value: TODAS_IMOBILIARIAS, label: 'Todas as imobiliárias' },
+                                ...(imobiliarias?.map((imobiliaria) => ({
+                                    value: String(imobiliaria.id),
+                                    label: imobiliaria.nomeFantasia ?? imobiliaria.razaoSocial
+                                })) ?? [])
+                            ]}
+                        />
                         {mostrarCarregando && ultimaAcao === 'filtro' && (
                             <Loader2 className="pointer-events-none absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
                         )}

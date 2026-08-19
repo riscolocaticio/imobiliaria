@@ -9,6 +9,7 @@ export interface Usuario {
     email: string
     login: string
     role: 'IMOBILIARIA' | 'MASTER'
+    papel: 'ADMIN' | 'PADRAO'
     status: 'ATIVO' | 'INATIVO'
     createdAt: string
     imobiliaria?: { id: number; razaoSocial: string; nomeFantasia: string | null }
@@ -21,6 +22,7 @@ export interface UsuarioCreateInput {
     email: string
     login: string
     password: string
+    papel: 'ADMIN' | 'PADRAO'
     imobiliariaId?: number
 }
 
@@ -29,6 +31,7 @@ export interface UsuarioUpdateInput {
     email?: string
     password?: string
     status?: 'ATIVO' | 'INATIVO'
+    papel?: 'ADMIN' | 'PADRAO'
     imobiliariaId?: number
 }
 

@@ -3,10 +3,11 @@
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { useUser } from '@/app/providers/user-provider'
+import { RequirePapelAdmin } from '@/components/require-papel-admin'
 import { ContestacaoMasterView } from './_components/contestacao-master-view'
 import { ContestacaoImobiliariaView } from './_components/contestacao-imobiliaria-view'
 
-export default function ContestacaoPage() {
+function ContestacaoPage() {
     return (
         <Suspense fallback={null}>
             <ContestacaoPageContent />
@@ -43,5 +44,13 @@ function ContestacaoPageContent() {
                 )}
             </div>
         </div>
+    )
+}
+
+export default function ContestacaoPageGuard() {
+    return (
+        <RequirePapelAdmin>
+            <ContestacaoPage />
+        </RequirePapelAdmin>
     )
 }

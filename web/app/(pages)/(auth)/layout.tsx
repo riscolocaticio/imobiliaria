@@ -25,6 +25,8 @@ const NAV_ITEMS = [
     { href: ROUTES.CONTESTACAO, label: 'Contestação', icon: MessageSquareWarning }
 ]
 
+const NAV_ITEMS_PADRAO = [{ href: ROUTES.CONSULTAR, label: 'Consultar Ocorrências', icon: Search }]
+
 function getSaudacao() {
     const minutosDoDia = new Date().getHours() * 60 + new Date().getMinutes()
 
@@ -68,7 +70,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         window.location.href = ROUTES.LOGIN
     }
 
-    const navItems = usuario.role === 'MASTER' ? [...NAV_ITEMS, ADMIN_NAV_ITEM] : NAV_ITEMS
+    const navItems =
+        usuario.role === 'MASTER'
+            ? [...NAV_ITEMS, ADMIN_NAV_ITEM]
+            : usuario.papel === 'PADRAO'
+              ? NAV_ITEMS_PADRAO
+              : NAV_ITEMS
 
     return (
         <div className="flex min-h-dvh md:h-dvh md:overflow-hidden">

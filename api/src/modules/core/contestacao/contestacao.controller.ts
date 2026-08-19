@@ -20,6 +20,7 @@ import { Response } from 'express'
 import { CurrentUser } from '../../../infra/system/security/decorators/current-user.decorator'
 import { JwtAuthGuard } from '../../../infra/system/security/guards/jwt-auth.guard'
 import { MasterGuard } from '../../../infra/system/security/guards/master.guard'
+import { PapelAdminGuard } from '../../../infra/system/security/guards/papel-admin.guard'
 import { UsuarioFromJwtDto } from '../usuario/types/usuario-from-jwt.input'
 import { contestacaoUploadOptions } from './config/contestacao-upload.config'
 import { ContestacaoAbrirInput } from './types/contestacao-abrir.input'
@@ -51,6 +52,7 @@ export class ContestacaoController {
         return this.contestacaoAbrirUsecase.execute(usuario, input)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Get()
     async listar(
         @CurrentUser() usuario: UsuarioFromJwtDto,
@@ -72,11 +74,13 @@ export class ContestacaoController {
         })
     }
 
+    @UseGuards(PapelAdminGuard)
     @Get(':id')
     async detalhar(@CurrentUser() usuario: UsuarioFromJwtDto, @Param('id', ParseIntPipe) id: number) {
         return this.contestacaoDetalharUsecase.execute(usuario, id)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Post(':id/documentos')
     @UseInterceptors(FileInterceptor('arquivo', contestacaoUploadOptions))
     async enviarDocumento(
@@ -87,6 +91,7 @@ export class ContestacaoController {
         return this.contestacaoUploadDocumentoUsecase.execute(usuario, id, arquivo)
     }
 
+    @UseGuards(PapelAdminGuard)
     @Get(':id/documentos/:documentoId')
     async baixarDocumento(
         @CurrentUser() usuario: UsuarioFromJwtDto,

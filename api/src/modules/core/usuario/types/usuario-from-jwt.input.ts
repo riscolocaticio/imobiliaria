@@ -1,4 +1,4 @@
-import { UsuarioRole } from '@prisma/client'
+import { PapelUsuario, UsuarioRole } from '@prisma/client'
 
 export class UsuarioFromJwtDto {
     id: number
@@ -6,5 +6,6 @@ export class UsuarioFromJwtDto {
     nomeCompleto: string
     email: string
     role: UsuarioRole
+    papel: PapelUsuario
     termoAceito: boolean
 }

@@ -18,6 +18,10 @@ export class UsuarioUpdateInput {
     @IsOptional()
     status?: 'ATIVO' | 'INATIVO'
 
+    @IsIn(['ADMIN', 'PADRAO'])
+    @IsOptional()
+    papel?: 'ADMIN' | 'PADRAO'
+
     @IsInt()
     @IsOptional()
     imobiliariaId?: number

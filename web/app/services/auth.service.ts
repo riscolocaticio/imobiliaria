@@ -8,6 +8,7 @@ export interface UsuarioLogado {
     nomeCompleto: string
     email: string
     role: 'IMOBILIARIA' | 'MASTER'
+    papel: 'ADMIN' | 'PADRAO'
     termoAceito: boolean
 }
 

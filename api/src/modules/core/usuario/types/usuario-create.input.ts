@@ -1,4 +1,4 @@
-import { IsDateString, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator'
+import { IsDateString, IsEmail, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator'
 
 export class UsuarioCreateInput {
     @IsString()
@@ -22,6 +22,11 @@ export class UsuarioCreateInput {
     @IsString()
     @MinLength(6, { message: 'A senha deve ter ao menos 6 caracteres' })
     password: string
+
+    // Se não informado, o usuário é criado como ADMIN (comportamento anterior).
+    @IsIn(['ADMIN', 'PADRAO'])
+    @IsOptional()
+    papel?: 'ADMIN' | 'PADRAO'
 
     // Só é considerado quando quem está criando é MASTER — para os demais, o
     // usuário é sempre criado na própria imobiliária, ignorando este campo.

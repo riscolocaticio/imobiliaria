@@ -41,6 +41,7 @@ export class UsuarioUpdateUsecase {
         }
 
         const novoStatus = input.status ?? usuario.status
+        const novoPapel = input.papel ?? usuario.papel
 
         if (input.status === 'INATIVO' && usuario.status === 'ATIVO' && !mudouDeImobiliaria) {
             const usuariosAtivos = await prisma.usuario.count({
@@ -49,6 +50,28 @@ export class UsuarioUpdateUsecase {
             if (usuariosAtivos <= 1) {
                 throw new ForbiddenException(
                     'Não é possível desativar o único usuário ativo da imobiliária'
+                )
+            }
+        }
+
+        const deixaDeSerAdminAtivoAli =
+            usuario.role === 'IMOBILIARIA' &&
+            usuario.papel === 'ADMIN' &&
+            usuario.status === 'ATIVO' &&
+            (mudouDeImobiliaria || novoStatus !== 'ATIVO' || novoPapel !== 'ADMIN')
+
+        if (deixaDeSerAdminAtivoAli) {
+            const outrosAdminsAtivos = await prisma.usuario.count({
+                where: {
+                    imobiliariaId: usuario.imobiliariaId,
+                    status: 'ATIVO',
+                    papel: 'ADMIN',
+                    id: { not: usuarioId }
+                }
+            })
+            if (outrosAdminsAtivos === 0) {
+                throw new ForbiddenException(
+                    'A imobiliária precisa ter ao menos um usuário Administrador ativo'
                 )
             }
         }
@@ -73,6 +96,7 @@ export class UsuarioUpdateUsecase {
                 nomeCompleto: input.nomeCompleto,
                 email: input.email,
                 status: input.status,
+                papel: input.papel,
                 sessaoExpiraEm: input.status === 'INATIVO' ? null : undefined,
                 passwordHash: input.password
                     ? await this.cryptoService.hash(input.password)
@@ -87,6 +111,7 @@ export class UsuarioUpdateUsecase {
                 email: true,
                 login: true,
                 role: true,
+                papel: true,
                 status: true,
                 createdAt: true
             }
