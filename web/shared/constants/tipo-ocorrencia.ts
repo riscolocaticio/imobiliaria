@@ -10,6 +10,7 @@ import {
     PaintRoller,
     ShieldAlert,
     Sofa,
+    Volume2,
     type LucideIcon
 } from 'lucide-react'
 
@@ -23,6 +24,7 @@ export const TIPO_OCORRENCIA_OPTIONS = [
     { value: 'DESCUMPRIMENTO_CONTRATUAL', label: 'Descumprimento contratual' },
     { value: 'LUZ_AGUA_IPTU', label: 'Luz/Água/Iptu' },
     { value: 'MULTA_RESCISORIA_NAO_QUITADA', label: 'Multa rescisória não quitada' },
+    { value: 'PERTURBACAO_SOSSEGO', label: 'Perturbação do sossego' },
     { value: 'PINTURA', label: 'Pintura' }
 ] as const
 
@@ -42,6 +44,7 @@ export const TIPO_OCORRENCIA_ICON: Record<string, LucideIcon> = {
     DESCUMPRIMENTO_CONTRATUAL: FileWarning,
     LUZ_AGUA_IPTU: Droplets,
     MULTA_RESCISORIA_NAO_QUITADA: Hammer,
+    PERTURBACAO_SOSSEGO: Volume2,
     PINTURA: PaintRoller
 }
 

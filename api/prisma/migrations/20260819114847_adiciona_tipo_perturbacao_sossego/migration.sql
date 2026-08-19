@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TipoOcorrencia" ADD VALUE 'PERTURBACAO_SOSSEGO';

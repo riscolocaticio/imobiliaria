@@ -145,7 +145,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </header>
 
                 <main className="flex w-full flex-1 flex-col px-4 pt-6 sm:px-6 sm:pt-8 md:min-h-0 md:overflow-y-auto lg:px-8">
-                    <div className="flex-1 pb-6">{children}</div>
+                    <div className="flex-1 pb-6 md:min-h-0">{children}</div>
                     <AppFooter />
                 </main>
             </div>
