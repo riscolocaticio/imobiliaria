@@ -11,7 +11,11 @@ import { formatCpf } from '@/lib/format-cpf'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, ConsultaResult, OcorrenciaDetalhe } from '@/app/services/ocorrencia.service'
-import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
+import {
+    TIPO_OCORRENCIA_ICON,
+    TIPO_OCORRENCIA_ICON_PADRAO,
+    TIPO_OCORRENCIA_LABEL
+} from '@/shared/constants/tipo-ocorrencia'
 import { SITUACAO_OCORRENCIA_LABEL } from '@/shared/constants/situacao-ocorrencia'
 import { FAIXA_VALOR_OCORRENCIA_LABEL } from '@/shared/constants/faixa-valor-ocorrencia'
 
@@ -102,7 +106,8 @@ export default function ConsultarPage() {
                                     {detalhes && (
                                         <ul className="flex flex-col gap-4 pb-6">
                                             {detalhes.map((ocorrencia) => {
-                                                const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
+                                                const Icon =
+                                                    TIPO_OCORRENCIA_ICON[ocorrencia.tipo] ?? TIPO_OCORRENCIA_ICON_PADRAO
                                                 return (
                                                     <li
                                                         key={ocorrencia.id}
@@ -114,7 +119,7 @@ export default function ConsultarPage() {
                                                                     <Icon className="h-4 w-4" />
                                                                 </span>
                                                                 <Badge variant="secondary">
-                                                                    {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}
+                                                                    {TIPO_OCORRENCIA_LABEL[ocorrencia.tipo] ?? ocorrencia.tipo}
                                                                 </Badge>
                                                             </div>
                                                             <span className="flex items-center gap-1 text-xs text-muted-foreground">

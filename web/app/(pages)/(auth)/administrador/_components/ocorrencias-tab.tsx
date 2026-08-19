@@ -13,6 +13,7 @@ import { imobiliariaService } from '@/app/services/imobiliaria.service'
 import { ocorrenciaService } from '@/app/services/ocorrencia.service'
 import {
     TIPO_OCORRENCIA_ICON,
+    TIPO_OCORRENCIA_ICON_PADRAO,
     TIPO_OCORRENCIA_LABEL,
     TIPO_OCORRENCIA_OPTIONS,
     type TipoOcorrencia
@@ -152,7 +153,7 @@ export function OcorrenciasTab() {
             }
         >
             {resultado?.ocorrencias.map((ocorrencia) => {
-                const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo]
+                const Icon = TIPO_OCORRENCIA_ICON[ocorrencia.tipo] ?? TIPO_OCORRENCIA_ICON_PADRAO
                 return (
                     <div key={ocorrencia.id} className="rounded-xl border border-border bg-card p-5 shadow-sm">
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -161,7 +162,7 @@ export function OcorrenciasTab() {
                                     <Icon className="h-4 w-4" />
                                 </span>
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <Badge variant="secondary">{TIPO_OCORRENCIA_LABEL[ocorrencia.tipo]}</Badge>
+                                    <Badge variant="secondary">{TIPO_OCORRENCIA_LABEL[ocorrencia.tipo] ?? ocorrencia.tipo}</Badge>
                                     <Badge variant="outline">{SITUACAO_OCORRENCIA_LABEL[ocorrencia.situacaoAtual]}</Badge>
                                     <Badge variant="outline">{FAIXA_VALOR_OCORRENCIA_LABEL[ocorrencia.faixaValor]}</Badge>
                                     {ocorrencia.status === 'EXCLUIDA' && <Badge variant="outline">Excluída</Badge>}

@@ -1,6 +1,7 @@
 import {
     Banknote,
     Building2,
+    CircleHelp,
     DoorOpen,
     Droplets,
     FileWarning,
@@ -43,3 +44,5 @@ export const TIPO_OCORRENCIA_ICON: Record<string, LucideIcon> = {
     MULTA_RESCISORIA_NAO_QUITADA: Hammer,
     PINTURA: PaintRoller
 }
+
+export const TIPO_OCORRENCIA_ICON_PADRAO: LucideIcon = CircleHelp

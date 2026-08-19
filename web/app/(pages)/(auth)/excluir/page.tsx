@@ -12,7 +12,11 @@ import { CpfSearchCard } from '@/components/cpf-search-card'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { useDelayedLoading } from '@/lib/use-delayed-loading'
 import { ocorrenciaService, OcorrenciaExcluivel } from '@/app/services/ocorrencia.service'
-import { TIPO_OCORRENCIA_ICON, TIPO_OCORRENCIA_LABEL } from '@/shared/constants/tipo-ocorrencia'
+import {
+    TIPO_OCORRENCIA_ICON,
+    TIPO_OCORRENCIA_ICON_PADRAO,
+    TIPO_OCORRENCIA_LABEL
+} from '@/shared/constants/tipo-ocorrencia'
 import { SITUACAO_OCORRENCIA_LABEL } from '@/shared/constants/situacao-ocorrencia'
 import { FAIXA_VALOR_OCORRENCIA_LABEL } from '@/shared/constants/faixa-valor-ocorrencia'
 
@@ -91,7 +95,7 @@ export default function ExcluirPage() {
                             <CardContent className="flex flex-col md:h-full md:min-h-0 md:overflow-y-auto">
                                 <ul className="flex flex-col gap-4 pb-6">
                                 {registros.map((registro) => {
-                                    const Icon = TIPO_OCORRENCIA_ICON[registro.tipo]
+                                    const Icon = TIPO_OCORRENCIA_ICON[registro.tipo] ?? TIPO_OCORRENCIA_ICON_PADRAO
                                     return (
                                         <li
                                             key={registro.id}
@@ -103,7 +107,7 @@ export default function ExcluirPage() {
                                                         <Icon className="h-4 w-4" />
                                                     </span>
                                                     <Badge variant="secondary">
-                                                        {TIPO_OCORRENCIA_LABEL[registro.tipo]}
+                                                        {TIPO_OCORRENCIA_LABEL[registro.tipo] ?? registro.tipo}
                                                     </Badge>
                                                 </div>
                                                 <div className="flex items-center gap-1">
@@ -158,7 +162,7 @@ export default function ExcluirPage() {
                 title="Excluir este registro?"
                 description={
                     registroParaExcluir
-                        ? `A ocorrência de "${TIPO_OCORRENCIA_LABEL[registroParaExcluir.tipo]}" será excluída. Essa ação não pode ser desfeita.`
+                        ? `A ocorrência de "${TIPO_OCORRENCIA_LABEL[registroParaExcluir.tipo] ?? registroParaExcluir.tipo}" será excluída. Essa ação não pode ser desfeita.`
                         : undefined
                 }
                 confirmLabel="Sim, excluir"
