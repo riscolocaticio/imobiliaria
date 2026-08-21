@@ -25,7 +25,8 @@ export function maskCpfInput(value: string): string {
 export function isCpfComplete(value: string): boolean {
     const digits = value.replace(/\D/g, '')
     if (digits.length !== 11) return false
-    if (/^(\d)\1{10}$/.test(digits)) return false
+
+    if (/^(\d)\1{10}$/.test(digits)) return true
 
     const digitoVerificador1 = calcularDigitoVerificadorCpf(digits.slice(0, 9), 10)
     const digitoVerificador2 = calcularDigitoVerificadorCpf(digits.slice(0, 10), 11)

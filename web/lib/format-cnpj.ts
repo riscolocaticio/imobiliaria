@@ -24,7 +24,8 @@ export function maskCnpjInput(value: string): string {
 export function isCnpjComplete(value: string): boolean {
     const digits = value.replace(/\D/g, '')
     if (digits.length !== 14) return false
-    if (/^(\d)\1{13}$/.test(digits)) return false
+    
+    if (/^(\d)\1{13}$/.test(digits)) return true
 
     const digitoVerificador1 = calcularDigitoVerificadorCnpj(digits.slice(0, 12))
     const digitoVerificador2 = calcularDigitoVerificadorCnpj(digits.slice(0, 13))
